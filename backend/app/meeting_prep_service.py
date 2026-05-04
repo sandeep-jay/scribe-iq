@@ -181,6 +181,71 @@ async def meeting_prep_context_bundle(
     return fp, facts
 
 
+
+
+
+def deterministic_meeting_prep_summary(facts: dict[str, Any]) -> str:
+    """Local prep blurb when Groq is unavailable (missing key, quota, or transport errors)."""
+
+    patient = facts.get("patient") if isinstance(facts.get("patient"), dict) else {}
+    name = str(patient.get("display_name") or patient.get("name") or "Patient").strip() or "Patient"
+    ext = str(patient.get("external_id") or "").strip()
+    sex = patient.get("sex")
+    bd = patient.get("birthdate")
+    spec = patient.get("primary_specialty")
+
+    header_bits: list[str] = []
+    if ext:
+        header_bits.append(f"id {ext}")
+    if sex:
+        header_bits.append(f"sex {sex}")
+    if bd:
+        header_bits.append(f"DOB {bd}")
+    if spec:
+        header_bits.append(f"noted specialty {spec}")
+    header_suffix = f" ({', '.join(header_bits)})" if header_bits else ""
+
+    p1 = (
+        f"{name}{header_suffix} — chart prep (offline). "
+        "This text is assembled from stored encounter rows and longitudinal JSON; it is not LLM-polished."
+    )
+
+    visits_raw = facts.get("recent_encounters_newest_first")
+    visits = visits_raw if isinstance(visits_raw, list) else []
+    lines: list[str] = []
+    for v in visits[:14]:
+        if not isinstance(v, dict):
+            continue
+        sd = str(v.get("session_date") or "—").strip()
+        sp = str(v.get("specialty") or "Clinical").strip()
+        summ = str(v.get("summary") or "").strip()
+        ex = str(v.get("full_note_excerpt") or "").strip()
+        body = summ if summ else ex
+        if len(body) > 320:
+            body = body[:317].rstrip() + "..."
+        lines.append(f"- {sd} ({sp}): {body or 'No synopsis in structured_note.'}")
+
+    p2 = "Recent documented encounters (newest first):" + '\n\n' + ('\n'.join(lines) if lines else "_No encounter rows returned.")
+
+    lng = facts.get("longitudinal_context")
+    if isinstance(lng, dict) and lng:
+        pvs = lng.get("prior_visits")
+        n = len(pvs) if isinstance(pvs, list) else 0
+        p3 = (
+            f"A longitudinal context bundle is on file ({n} prior visit rows in the capped window). "
+            "Use the Sources tab on the patient chart for citation-style priors."
+        )
+    else:
+        p3 = "No longitudinal JSON was attached to notes for this patient (or the bundle was empty after parsing)."
+
+    p4 = (
+        "NOTE: Groq is not configured or the model call failed — set `GROQ_API_KEY` in `backend/.env` "
+        "and restart the API to enable AI-polished pre-meeting summaries."
+    )
+
+    return ('\n\n').join([p1, p2, p3, p4])
+
+
 def meeting_prep_messages(facts: dict[str, Any]) -> list[dict[str, str]]:
     system = (
         "You are a clinical documentation assistant for a synthetic demo corpus. "

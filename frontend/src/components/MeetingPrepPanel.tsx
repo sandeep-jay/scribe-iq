@@ -65,6 +65,13 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
 
       {err ? <p className="mt-3 text-sm text-red-700 dark:text-red-300">{err}</p> : null}
 
+      {data?.degraded ? (
+        <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+          Offline prep: Groq is not configured or the model call failed. Set <span className="font-mono">GROQ_API_KEY</span> in{" "}
+          <span className="font-mono">backend/.env</span> and restart the API for AI-polished summaries.
+        </p>
+      ) : null}
+
       {!err && !data && busy ? <p className="mt-3 text-sm text-indigo-900/70">Generating summary…</p> : null}
 
       {data && !err ? (

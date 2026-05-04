@@ -78,4 +78,5 @@ class MeetingPrepResponse(BaseModel):
     cached: bool
     prompt_version: str
     model: str
+    degraded: bool = False
 

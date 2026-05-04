@@ -66,6 +66,8 @@ export type MeetingPrepPayload = {
   cached: boolean;
   prompt_version: string;
   model: string;
+  /** True when summary was assembled locally (no Groq or Groq call failed). */
+  degraded?: boolean;
 };
 
 

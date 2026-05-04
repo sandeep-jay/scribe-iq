@@ -11,7 +11,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.db import get_conn
 from app.config import get_settings
 from app.llm import groq_chat_complete
-from app.meeting_prep_service import MEETING_PREP_PROMPT_VERSION, meeting_prep_context_bundle, meeting_prep_messages
+import logging
+
+from app.meeting_prep_service import (
+    MEETING_PREP_PROMPT_VERSION,
+    deterministic_meeting_prep_summary,
+    meeting_prep_context_bundle,
+    meeting_prep_messages,
+)
 from app.schemas.api_patients import (
     CorpusPatientStats,
     MeetingPrepResponse,
@@ -254,6 +261,7 @@ async def get_meeting_prep(
             domain,
         )
         if cached and cached["source_fingerprint"] == fp:
+            mdl = str(cached["model"] or "")
             return MeetingPrepResponse(
                 patient_id=pid,
                 summary=cached["summary_text"],
@@ -261,16 +269,30 @@ async def get_meeting_prep(
                 cached=True,
                 prompt_version=cached["prompt_version"],
                 model=cached["model"],
+                degraded=mdl == "deterministic-fallback",
             )
 
-    try:
-        msgs = meeting_prep_messages(facts)
-        summary = await groq_chat_complete(msgs, temperature=0.2, max_tokens=900)
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e)) from e
+    log = logging.getLogger(__name__)
+    groq_key = (settings.groq_api_key or "").strip()
+    degraded = False
+    if groq_key:
+        try:
+            msgs = meeting_prep_messages(facts)
+            summary = await groq_chat_complete(msgs, temperature=0.2, max_tokens=900)
+            model = settings.groq_chat_model
+            pv = MEETING_PREP_PROMPT_VERSION
+        except Exception as e:
+            log.warning("meeting_prep: Groq unavailable (%s); using deterministic fallback", e)
+            summary = deterministic_meeting_prep_summary(facts)
+            model = "deterministic-fallback"
+            pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
+            degraded = True
+    else:
+        summary = deterministic_meeting_prep_summary(facts)
+        model = "deterministic-fallback"
+        pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
+        degraded = True
 
-    model = settings.groq_chat_model
-    pv = MEETING_PREP_PROMPT_VERSION
     await conn.execute(
         """
         INSERT INTO patient_meeting_prep (
@@ -303,6 +325,7 @@ async def get_meeting_prep(
         cached=False,
         prompt_version=pv,
         model=model,
+        degraded=degraded,
     )
 
 @router.get("/patients/{patient_id}", response_model=PatientDetail)
