@@ -30,9 +30,18 @@ def create_app() -> FastAPI:
 
     application.add_middleware(OptionalApiKeyMiddleware)
 
+    relax = settings.cors_relax_local
+    allow_origin_regex = (
+        r"^https?://(localhost|127\.0\.0\.1):\d+$"
+        r"|^https?://192\.168\.\d{1,3}\.\d{1,3}:\d+$"
+        if relax
+        else None
+    )
+
     application.add_middleware(
         CORSMiddleware,
         allow_origins=cors_origin_list(settings.cors_origins),
+        allow_origin_regex=allow_origin_regex,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

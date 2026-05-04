@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
 import type { CorpusPatientStats, PatientListItem } from "@/lib/backend";
+import { usePatientsListSearchQuery } from "@/lib/usePatientsListSearchQuery";
 import { patientInitials } from "@/lib/patientDisplay";
 
 type SortKey = "name" | "external_id" | "note_count" | "last_session";
@@ -78,7 +79,7 @@ export function PatientsExplorer({
   patients: PatientListItem[];
   stats: CorpusPatientStats;
 }) {
-  const [q, setQ] = useState("");
+  const { displayValue: listSearchQuery } = usePatientsListSearchQuery();
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [chipLongitudinal, setChipLongitudinal] = useState(false);
@@ -101,7 +102,7 @@ export function PatientsExplorer({
   );
 
   const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = listSearchQuery.trim().toLowerCase();
     const spec = specialtyQ.trim().toLowerCase();
     const advName = advApplied.name.trim().toLowerCase();
     const advExt = advApplied.externalId.trim().toLowerCase();
@@ -129,7 +130,7 @@ export function PatientsExplorer({
       }
       return true;
     });
-  }, [patients, q, chipLongitudinal, chipMinEncounters, specialtyQ, advApplied]);
+  }, [patients, listSearchQuery, chipLongitudinal, chipMinEncounters, specialtyQ, advApplied]);
 
   const displayed = useMemo(() => {
     const rows = [...filtered];
@@ -187,15 +188,9 @@ export function PatientsExplorer({
           </p>
         </div>
         <div className="flex w-full max-w-md flex-col gap-2">
-          <label className="text-sm">
-            <span className="sr-only">Search patients</span>
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search name or external id…"
-              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none ring-zinc-200 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:ring-zinc-800"
-            />
-          </label>
+          <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+            Name or external id: use the top search bar (same filter as <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-[10px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">?q=</code> in the URL). Specialty, chips, and advanced search stay here.
+          </p>
           <label className="text-sm">
             <span className="sr-only">Filter by specialty text</span>
             <input
@@ -271,7 +266,7 @@ export function PatientsExplorer({
             </div>
             <div className="flex-1 space-y-4 overflow-y-auto p-4 text-sm">
               <p className="text-xs text-zinc-500">
-                Client-side filters on the loaded page (limit {patients.length}). Combine with chips and the quick search field.
+                Client-side filters on the loaded page (limit {patients.length}). Combine with chips and the top search bar.
               </p>
               <label className="block space-y-1">
                 <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">Name contains</span>

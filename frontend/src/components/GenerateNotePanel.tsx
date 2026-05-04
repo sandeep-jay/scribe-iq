@@ -85,6 +85,9 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
           Verify <span className="font-mono">NEXT_PUBLIC_SCRIBE_API_BASE</span> / CORS, or start uvicorn on{" "}
           <span className="font-mono">{apiBase()}</span>.
         </p>
+        <p className="leading-relaxed opacity-90">
+          <span className="font-semibold">Note:</span> &quot;Failed to fetch&quot; means the browser did not get an HTTP response from FastAPI (offline API, wrong URL, mixed content, or CORS). Groq is only used after the request reaches the backend.
+        </p>
       </section>
     );
   }

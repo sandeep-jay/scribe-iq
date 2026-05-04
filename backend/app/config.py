@@ -15,7 +15,16 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql://rag:rag_dev_password@127.0.0.1:5433/rag_dev"
 
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    # Comma-separated exact origins. Next often uses 3001+ when 3000 is busy; LAN testing uses 192.168.x.x.
+    cors_origins: str = ",".join(
+        [f"http://{host}:{port}" for host in ("localhost", "127.0.0.1") for port in range(3000, 3013)]
+        + [f"http://{host}:3020" for host in ("localhost", "127.0.0.1")]
+        + [f"http://{host}:5173" for host in ("localhost", "127.0.0.1")]
+    )
+
+    # When true, also allow any localhost / 127.0.0.1 port and 192.168.* via regex (browser shows generic
+    # "Failed to fetch" if Origin is not allowed). Set CORS_RELAX_LOCAL=false in locked-down deployments.
+    cors_relax_local: bool = True
 
     # --- LLM (chat / JSON) ---
     llm_provider: str = "groq"  # groq | azure

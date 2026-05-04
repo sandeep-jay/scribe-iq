@@ -98,7 +98,12 @@ export default async function EncounterViewerPage({ params }: Props) {
           <p className="text-xs uppercase text-zinc-500">Encounter viewer</p>
           <h1 className="text-2xl font-semibold">{note.external_encounter_id}</h1>
           <p className="text-sm text-zinc-600">{patient.name}</p>
-          {preview.specialty ? <p className="text-xs text-zinc-500">Specialty: {preview.specialty}</p> : null}
+          {preview.specialty ? (
+            <p className="mt-1 text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+              <span className="text-xs font-medium uppercase tracking-wide text-zinc-500">Specialty</span>{" "}
+              {preview.specialty}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
