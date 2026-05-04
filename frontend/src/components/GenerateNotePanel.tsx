@@ -85,6 +85,9 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
           Verify <span className="font-mono">NEXT_PUBLIC_SCRIBE_API_BASE</span> / CORS, or start uvicorn on{" "}
           <span className="font-mono">{apiBase()}</span>.
         </p>
+        <p className="leading-relaxed opacity-90">
+          <span className="font-semibold">Note:</span> &quot;Failed to fetch&quot; means the browser did not get an HTTP response from FastAPI (offline API, wrong URL, mixed content, or CORS). Groq is only used after the request reaches the backend.
+        </p>
       </section>
     );
   }
@@ -156,7 +159,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
   };
 
   return (
-    <section className="space-y-4 rounded-xl border border-indigo-200 bg-indigo-50/70 p-5 text-sm text-indigo-950 dark:border-indigo-950 dark:bg-indigo-950/30 dark:text-indigo-50">
+    <section className="min-w-0 max-w-full space-y-4 rounded-xl border border-indigo-200 bg-indigo-50/70 p-5 text-sm text-indigo-950 dark:border-indigo-950 dark:bg-indigo-950/30 dark:text-indigo-50">
       <header className="space-y-1">
         <h2 className="text-[11px] font-semibold uppercase tracking-wide">LLM encounter drafting</h2>
         <p className="text-[11px] text-indigo-800 dark:text-indigo-100">

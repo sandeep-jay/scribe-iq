@@ -125,4 +125,5 @@ High-fidelity references (patient overview, CCM enrolled view, patients table, a
 |------|--------|
 | 2026-05-04 | Initial UI roadmap: phases A–D, principles, out of scope, open decisions. |
 | 2026-05-04 | Phase A closed: sidebar + `/docs`, top search/user chrome, patient anchors (see repo history). |
+| 2026-05-04 | Phases B–D implemented on branch `feature/ui-roadmap-bcd`: patients findability, chart rail + month timeline, encounter workspace shell. |
 

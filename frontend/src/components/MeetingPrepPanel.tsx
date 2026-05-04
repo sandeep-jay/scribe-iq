@@ -40,7 +40,7 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
   }, [data?.summary]);
 
   return (
-    <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-6 text-sm text-indigo-950 dark:border-indigo-900 dark:bg-indigo-950/25 dark:text-indigo-50">
+    <section className="min-w-0 max-w-full rounded-xl border border-indigo-200 bg-indigo-50/60 p-6 text-sm text-indigo-950 dark:border-indigo-900 dark:bg-indigo-950/25 dark:text-indigo-50">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-indigo-800/80 dark:text-indigo-200/90">Pre-Meeting Summary</p>
@@ -63,7 +63,16 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
         </div>
       </div>
 
-      {err ? <p className="mt-3 text-sm text-red-700 dark:text-red-300">{err}</p> : null}
+      {err ? (
+        <div className="mt-3 space-y-2 text-sm text-red-700 dark:text-red-300">
+          <p>{err}</p>
+          <p className="text-xs leading-relaxed opacity-90">
+            &quot;Failed to fetch&quot; usually means the browser never reached FastAPI (start uvicorn, check{" "}
+            <span className="font-mono">NEXT_PUBLIC_SCRIBE_API_BASE</span>, and CORS / same host as the app). Groq runs only after the backend answers.
+          </p>
+        </div>
+      ) : null}
+
 
       {data?.degraded ? (
         <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">

@@ -59,7 +59,7 @@ function ChatSurface() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 max-w-full space-y-6">
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-50">
           <p className="font-medium">RAG chat retrieval is intentionally deferred in this sprint.</p>
           <p className="mt-2 text-xs text-amber-900/80 dark:text-amber-100/80">
@@ -69,8 +69,8 @@ function ChatSurface() {
           </p>
         </div>
 
-<div className="grid gap-10 lg:grid-cols-[2fr_minmax(16rem_1fr)]">
-      <div className="space-y-6">
+<div className="grid min-w-0 gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
+      <div className="min-w-0 space-y-6">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold">Chat-on-corpus</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -136,7 +136,7 @@ function ChatSurface() {
         </div>
       </div>
 
-      <aside className="space-y-4 rounded-xl border border-zinc-200 p-4 text-sm dark:border-zinc-800">
+      <aside className="min-w-0 space-y-4 rounded-xl border border-zinc-200 p-4 text-sm dark:border-zinc-800">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Citations</h2>
         {lastCit.length === 0 ? (
           <p className="text-zinc-500">Send a prompt to hydrate retrieved excerpts.</p>

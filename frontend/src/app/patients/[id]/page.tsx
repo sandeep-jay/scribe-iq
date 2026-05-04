@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GenerateNotePanel } from "@/components/GenerateNotePanel";
 import { PatientChartTabs } from "@/components/PatientChartTabs";
 import { fetchPatient } from "@/lib/backend";
+import { patientInitials } from "@/lib/patientDisplay";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -69,14 +70,26 @@ export default async function PatientDetailPage({ params }: Props) {
     "inline-flex items-center rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800";
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-      <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
+    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-8">
+      <section className="min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
         <p className="text-xs uppercase tracking-wide text-zinc-500">Patient context</p>
-        <h1 className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{detail.name}</h1>
-        <p className="mt-1 break-all text-sm text-zinc-600 dark:text-zinc-400">{detail.external_id}</p>
-        <p className="mt-0.5 font-mono text-xs text-zinc-500">{detail.id}</p>
-        {line2 ? <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{line2}</p> : null}
-        {cityState ? <p className="mt-1 text-xs text-zinc-500">{cityState}</p> : null}
+        <div className="mt-3 flex min-w-0 items-start gap-4">
+          <span
+            className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-semibold text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100"
+            aria-hidden
+          >
+            {patientInitials(detail.name)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{detail.name}</h1>
+            <p className="mt-1 break-all text-sm text-zinc-600 dark:text-zinc-400">{detail.external_id}</p>
+            <p className="mt-0.5 truncate font-mono text-xs text-zinc-500" title={detail.id}>
+              {detail.id}
+            </p>
+            {line2 ? <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{line2}</p> : null}
+            {cityState ? <p className="mt-1 text-xs text-zinc-500">{cityState}</p> : null}
+          </div>
+        </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
           <Link className={jumpClass} href={chatHref}>
@@ -97,7 +110,7 @@ export default async function PatientDetailPage({ params }: Props) {
         </div>
       </section>
 
-      <details className="rounded-xl border border-zinc-200 p-4 text-sm dark:border-zinc-800">
+      <details className="min-w-0 rounded-xl border border-zinc-200 p-4 text-sm dark:border-zinc-800">
         <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
           Synthea profile (demographics & synthetic economics)
         </summary>
@@ -153,7 +166,7 @@ export default async function PatientDetailPage({ params }: Props) {
         meds={detail.longitudinal_medication_hints ?? []}
       />
 
-      <div id="generate-note" className="scroll-mt-28">
+      <div id="generate-note" className="scroll-mt-28 min-w-0">
         <GenerateNotePanel patientId={detail.id} />
       </div>
 

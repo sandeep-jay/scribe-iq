@@ -1,6 +1,8 @@
+import { Suspense } from "react";
+
+import { PatientsExplorer } from "@/components/PatientsExplorer";
 import type { PaginatedPatients } from "@/lib/backend";
 import { fetchCorpusPatientStats, fetchPatients } from "@/lib/backend";
-import { PatientsExplorer } from "@/components/PatientsExplorer";
 
 export default async function PatientsPage() {
   let data: PaginatedPatients;
@@ -19,5 +21,9 @@ export default async function PatientsPage() {
     );
   }
 
-  return <PatientsExplorer patients={data.patients} stats={stats} />;
+  return (
+    <Suspense fallback={<p className="text-sm text-zinc-500">Loading filters…</p>}>
+      <PatientsExplorer patients={data.patients} stats={stats} />
+    </Suspense>
+  );
 }

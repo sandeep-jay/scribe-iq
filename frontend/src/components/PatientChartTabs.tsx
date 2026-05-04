@@ -16,6 +16,8 @@ export type JourneyNote = {
 type TabId = "read" | "sources" | "codes";
 
 const ENCOUNTER_LIST_PAGE_SIZE = 10;
+/** Above this, timeline compresses to one anchor per calendar month (Phase C2). */
+const TIMELINE_BUCKET_AT = 32;
 
 function strVal(val: unknown): string | undefined {
   if (val === null || val === undefined) return undefined;
@@ -149,6 +151,28 @@ export function PatientChartTabs(props: {
     [journeyNotes],
   );
 
+  const timelineBuckets = useMemo(() => {
+    const visits = timelineChronological;
+    if (visits.length <= TIMELINE_BUCKET_AT) {
+      return { kind: "visits" as const, visits };
+    }
+    const byMonth = new Map<string, JourneyNote[]>();
+    for (const n of visits) {
+      const day = isoDateFromSession(n.session_date);
+      const k = day ? day.slice(0, 7) : "unknown";
+      if (!byMonth.has(k)) byMonth.set(k, []);
+      byMonth.get(k)!.push(n);
+    }
+    const keys = [...byMonth.keys()].sort();
+    const months = keys.map((k) => {
+      const vs = byMonth.get(k)!;
+      vs.sort((a, b) => compareSessionDateIso(a.session_date, b.session_date));
+      const note = vs[vs.length - 1]!;
+      return { key: k, note, count: vs.length };
+    });
+    return { kind: "months" as const, months };
+  }, [timelineChronological]);
+
   const encounterTotal = journeyNotes.length;
   const listMaxPage = Math.max(0, Math.ceil(encounterTotal / ENCOUNTER_LIST_PAGE_SIZE) - 1);
 
@@ -181,7 +205,7 @@ export function PatientChartTabs(props: {
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(snapToLatest) : null;
     ro?.observe(el);
     return () => ro?.disconnect();
-  }, [tab, journeySig, timelineChronological.length]);
+  }, [tab, journeySig, timelineChronological.length, timelineBuckets.kind]);
 
   const todayYmd = ymdLocalToday();
 
@@ -206,12 +230,12 @@ export function PatientChartTabs(props: {
   const bundleVersion = strVal(longitudinal?.bundle_version) ?? strVal(longitudinal?.version);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
+    <div className="min-w-0 max-w-full space-y-6">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
         {tabBtn(tab === "read", () => setTab("read"), "Read")}
         {tabBtn(tab === "sources", () => setTab("sources"), "Sources")}
         {tabBtn(tab === "codes", () => setTab("codes"), "Codes & map")}
-        <p className="ml-auto max-w-md text-[11px] text-zinc-500">
+        <p className="ml-auto min-w-0 max-w-md text-[11px] text-zinc-500">
           Clinician-first on <span className="font-medium text-zinc-700 dark:text-zinc-300">Read</span>; longitudinal as
           citations on <span className="font-medium text-zinc-700 dark:text-zinc-300">Sources</span>; demo codes on{" "}
           <span className="font-medium text-zinc-700 dark:text-zinc-300">Codes & map</span>.
@@ -219,9 +243,9 @@ export function PatientChartTabs(props: {
       </div>
 
       {tab === "read" ? (
-        <div className="relative space-y-8">
+        <div className="relative min-w-0 space-y-8">
           <nav
-            className="sticky top-14 z-30 -mx-1 flex flex-wrap items-center gap-2 border-b border-zinc-200/90 bg-white/90 px-1 py-2 backdrop-blur md:top-0 dark:border-zinc-800/90 dark:bg-zinc-950/90"
+            className="sticky top-0 z-30 -mx-1 flex flex-wrap items-center gap-2 border-b border-zinc-200/90 bg-white/90 px-1 py-2 backdrop-blur dark:border-zinc-800/90 dark:bg-zinc-950/90"
             aria-label="Jump to section"
           >
             <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Jump ·</span>
@@ -251,8 +275,17 @@ export function PatientChartTabs(props: {
             </a>
           </nav>
 
-          <div id="chart-prep" className="scroll-mt-28">
+          <div id="chart-prep" className="scroll-mt-28 space-y-2">
             <MeetingPrepPanel patientId={patientId} />
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setTab("sources")}
+                className="text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+              >
+                See Sources (longitudinal priors) →
+              </button>
+            </div>
           </div>
 
           <section id="care-timeline" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
@@ -262,53 +295,104 @@ export function PatientChartTabs(props: {
                 <p className="mt-1 text-xs text-zinc-500">
                   Full history on one axis: older visits extend left; the most recent stays on the right. The view
                   starts scrolled to the latest — drag left for older visits.
+                  {timelineBuckets.kind === "months" ? (
+                    <span className="mt-1 block text-amber-800 dark:text-amber-200">
+                      Month mode: {timelineChronological.length} visits are grouped into {timelineBuckets.months.length}{" "}
+                      anchors (one per calendar month) to keep the strip usable.
+                    </span>
+                  ) : null}
                 </p>
               </div>
             </div>
-            <div ref={timelineScrollRef} className="mt-6 overflow-x-auto pb-2">
+            <div ref={timelineScrollRef} className="mt-6 min-w-0 max-w-full overflow-x-auto pb-2">
               <div className="relative min-w-max px-2">
                 <div className="absolute left-4 right-4 top-[11px] h-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
                 <div className="relative flex gap-0">
-                  {timelineChronological.map((n) => {
-                    const isLatest = globalLatestNoteId !== null && n.id === globalLatestNoteId;
-                    const day = isoDateFromSession(n.session_date);
-                    const maybeToday = isLatest && day === todayYmd;
-                    return (
-                    <div key={n.id} className="flex flex-col items-center" style={{ minWidth: 112 }}>
-                      <Link
-                        href={encounterHref(n.external_encounter_id)}
-                        className="group flex flex-col items-center text-center"
-                      >
-                        <span
-                          className={
-                            isLatest
-                              ? "z-10 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow ring-2 ring-indigo-300/80 group-hover:bg-indigo-500 dark:border-zinc-950 dark:ring-indigo-500/50"
-                              : "z-10 h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow group-hover:bg-indigo-400 dark:border-zinc-950"
-                          }
-                        />
-                        <p className="mt-2 max-w-[7.5rem] text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-                          {n.session_date ?? "—"}
-                        </p>
-                        <p className="mt-1 line-clamp-3 max-w-[7.5rem] text-xs font-medium leading-snug text-zinc-900 group-hover:text-indigo-600 dark:text-zinc-50 dark:group-hover:text-indigo-300">
-                          {encounterPreview(n.summary)}
-                        </p>
-                        <p className="mt-1 text-[10px] text-zinc-500">{n.specialty ?? "Clinical"}</p>
-                        {isLatest ? (
-                          <div className="mt-1 flex flex-wrap justify-center gap-1">
-                            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100">
-                              Latest
-                            </span>
-                            {maybeToday ? (
-                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-950 dark:bg-amber-950/50 dark:text-amber-100">
-                                Today?
-                              </span>
-                            ) : null}
+                  {timelineBuckets.kind === "visits"
+                    ? timelineBuckets.visits.map((n) => {
+                        const isLatest = globalLatestNoteId !== null && n.id === globalLatestNoteId;
+                        const day = isoDateFromSession(n.session_date);
+                        const maybeToday = isLatest && day === todayYmd;
+                        return (
+                          <div key={n.id} className="flex flex-col items-center" style={{ minWidth: 112 }}>
+                            <Link
+                              href={encounterHref(n.external_encounter_id)}
+                              className="group flex flex-col items-center text-center"
+                            >
+                              <span
+                                className={
+                                  isLatest
+                                    ? "z-10 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow ring-2 ring-indigo-300/80 group-hover:bg-indigo-500 dark:border-zinc-950 dark:ring-indigo-500/50"
+                                    : "z-10 h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow group-hover:bg-indigo-400 dark:border-zinc-950"
+                                }
+                              />
+                              <p className="mt-2 max-w-[7.5rem] text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+                                {n.session_date ?? "—"}
+                              </p>
+                              <p className="mt-1 line-clamp-3 max-w-[7.5rem] text-xs font-medium leading-snug text-zinc-900 group-hover:text-indigo-600 dark:text-zinc-50 dark:group-hover:text-indigo-300">
+                                {encounterPreview(n.summary)}
+                              </p>
+                              <p className="mt-1 max-w-[7.5rem] text-xs font-semibold leading-snug text-zinc-700 dark:text-zinc-300">{n.specialty ?? "Clinical"}</p>
+                              {isLatest ? (
+                                <div className="mt-1 flex flex-wrap justify-center gap-1">
+                                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100">
+                                    Latest
+                                  </span>
+                                  {maybeToday ? (
+                                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-950 dark:bg-amber-950/50 dark:text-amber-100">
+                                      Today?
+                                    </span>
+                                  ) : null}
+                                </div>
+                              ) : null}
+                            </Link>
                           </div>
-                        ) : null}
-                      </Link>
-                    </div>
-                    );
-                  })}
+                        );
+                      })
+                    : timelineBuckets.months.map((b) => {
+                        const n = b.note;
+                        const isLatest = globalLatestNoteId !== null && n.id === globalLatestNoteId;
+                        const day = isoDateFromSession(n.session_date);
+                        const maybeToday = isLatest && day === todayYmd;
+                        return (
+                          <div key={b.key} className="flex flex-col items-center" style={{ minWidth: 128 }}>
+                            <Link
+                              href={encounterHref(n.external_encounter_id)}
+                              className="group flex flex-col items-center text-center"
+                            >
+                              <span
+                                className={
+                                  isLatest
+                                    ? "z-10 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow ring-2 ring-indigo-300/80 group-hover:bg-indigo-500 dark:border-zinc-950 dark:ring-indigo-500/50"
+                                    : "z-10 h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow group-hover:bg-indigo-400 dark:border-zinc-950"
+                                }
+                              />
+                              <p className="mt-2 max-w-[7.5rem] text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+                                {b.key === "unknown" ? "Unknown month" : b.key}
+                              </p>
+                              <p className="mt-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
+                                {b.count} visit{b.count === 1 ? "" : "s"}
+                              </p>
+                              <p className="mt-1 line-clamp-3 max-w-[7.5rem] text-xs font-medium leading-snug text-zinc-900 group-hover:text-indigo-600 dark:text-zinc-50 dark:group-hover:text-indigo-300">
+                                {encounterPreview(n.summary)}
+                              </p>
+                              <p className="mt-1 max-w-[7.5rem] text-xs font-semibold leading-snug text-zinc-700 dark:text-zinc-300">{n.specialty ?? "Clinical"}</p>
+                              {isLatest ? (
+                                <div className="mt-1 flex flex-wrap justify-center gap-1">
+                                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100">
+                                    Latest
+                                  </span>
+                                  {maybeToday ? (
+                                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-950 dark:bg-amber-950/50 dark:text-amber-100">
+                                      Today?
+                                    </span>
+                                  ) : null}
+                                </div>
+                              ) : null}
+                            </Link>
+                          </div>
+                        );
+                      })}
                 </div>
               </div>
             </div>
@@ -333,7 +417,7 @@ export function PatientChartTabs(props: {
             </section>
           ) : null}
 
-          <section id="encounters-list" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
+          <section id="encounters-list" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm min-w-0 dark:border-zinc-800">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Encounters</h2>
             <p className="mt-1 text-xs text-zinc-500">
               Newest sessions first — paginated ({ENCOUNTER_LIST_PAGE_SIZE} per page) so note generation stays in reach
@@ -366,14 +450,15 @@ export function PatientChartTabs(props: {
             </div>
             <ul className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
               {pagedEncounterList.map((n) => (
-                <li key={n.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0">
+                <li key={n.id} className="flex min-w-0 max-w-full flex-wrap items-center justify-between gap-2 py-3 first:pt-0">
                   <div className="min-w-0">
                     <p className="line-clamp-2 text-sm font-medium leading-snug text-zinc-900 dark:text-zinc-50">
                       {encounterPreview(n.summary)}
                     </p>
-                    <p className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-                      <span>
-                        {n.session_date ?? "—"} · {n.specialty ?? "Clinical"}
+                    <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                      <span className="tabular-nums">{n.session_date ?? "—"}</span>
+                      <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-semibold text-zinc-800 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
+                        {n.specialty ?? "Clinical"}
                       </span>
                       {globalLatestNoteId !== null && n.id === globalLatestNoteId ? (
                         <>
@@ -388,7 +473,7 @@ export function PatientChartTabs(props: {
                         </>
                       ) : null}
                     </p>
-                    <p className="font-mono text-[10px] text-zinc-400" title={n.external_encounter_id}>
+                    <p className="truncate font-mono text-[10px] text-zinc-400" title={n.external_encounter_id}>
                       {compactEncounterLabel(n.external_encounter_id)}
                     </p>
                   </div>
@@ -426,6 +511,20 @@ export function PatientChartTabs(props: {
                 {fingerprint ? <span className="font-mono">Fingerprint: {fingerprint}</span> : null}
               </p>
             )}
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("read");
+                  window.requestAnimationFrame(() => {
+                    document.getElementById("chart-prep")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  });
+                }}
+                className="text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+              >
+                ← Jump to Read / pre-meeting summary
+              </button>
+            </div>
           </div>
 
           {!longitudinal ? (
