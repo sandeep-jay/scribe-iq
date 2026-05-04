@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
 import type { CorpusPatientStats, PatientListItem } from "@/lib/backend";
+import { patientInitials } from "@/lib/patientDisplay";
 
 type SortKey = "name" | "external_id" | "note_count" | "last_session";
 type SortDir = "asc" | "desc";
@@ -25,13 +26,6 @@ function lastSessionSortKey(p: PatientListItem): string {
   if (!p.last_session_date) return "";
   const d = p.last_session_date;
   return d.includes("T") ? d.slice(0, 10) : d.trim();
-}
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return "?";
-  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-  return (parts[0]![0] + parts[parts.length - 1]![0]).toUpperCase();
 }
 
 function sessionYmd(raw: string | null): string | null {
@@ -365,7 +359,7 @@ export function PatientsExplorer({
                       className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100"
                       aria-hidden
                     >
-                      {initials(p.name)}
+                      {patientInitials(p.name)}
                     </span>
                     <div className="min-w-0">
                       <p className="font-medium text-zinc-900 dark:text-zinc-50">{p.name}</p>
