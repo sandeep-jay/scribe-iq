@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { GenerateNotePanel } from "@/components/GenerateNotePanel";
 import { MeetingPrepPanel } from "@/components/MeetingPrepPanel";
 
 export type JourneyNote = {
@@ -220,10 +219,43 @@ export function PatientChartTabs(props: {
       </div>
 
       {tab === "read" ? (
-        <div className="space-y-8">
-          <MeetingPrepPanel patientId={patientId} />
+        <div className="relative space-y-8">
+          <nav
+            className="sticky top-14 z-30 -mx-1 flex flex-wrap items-center gap-2 border-b border-zinc-200/90 bg-white/90 px-1 py-2 backdrop-blur md:top-0 dark:border-zinc-800/90 dark:bg-zinc-950/90"
+            aria-label="Jump to section"
+          >
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Jump ·</span>
+            <a
+              className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              href="#chart-prep"
+            >
+              Prep
+            </a>
+            <a
+              className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              href="#care-timeline"
+            >
+              Timeline
+            </a>
+            <a
+              className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              href="#encounters-list"
+            >
+              Encounters
+            </a>
+            <a
+              className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              href="#generate-note"
+            >
+              Generate
+            </a>
+          </nav>
 
-          <section className="rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
+          <div id="chart-prep" className="scroll-mt-28">
+            <MeetingPrepPanel patientId={patientId} />
+          </div>
+
+          <section id="care-timeline" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-wide text-zinc-500">Care timeline</p>
@@ -301,7 +333,7 @@ export function PatientChartTabs(props: {
             </section>
           ) : null}
 
-          <section className="rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
+          <section id="encounters-list" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Encounters</h2>
             <p className="mt-1 text-xs text-zinc-500">
               Newest sessions first — paginated ({ENCOUNTER_LIST_PAGE_SIZE} per page) so note generation stays in reach
@@ -371,7 +403,12 @@ export function PatientChartTabs(props: {
             </ul>
           </section>
 
-          <GenerateNotePanel patientId={patientId} />
+          <a
+            href="#generate-note"
+            className="fixed bottom-4 right-4 z-30 inline-flex items-center rounded-full border border-indigo-400 bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-lg hover:bg-indigo-500 md:hidden"
+          >
+            Generate note
+          </a>
         </div>
       ) : null}
 

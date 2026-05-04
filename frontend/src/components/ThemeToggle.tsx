@@ -26,7 +26,7 @@ function applyDom(mode: ThemeMode) {
   document.documentElement.classList.toggle("dark", mode === "dark");
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const [mode, setMode] = useState<ThemeMode>("light");
   const [ready, setReady] = useState(false);
 
@@ -61,13 +61,16 @@ export function ThemeToggle() {
 
   const label = mode === "dark" ? "Switch to light theme" : "Switch to dark theme";
 
+  const base =
+    "rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800";
+
   return (
     <button
       type="button"
       onClick={toggle}
       aria-label={label}
       title={ready ? label : "Theme"}
-      className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+      className={className ? `${base} ${className}` : base}
     >
       {ready ? (mode === "dark" ? "Light" : "Dark") : "…"}
     </button>

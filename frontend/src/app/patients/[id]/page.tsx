@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GenerateNotePanel } from "@/components/GenerateNotePanel";
 import { PatientChartTabs } from "@/components/PatientChartTabs";
 import { fetchPatient } from "@/lib/backend";
 
@@ -63,29 +64,46 @@ export default async function PatientDetailPage({ params }: Props) {
       ? ((longitudinalRec as Record<string, unknown>).prior_visits as unknown[])
       : null;
 
-  const demographicsCardCls =
-    "grid w-full gap-4 rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800";
+  const chatHref = `/chat?patient_id=${encodeURIComponent(detail.id)}`;
+  const jumpClass =
+    "inline-flex items-center rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800";
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
-      <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
-        <section className="space-y-2 lg:col-span-12 xl:col-span-5">
-          <p className="text-xs uppercase tracking-wide text-zinc-500">Patient record</p>
-          <h1 className="text-3xl font-semibold">{detail.name}</h1>
-          <p className="text-sm text-zinc-600 break-all dark:text-zinc-400">{detail.external_id}</p>
-          {line2 ? <p className="text-sm text-zinc-700 dark:text-zinc-200">{line2}</p> : null}
-          {cityState ? <p className="text-xs text-zinc-500">{cityState}</p> : null}
-          <Link
-            className="inline-block text-sm text-indigo-600 hover:text-indigo-500"
-            href={`/chat?patient_id=${encodeURIComponent(detail.id)}`}
-          >
-            Open chat grounded to patient →
-          </Link>
-        </section>
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+      <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
+        <p className="text-xs uppercase tracking-wide text-zinc-500">Patient context</p>
+        <h1 className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{detail.name}</h1>
+        <p className="mt-1 break-all text-sm text-zinc-600 dark:text-zinc-400">{detail.external_id}</p>
+        <p className="mt-0.5 font-mono text-xs text-zinc-500">{detail.id}</p>
+        {line2 ? <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{line2}</p> : null}
+        {cityState ? <p className="mt-1 text-xs text-zinc-500">{cityState}</p> : null}
 
-        <section className={`${demographicsCardCls} lg:col-span-12 xl:col-span-7`}>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link className={jumpClass} href={chatHref}>
+            Chat
+          </Link>
+          <a className={jumpClass} href="#chart-prep">
+            Meeting prep
+          </a>
+          <a className={jumpClass} href="#care-timeline">
+            Care timeline
+          </a>
+          <a className={jumpClass} href="#encounters-list">
+            Encounters
+          </a>
+          <a className={jumpClass} href="#generate-note">
+            Generate note
+          </a>
+        </div>
+      </section>
+
+      <details className="rounded-xl border border-zinc-200 p-4 text-sm dark:border-zinc-800">
+        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
+          Synthea profile (demographics & synthetic economics)
+        </summary>
+        <div className="mt-4 grid gap-6 lg:grid-cols-2">
           <div>
-            <p className="text-xs uppercase tracking-wide text-zinc-500">Synthea demographics</p>
+            <p className="text-xs uppercase tracking-wide text-zinc-500">Demographics</p>
             <dl className="mt-3 space-y-2 text-xs text-zinc-800 dark:text-zinc-100">
               {[
                 ["Race", strVal(meta.race)],
@@ -106,8 +124,8 @@ export default async function PatientDetailPage({ params }: Props) {
             </dl>
           </div>
 
-          <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">Synthetic economics (Synthea)</p>
+          <div className="border-t border-zinc-200 pt-4 lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0 dark:border-zinc-800">
+            <p className="text-xs uppercase tracking-wide text-zinc-500">Synthetic economics</p>
             <dl className="mt-3 space-y-2 text-xs text-zinc-800 dark:text-zinc-100">
               {[
                 ["Annual income", formatUsd(econ?.annual_income)],
@@ -124,8 +142,8 @@ export default async function PatientDetailPage({ params }: Props) {
               )}
             </dl>
           </div>
-        </section>
-      </div>
+        </div>
+      </details>
 
       <PatientChartTabs
         patientId={detail.id}
@@ -134,6 +152,10 @@ export default async function PatientDetailPage({ params }: Props) {
         priorVisits={priorVisitsRaw}
         meds={detail.longitudinal_medication_hints ?? []}
       />
+
+      <div id="generate-note" className="scroll-mt-28">
+        <GenerateNotePanel patientId={detail.id} />
+      </div>
 
       <details className="rounded-xl border border-dashed border-zinc-300 p-4 text-xs dark:border-zinc-700">
         <summary className="cursor-pointer text-[11px] font-semibold uppercase tracking-wide text-zinc-600">

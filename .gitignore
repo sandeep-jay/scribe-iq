@@ -39,3 +39,6 @@ lakehouse/.hf_home/
 backend/.venv/
 
 evals/results/
+
+# Python editable-install metadata
+*.egg-info/
