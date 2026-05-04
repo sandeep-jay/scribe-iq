@@ -1,0 +1,41 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+
+# Released binary (download from Synthea GitHub releases)
+synthea-with-dependencies.jar
+
+# Local datasets — default: not versioned (use .gitkeep placeholders)
+data/*
+!data/**/.gitkeep
+
+data/raw/synthea/
+data/staging/**/*.parquet
+data/staging/AGBonnet__augmented-clinical-notes/train.jsonl
+
+# OHDSI Athena: keep extracted vocabulary CSVs offline; ignore bulk zips + duplicate unpack trees
+data/snomed_icd10/**/*.zip
+data/snomed_icd10/vocabulary_download_v5_*/
+data/snomed_icd10_icd10cm/
+
+data/raw/snomed_icd10cm/
+data/snomed_icd10/vocabulary/*.csv
+
+# Tooling caches
+**/.hf_home/
+**/xet/logs/
+
+data_prep/.venv/
+data_prep/.hf_home/
+
+lakehouse-old/*
+lakehouse/.venv/
+lakehouse/.hf_home/
+
+backend/.venv/
+
+evals/results/

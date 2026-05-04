@@ -1,0 +1,381 @@
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: var(--font-sans);
+  background: var(--color-background-tertiary);
+  padding: 24px;
+  font-size: 14px;
+}
+.dashboard-header {
+  margin-bottom: 24px;
+}
+h1 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 16px;
+}
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.stat-detail {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+.controls-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.search-box {
+  flex: 1;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  font-size: 14px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-primary);
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary);
+  font-size: 14px;
+}
+.filter-btn {
+  padding: 10px 16px;
+  font-size: 13px;
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.table-container {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  overflow: hidden;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead {
+  background: var(--color-background-secondary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+tbody tr {
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+tbody tr:hover {
+  background: var(--color-background-secondary);
+}
+tbody tr:last-child {
+  border-bottom: none;
+}
+td {
+  padding: 14px 16px;
+  font-size: 13px;
+}
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.patient-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-background-info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-text-info);
+  flex-shrink: 0;
+}
+.patient-info {
+  flex: 1;
+  min-width: 0;
+}
+.patient-name {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.patient-mrn {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+.specialty-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.badge-cardiology {
+  background: var(--color-background-info);
+  color: var(--color-text-info);
+}
+.badge-endocrinology {
+  background: var(--color-background-warning);
+  color: var(--color-text-warning);
+}
+.badge-pulmonology {
+  background: #e1f5ee;
+  color: #0f6e56;
+}
+.risk-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+.risk-low { background: var(--color-text-success); }
+.risk-medium { background: var(--color-text-warning); }
+.risk-high { background: var(--color-text-danger); }
+.trend-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+}
+.trend-up { color: var(--color-text-success); }
+.trend-down { color: var(--color-text-danger); }
+</style>
+
+<div class="dashboard-header">
+  <h1>Patients</h1>
+  <p class="subtitle">19 longitudinal patients · 269 encounters · 3+ years of history</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Patients</div>
+    <div class="stat-value">19</div>
+    <div class="stat-detail">14 avg encounters</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-label">Active Encounters</div>
+    <div class="stat-value">269</div>
+    <div class="stat-detail">Over 3.2 years</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-label">Avg HbA1c Improvement</div>
+    <div class="stat-value">-12%</div>
+    <div class="stat-detail">Diabetic cohort</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-label">BP Control Rate</div>
+    <div class="stat-value">84%</div>
+    <div class="stat-detail">Target <140/90</div>
+  </div>
+</div>
+
+<div class="controls-row">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search by name, MRN, condition, or medication...">
+  </div>
+  <button class="filter-btn">⚙ Specialty</button>
+  <button class="filter-btn">📊 Risk Level</button>
+  <button class="filter-btn">📅 Last Visit</button>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Patient</th>
+        <th>Age / Gender</th>
+        <th>Specialty</th>
+        <th>Visits</th>
+        <th>Trends</th>
+        <th>Last Visit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr onclick="sendPrompt('Show James Chen patient detail')">
+        <td>
+          <div class="patient-cell">
+            <div class="patient-avatar">JC</div>
+            <div class="patient-info">
+              <div class="patient-name">James Chen</div>
+              <div class="patient-mrn">MRN: 847392</div>
+            </div>
+          </div>
+        </td>
+        <td>67 / M</td>
+        <td><span class="specialty-badge badge-cardiology">Cardiology</span></td>
+        <td>14</td>
+        <td>
+          <div class="trend-mini trend-up">
+            <span>↓</span>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">HbA1c 7.2%</span>
+          </div>
+        </td>
+        <td>Nov 15, 2024</td>
+      </tr>
+      
+      <tr>
+        <td>
+          <div class="patient-cell">
+            <div class="patient-avatar" style="background: var(--color-background-warning); color: var(--color-text-warning);">MR</div>
+            <div class="patient-info">
+              <div class="patient-name">Maria Rodriguez</div>
+              <div class="patient-mrn">MRN: 582019</div>
+            </div>
+          </div>
+        </td>
+        <td>54 / F</td>
+        <td><span class="specialty-badge badge-endocrinology">Endocrinology</span></td>
+        <td>16</td>
+        <td>
+          <div class="trend-mini trend-up">
+            <span>↓</span>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">A1c 6.8%</span>
+          </div>
+        </td>
+        <td>Oct 28, 2024</td>
+      </tr>
+      
+      <tr>
+        <td>
+          <div class="patient-cell">
+            <div class="patient-avatar">DT</div>
+            <div class="patient-info">
+              <div class="patient-name">David Thompson</div>
+              <div class="patient-mrn">MRN: 293847</div>
+            </div>
+          </div>
+        </td>
+        <td>72 / M</td>
+        <td><span class="specialty-badge badge-cardiology">Cardiology</span></td>
+        <td>12</td>
+        <td>
+          <div class="trend-mini">
+            <span style="color: var(--color-text-secondary);">—</span>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">BP stable</span>
+          </div>
+        </td>
+        <td>Dec 2, 2024</td>
+      </tr>
+      
+      <tr>
+        <td>
+          <div class="patient-cell">
+            <div class="patient-avatar" style="background: #e1f5ee; color: #0f6e56;">SJ</div>
+            <div class="patient-info">
+              <div class="patient-name">Sarah Johnson</div>
+              <div class="patient-mrn">MRN: 619283</div>
+            </div>
+          </div>
+        </td>
+        <td>61 / F</td>
+        <td><span class="specialty-badge badge-pulmonology">Pulmonology</span></td>
+        <td>13</td>
+        <td>
+          <div class="trend-mini trend-up">
+            <span>↑</span>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">FEV1 82%</span>
+          </div>
+        </td>
+        <td>Sep 14, 2024</td>
+      </tr>
+      
+      <tr>
+        <td>
+          <div class="patient-cell">
+            <div class="patient-avatar" style="background: var(--color-background-warning); color: var(--color-text-warning);">MP</div>
+            <div class="patient-info">
+              <div class="patient-name">Michael Park</div>
+              <div class="patient-mrn">MRN: 437291</div>
+            </div>
+          </div>
+        </td>
+        <td>58 / M</td>
+        <td><span class="specialty-badge badge-endocrinology">Endocrinology</span></td>
+        <td>15</td>
+        <td>
+          <div class="trend-mini trend-down">
+            <span>↑</span>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">A1c 8.4%</span>
+          </div>
+        </td>
+        <td>Nov 3, 2024</td>
+      </tr>
+      
+      <tr>
+        <td>
+          <div class="patient-cell">
+            <div class="patient-avatar">LA</div>
+            <div class="patient-info">
+              <div class="patient-name">Lisa Anderson</div>
+              <div class="patient-mrn">MRN: 728491</div>
+            </div>
+          </div>
+        </td>
+        <td>65 / F</td>
+        <td><span class="specialty-badge badge-cardiology">Cardiology</span></td>
+        <td>14</td>
+        <td>
+          <div class="trend-mini trend-up">
+            <span>↓</span>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">BP 132/78</span>
+          </div>
+        </td>
+        <td>Oct 19, 2024</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

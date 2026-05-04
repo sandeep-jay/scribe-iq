@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: scribe_iq_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag_dev_password
+      POSTGRES_DB: rag_dev
+    # Bind host 5433 -> container 5432 so host tools (Alembic/psql) do NOT hit another local Postgres on :5432
+    ports:
+      - "5433:5432"
+    volumes:
+      - scribe_iq_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  scribe_iq_pgdata:

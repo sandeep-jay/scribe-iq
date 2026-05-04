@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, #e6f1fb 0%, #d5e7f7 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.login-container {
+  width: 100%;
+  max-width: 420px;
+}
+.branding {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logo {
+  width: 56px;
+  height: 56px;
+  background: var(--color-text-info);
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: white;
+  font-size: 28px;
+  font-weight: 500;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+.tagline {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+.card {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.form-group {
+  margin-bottom: 20px;
+}
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: var(--color-border-info);
+  box-shadow: 0 0 0 3px rgba(55, 138, 221, 0.1);
+}
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background: var(--color-text-info);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+}
+.divider {
+  margin: 24px 0;
+  padding-top: 24px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+.help-text {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+.footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+</style>
+</head>
+<body>
+<div class="login-container">
+  <div class="branding">
+    <div class="logo">S</div>
+    <h1>Scribe-IQ</h1>
+    <p class="tagline">Clinical AI Documentation Demo</p>
+  </div>
+  
+  <div class="card">
+    <form>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="demo" value="demo">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      
+      <button type="submit" class="btn-primary">Sign In</button>
+      
+      <div class="divider"></div>
+      
+      <p class="help-text">
+        This is a demo environment showcasing AI-powered<br>
+        clinical documentation. Contact the developer for<br>
+        access credentials.
+      </p>
+    </form>
+  </div>
+  
+  <div class="footer">
+    Built with Next.js, FastAPI, and Claude AI
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: var(--font-sans);
+  background: var(--color-background-tertiary);
+  padding: 24px;
+  font-size: 14px;
+}
+.patient-header {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+h1 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+.vitals-row {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 8px;
+}
+.vital-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.vital-value {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.conditions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.condition-badge {
+  padding: 5px 12px;
+  background: var(--color-background-danger);
+  color: var(--color-text-danger);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 20px;
+}
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-tertiary);
+}
+.trend-indicator {
+  font-size: 20px;
+  line-height: 1;
+}
+.trend-up { color: var(--color-text-success); }
+.stat-value {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+.stat-change {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.summary-section {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+h2 {
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai-badge {
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.summary-content {
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+.summary-content p {
+  margin-bottom: 12px;
+}
+.summary-content strong {
+  font-weight: 500;
+}
+.timeline-section {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.timeline-container {
+  position: relative;
+  padding: 30px 0 20px;
+}
+.timeline-line {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-border-tertiary);
+}
+.timeline-items {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.timeline-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  background: white;
+  border: 3px solid var(--color-text-info);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.2s;
+}
+.timeline-item:hover .timeline-dot {
+  transform: scale(1.4);
+  border-width: 4px;
+}
+.timeline-item:hover .tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+.timeline-date {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+.timeline-reason {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 8px 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s;
+  z-index: 10;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.tooltip-title {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+.tooltip-detail {
+  color: var(--color-text-secondary);
+}
+.start-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background: var(--color-text-info);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 20px;
+}
+.start-btn:hover {
+  opacity: 0.9;
+}
+.encounters-section {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 24px;
+}
+.encounter-card {
+  border-left: 3px solid var(--color-border-info);
+  background: var(--color-background-secondary);
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.encounter-card:hover {
+  background: var(--color-background-primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.encounter-card:last-child {
+  margin-bottom: 0;
+}
+.encounter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.encounter-title {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+.encounter-date {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.encounter-meta {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+.encounter-snippet {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.view-all-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  color: var(--color-text-info);
+  background: transparent;
+  border: 0.5px solid var(--color-border-info);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+.view-all-btn:hover {
+  background: var(--color-background-info);
+}
+</style>
+
+<div class="patient-header">
+  <div class="header-top">
+    <div>
+      <h1>James Chen, 67M</h1>
+      <div class="vitals-row">
+        <div class="vital-item">
+          <span>BP:</span>
+          <span class="vital-value">138/84</span>
+        </div>
+        <div class="vital-item">
+          <span>HR:</span>
+          <span class="vital-value">68</span>
+        </div>
+        <div class="vital-item">
+          <span>Temp:</span>
+          <span class="vital-value">98.6°F</span>
+        </div>
+        <div class="vital-item" style="color: var(--color-text-tertiary);">
+          Today, 9:15 AM
+        </div>
+      </div>
+    </div>
+    <div style="text-align: right; font-size: 13px; color: var(--color-text-secondary);">
+      <div>MRN: 847392</div>
+      <div>DOB: Mar 15, 1957</div>
+      <div style="margin-top: 4px; font-weight: 500; color: var(--color-text-primary);">Cardiology</div>
+    </div>
+  </div>
+  
+  <div class="conditions-row">
+    <span class="condition-badge">CAD</span>
+    <span class="condition-badge">Hypertension</span>
+    <span class="condition-badge">Type 2 Diabetes</span>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-label">HbA1c</div>
+      <div class="trend-indicator trend-up">↓</div>
+    </div>
+    <div class="stat-value">7.2%</div>
+    <div class="stat-change">From 8.1% (6 months)</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-label">Blood Pressure</div>
+      <div class="trend-indicator trend-up">↓</div>
+    </div>
+    <div class="stat-value">138/84</div>
+    <div class="stat-change">From 145/90 (3 months)</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-label">LDL Cholesterol</div>
+      <div class="trend-indicator trend-up">↓</div>
+    </div>
+    <div class="stat-value">98 mg/dL</div>
+    <div class="stat-change">At goal (<100)</div>
+  </div>
+</div>
+
+<div class="summary-section">
+  <div class="section-header">
+    <h2>
+      Pre-Meeting Summary
+      <span class="ai-badge">AI Powered</span>
+    </h2>
+    <button style="padding: 7px 14px; font-size: 12px; color: var(--color-text-info); background: transparent; border: 0.5px solid var(--color-border-info); border-radius: var(--border-radius-md); cursor: pointer;">
+      ↻ Regenerate
+    </button>
+  </div>
+  
+  <div class="summary-content">
+    <p>67-year-old male with established cardiovascular disease and metabolic syndrome. Three-year cardiology history shows progressive improvement in glycemic control and blood pressure management.</p>
+    
+    <p><strong>Recent history:</strong> Last seen 3 months ago (Nov 2024) for chest tightness assessment. Stress test was negative. Metoprolol dose increased from 50mg to 100mg daily with good response. Prior visit (Aug 2024) showed HbA1c improvement to 7.8%, prompting Metformin increase to 1000mg BID.</p>
+  </div>
+</div>
+
+<div class="timeline-section">
+  <h2 style="margin-bottom: 20px;">Patient Journey (14 encounters over 3 years)</h2>
+  
+  <div class="timeline-container">
+    <div class="timeline-line"></div>
+    <div class="timeline-items">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">Jun '22</div>
+        <div class="timeline-reason">Initial</div>
+        <div class="tooltip">
+          <div class="tooltip-title">Initial Cardiology Visit</div>
+          <div class="tooltip-detail">CAD diagnosis • Started Metoprolol</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">Sep '22</div>
+        <div class="timeline-reason">F/U</div>
+        <div class="tooltip">
+          <div class="tooltip-title">Follow-up</div>
+          <div class="tooltip-detail">BP: 148/92 • HbA1c: 8.3%</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">Jan '23</div>
+        <div class="timeline-reason">Labs</div>
+        <div class="tooltip">
+          <div class="tooltip-title">Lab Review</div>
+          <div class="tooltip-detail">HbA1c: 8.1% • LDL: 120</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">May '23</div>
+        <div class="timeline-reason">Echo</div>
+        <div class="tooltip">
+          <div class="tooltip-title">Echocardiogram</div>
+          <div class="tooltip-detail">EF: 60% (normal) • No wall motion abn.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">Aug '24</div>
+        <div class="timeline-reason">Labs</div>
+        <div class="tooltip">
+          <div class="tooltip-title">Lab Review</div>
+          <div class="tooltip-detail">HbA1c: 7.8% ↓ • Metformin increased</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">Nov '24</div>
+        <div class="timeline-reason">Chest pain</div>
+        <div class="tooltip">
+          <div class="tooltip-title">Chest Tightness Assessment</div>
+          <div class="tooltip-detail">Stress test: Negative • Metoprolol ↑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <button class="start-btn" onclick="sendPrompt('Show encounter viewer')">▶ Start Today's Encounter</button>
+</div>
+
+<div class="encounters-section">
+  <h2 style="margin-bottom: 16px;">Recent Clinical Notes</h2>
+  
+  <div class="encounter-card" onclick="sendPrompt('Show me the Nov 2024 encounter note')">
+    <div class="encounter-header">
+      <div class="encounter-title">Cardiology Follow-up</div>
+      <div class="encounter-date">Nov 15, 2024</div>
+    </div>
+    <div class="encounter-meta">Chief Complaint: Chest tightness • Dr. Martinez</div>
+    <div class="encounter-snippet">
+      Patient reports intermittent chest tightness with exertion over past 2 weeks. Denies rest symptoms. Stress test ordered and completed, showing no ischemic changes. Metoprolol increased to 100mg daily...
+    </div>
+  </div>
+  
+  <div class="encounter-card" onclick="sendPrompt('Show me the Aug 2024 encounter note')">
+    <div class="encounter-header">
+      <div class="encounter-title">Diabetes Management</div>
+      <div class="encounter-date">Aug 10, 2024</div>
+    </div>
+    <div class="encounter-meta">Chief Complaint: Lab review • Dr. Martinez</div>
+    <div class="encounter-snippet">
+      HbA1c improved to 7.8% from 8.1% three months ago. Patient reports good medication adherence. Metformin dose increased to 1000mg BID to continue progress toward target <7%...
+    </div>
+  </div>
+  
+  <div class="encounter-card" onclick="sendPrompt('Show me the May 2024 encounter note')">
+    <div class="encounter-header">
+      <div class="encounter-title">Annual Echocardiogram</div>
+      <div class="encounter-date">May 23, 2024</div>
+    </div>
+    <div class="encounter-meta">Procedure: Transthoracic echo • Dr. Martinez</div>
+    <div class="encounter-snippet">
+      Echo shows preserved ejection fraction at 60%, no regional wall motion abnormalities. Mild left ventricular hypertrophy consistent with long-standing hypertension. No significant valvular disease...
+    </div>
+  </div>
+  
+  <button class="view-all-btn" onclick="sendPrompt('Show all 14 encounters for this patient')">
+    View All 14 Encounters →
+  </button>
+</div>
