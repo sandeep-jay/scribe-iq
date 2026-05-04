@@ -36,6 +36,31 @@ function encounterTitle(summary: string | null | undefined): string {
   return "Visit (no synopsis yet)";
 }
 
+/** ISO yyyy-mm-dd strings sort lexicographically. Null / empty dates sink to the end for ascending timelines. */
+function compareSessionDateIso(a: string | null, b: string | null): number {
+  const as = (a ?? "").trim();
+  const bs = (b ?? "").trim();
+  if (!as && !bs) return 0;
+  if (!as) return 1;
+  if (!bs) return -1;
+  return as.localeCompare(bs);
+}
+
+function isoDateFromSession(raw: string | null): string | null {
+  if (!raw) return null;
+  const s = raw.trim();
+  if (s.length >= 10) return s.slice(0, 10);
+  return null;
+}
+
+function ymdLocalToday(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 /** ICD-10-CM-ish: letter + 2 digits + optional decimal (conservative). */
 const ICD_LIKE = /\b([A-TV-Z][0-9][0-9A-TV-Z](?:\.[0-9A-TV-Z]{1,4})?)\b/g;
 /** SNOMED CT SCTIDs are often 6–18 digits. */
@@ -101,15 +126,35 @@ export function PatientChartTabs(props: {
   const { patientId, journeyNotes, longitudinal, priorVisits, meds } = props;
   const [tab, setTab] = useState<TabId>("read");
 
-  const sortedJourney = useMemo(
-    () => [...journeyNotes].sort((a, b) => (a.session_date ?? "").localeCompare(b.session_date ?? "")),
+  /** Oldest → newest so the most recent encounter sits on the right. */
+  const timelineChronological = useMemo(
+    () => [...journeyNotes].sort((a, b) => compareSessionDateIso(a.session_date, b.session_date)),
     [journeyNotes],
   );
+
+  /** Encounter index: newest first (last clinical date at top). */
+  const encountersNewestFirst = useMemo(
+    () => [...journeyNotes].sort((a, b) => compareSessionDateIso(b.session_date, a.session_date)),
+    [journeyNotes],
+  );
+
+  const todayYmd = ymdLocalToday();
 
   const encounterHref = (externalEncounterId: string) =>
     `/patients/${encodeURIComponent(patientId)}/encounters/${encodeURIComponent(externalEncounterId)}`;
 
-  const priorBlocks = priorVisits ?? [];
+  const priorBlocks = useMemo(() => priorVisits ?? [], [priorVisits]);
+  const priorSourcesNewestFirst = useMemo(() => {
+    const blocks = [...priorBlocks];
+    blocks.sort((a, b) => {
+      const va = priorVisitRecord(a);
+      const vb = priorVisitRecord(b);
+      const da = strVal(va?.date) ?? strVal(va?.visit_date) ?? "";
+      const db = strVal(vb?.date) ?? strVal(vb?.visit_date) ?? "";
+      return compareSessionDateIso(db, da);
+    });
+    return blocks;
+  }, [priorBlocks]);
   const codeHints = useMemo(() => collectCodeLikeStrings(longitudinal), [longitudinal]);
 
   const fingerprint = strVal(longitudinal?.note_fingerprint) ?? strVal(longitudinal?.fingerprint);
@@ -137,7 +182,7 @@ export function PatientChartTabs(props: {
               <div>
                 <p className="text-xs uppercase tracking-wide text-zinc-500">Care timeline</p>
                 <p className="mt-1 text-xs text-zinc-500">
-                  One spine for all stored encounters — click a visit to open the encounter viewer.
+                  Oldest visits on the left, most recent on the right — click a node to open the encounter viewer.
                 </p>
               </div>
             </div>
@@ -145,13 +190,23 @@ export function PatientChartTabs(props: {
               <div className="relative min-w-max px-2">
                 <div className="absolute left-4 right-4 top-[11px] h-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
                 <div className="relative flex gap-0">
-                  {sortedJourney.map((n) => (
+                  {timelineChronological.map((n, idx) => {
+                    const isLatest = timelineChronological.length > 0 && idx === timelineChronological.length - 1;
+                    const day = isoDateFromSession(n.session_date);
+                    const maybeToday = isLatest && day === todayYmd;
+                    return (
                     <div key={n.id} className="flex flex-col items-center" style={{ minWidth: 112 }}>
                       <Link
                         href={encounterHref(n.external_encounter_id)}
                         className="group flex flex-col items-center text-center"
                       >
-                        <span className="z-10 h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow group-hover:bg-indigo-400 dark:border-zinc-950" />
+                        <span
+                          className={
+                            isLatest
+                              ? "z-10 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow ring-2 ring-indigo-300/80 group-hover:bg-indigo-500 dark:border-zinc-950 dark:ring-indigo-500/50"
+                              : "z-10 h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow group-hover:bg-indigo-400 dark:border-zinc-950"
+                          }
+                        />
                         <p className="mt-2 max-w-[7.5rem] text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
                           {n.session_date ?? "—"}
                         </p>
@@ -159,9 +214,22 @@ export function PatientChartTabs(props: {
                           {encounterTitle(n.summary)}
                         </p>
                         <p className="mt-1 text-[10px] text-zinc-500">{n.specialty ?? "Clinical"}</p>
+                        {isLatest ? (
+                          <div className="mt-1 flex flex-wrap justify-center gap-1">
+                            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100">
+                              Latest
+                            </span>
+                            {maybeToday ? (
+                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-950 dark:bg-amber-950/50 dark:text-amber-100">
+                                Today?
+                              </span>
+                            ) : null}
+                          </div>
+                        ) : null}
                       </Link>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -188,14 +256,30 @@ export function PatientChartTabs(props: {
 
           <section className="rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Encounters</h2>
-            <p className="mt-1 text-xs text-zinc-500">Dense index (same data as the timeline — no duplicate card rail).</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              Newest session first (same visits as the timeline, reversed for scanning).
+            </p>
             <ul className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
-              {sortedJourney.map((n) => (
+              {encountersNewestFirst.map((n, idx) => (
                 <li key={n.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{encounterTitle(n.summary)}</p>
-                    <p className="text-xs text-zinc-500">
-                      {n.session_date ?? "—"} · {n.specialty ?? "Clinical"}
+                    <p className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                      <span>
+                        {n.session_date ?? "—"} · {n.specialty ?? "Clinical"}
+                      </span>
+                      {idx === 0 && encountersNewestFirst.length > 0 ? (
+                        <>
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100">
+                            Latest
+                          </span>
+                          {isoDateFromSession(n.session_date) === todayYmd ? (
+                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:bg-amber-950/50 dark:text-amber-100">
+                              Today?
+                            </span>
+                          ) : null}
+                        </>
+                      ) : null}
                     </p>
                     <p className="font-mono text-[10px] text-zinc-400" title={n.external_encounter_id}>
                       {compactEncounterLabel(n.external_encounter_id)}
@@ -240,7 +324,7 @@ export function PatientChartTabs(props: {
             </pre>
           ) : (
             <ol className="space-y-4">
-              {priorBlocks.map((pv, idx) => {
+              {priorSourcesNewestFirst.map((pv, idx) => {
                 const vis = priorVisitRecord(pv);
                 if (!vis) return null;
                 const when = strVal(vis.date) ?? strVal(vis.visit_date) ?? "—";
