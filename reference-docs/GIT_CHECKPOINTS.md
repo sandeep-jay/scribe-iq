@@ -37,6 +37,9 @@ git reset --hard <checkpoint-commit-sha>
 git push -u origin checkpoint/<short-label>
 ```
 
+**Remote pushes:** do not push to GitHub (or any remote) unless the repository owner explicitly requests it.
+
+
 **Continue development without moving the checkpoint needle:** branch from the checkpoint commit, for example:
 
 ```bash
