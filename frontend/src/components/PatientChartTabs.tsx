@@ -18,7 +18,6 @@ type TabId = "read" | "sources" | "codes";
 const ENCOUNTER_LIST_PAGE_SIZE = 10;
 /** Above this, timeline compresses to one anchor per calendar month (Phase C2). */
 const TIMELINE_BUCKET_AT = 32;
-const RECENT_VISITS_RAIL = 7;
 
 function strVal(val: unknown): string | undefined {
   if (val === null || val === undefined) return undefined;
@@ -244,7 +243,6 @@ export function PatientChartTabs(props: {
       </div>
 
       {tab === "read" ? (
-        <div className="min-w-0 lg:grid lg:grid-cols-[minmax(0,1fr),13.5rem] lg:items-start lg:gap-6">
         <div className="relative min-w-0 space-y-8">
           <nav
             className="sticky top-14 z-30 -mx-1 flex flex-wrap items-center gap-2 border-b border-zinc-200/90 bg-white/90 px-1 py-2 backdrop-blur md:top-0 dark:border-zinc-800/90 dark:bg-zinc-950/90"
@@ -495,28 +493,6 @@ export function PatientChartTabs(props: {
           >
             Generate note
           </a>
-        </div>
-
-        <aside className="hidden min-w-0 lg:block">
-          <div className="sticky top-24 space-y-2 rounded-xl border border-zinc-200 bg-white p-3 text-xs shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Recent visits</p>
-            <p className="text-[11px] text-zinc-500">Newest first — same data as the encounter list.</p>
-            <ol className="mt-2 space-y-2">
-              {encountersNewestFirst.slice(0, RECENT_VISITS_RAIL).map((n) => (
-                <li key={n.id} className="rounded-lg border border-zinc-200 bg-zinc-50/80 p-2 dark:border-zinc-800 dark:bg-zinc-900/40">
-                  <Link href={encounterHref(n.external_encounter_id)} className="block hover:text-indigo-600 dark:hover:text-indigo-300">
-                    <p className="line-clamp-2 text-[11px] font-medium leading-snug text-zinc-900 dark:text-zinc-50">
-                      {encounterPreview(n.summary)}
-                    </p>
-                    <p className="mt-1 text-[10px] text-zinc-500">
-                      {n.session_date ?? "—"} · {n.specialty ?? "Clinical"}
-                    </p>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </aside>
         </div>
       ) : null}
 
