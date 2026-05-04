@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { GenerateNotePanel } from "@/components/GenerateNotePanel";
 import { MeetingPrepPanel } from "@/components/MeetingPrepPanel";
@@ -15,6 +15,8 @@ export type JourneyNote = {
 };
 
 type TabId = "read" | "sources" | "codes";
+
+const ENCOUNTER_LIST_PAGE_SIZE = 10;
 
 function strVal(val: unknown): string | undefined {
   if (val === null || val === undefined) return undefined;
@@ -35,6 +37,14 @@ function encounterTitle(summary: string | null | undefined): string {
   if (s) return s;
   return "Visit (no synopsis yet)";
 }
+
+/** Strip leading SOAP enumeration (e.g. "1. Subjective") for denser previews. */
+function encounterPreview(summary: string | null | undefined): string {
+  const base = encounterTitle(summary);
+  const stripped = base.replace(/^\s*\d+[.)]\s+/, "").trim();
+  return stripped || base;
+}
+
 
 /** ISO yyyy-mm-dd strings sort lexicographically. Null / empty dates sink to the end for ascending timelines. */
 function compareSessionDateIso(a: string | null, b: string | null): number {
@@ -125,6 +135,8 @@ export function PatientChartTabs(props: {
 }) {
   const { patientId, journeyNotes, longitudinal, priorVisits, meds } = props;
   const [tab, setTab] = useState<TabId>("read");
+  const [encounterListPage, setEncounterListPage] = useState(0);
+  const journeySig = useMemo(() => journeyNotes.map((n) => n.id).join(","), [journeyNotes]);
 
   /** Oldest → newest so the most recent encounter sits on the right. */
   const timelineChronological = useMemo(
@@ -137,6 +149,40 @@ export function PatientChartTabs(props: {
     () => [...journeyNotes].sort((a, b) => compareSessionDateIso(b.session_date, a.session_date)),
     [journeyNotes],
   );
+
+  const encounterTotal = journeyNotes.length;
+  const listMaxPage = Math.max(0, Math.ceil(encounterTotal / ENCOUNTER_LIST_PAGE_SIZE) - 1);
+
+  useEffect(() => {
+    setEncounterListPage(0);
+  }, [patientId, journeySig]);
+
+  useEffect(() => {
+    setEncounterListPage((p) => Math.min(p, listMaxPage));
+  }, [listMaxPage]);
+
+  const listPageClamped = Math.min(encounterListPage, listMaxPage);
+  const pagedEncounterList = useMemo(() => {
+    const start = listPageClamped * ENCOUNTER_LIST_PAGE_SIZE;
+    return encountersNewestFirst.slice(start, start + ENCOUNTER_LIST_PAGE_SIZE);
+  }, [encountersNewestFirst, listPageClamped]);
+
+  const globalLatestNoteId = encountersNewestFirst[0]?.id ?? null;
+
+  const timelineScrollRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (tab !== "read") return;
+    const el = timelineScrollRef.current;
+    if (!el) return;
+    const snapToLatest = () => {
+      el.scrollLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+    };
+    snapToLatest();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(snapToLatest) : null;
+    ro?.observe(el);
+    return () => ro?.disconnect();
+  }, [tab, journeySig, timelineChronological.length]);
 
   const todayYmd = ymdLocalToday();
 
@@ -182,16 +228,17 @@ export function PatientChartTabs(props: {
               <div>
                 <p className="text-xs uppercase tracking-wide text-zinc-500">Care timeline</p>
                 <p className="mt-1 text-xs text-zinc-500">
-                  Oldest visits on the left, most recent on the right — click a node to open the encounter viewer.
+                  Full history on one axis: older visits extend left; the most recent stays on the right. The view
+                  starts scrolled to the latest — drag left for older visits.
                 </p>
               </div>
             </div>
-            <div className="mt-6 overflow-x-auto pb-2">
+            <div ref={timelineScrollRef} className="mt-6 overflow-x-auto pb-2">
               <div className="relative min-w-max px-2">
                 <div className="absolute left-4 right-4 top-[11px] h-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
                 <div className="relative flex gap-0">
-                  {timelineChronological.map((n, idx) => {
-                    const isLatest = timelineChronological.length > 0 && idx === timelineChronological.length - 1;
+                  {timelineChronological.map((n) => {
+                    const isLatest = globalLatestNoteId !== null && n.id === globalLatestNoteId;
                     const day = isoDateFromSession(n.session_date);
                     const maybeToday = isLatest && day === todayYmd;
                     return (
@@ -211,7 +258,7 @@ export function PatientChartTabs(props: {
                           {n.session_date ?? "—"}
                         </p>
                         <p className="mt-1 line-clamp-3 max-w-[7.5rem] text-xs font-medium leading-snug text-zinc-900 group-hover:text-indigo-600 dark:text-zinc-50 dark:group-hover:text-indigo-300">
-                          {encounterTitle(n.summary)}
+                          {encounterPreview(n.summary)}
                         </p>
                         <p className="mt-1 text-[10px] text-zinc-500">{n.specialty ?? "Clinical"}</p>
                         {isLatest ? (
@@ -257,18 +304,46 @@ export function PatientChartTabs(props: {
           <section className="rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Encounters</h2>
             <p className="mt-1 text-xs text-zinc-500">
-              Newest session first (same visits as the timeline, reversed for scanning).
+              Newest sessions first — paginated ({ENCOUNTER_LIST_PAGE_SIZE} per page) so note generation stays in reach
+              on long histories. Same visits as the timeline.
             </p>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-300">
+              <span>
+                {encounterTotal === 0
+                  ? "No encounters loaded."
+                  : `Showing ${listPageClamped * ENCOUNTER_LIST_PAGE_SIZE + 1}–${Math.min(encounterTotal, (listPageClamped + 1) * ENCOUNTER_LIST_PAGE_SIZE)} of ${encounterTotal}`}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={listPageClamped <= 0}
+                  onClick={() => setEncounterListPage((p) => Math.max(0, p - 1))}
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  disabled={listPageClamped >= listMaxPage}
+                  onClick={() => setEncounterListPage((p) => Math.min(listMaxPage, p + 1))}
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
             <ul className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
-              {encountersNewestFirst.map((n, idx) => (
+              {pagedEncounterList.map((n) => (
                 <li key={n.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{encounterTitle(n.summary)}</p>
+                    <p className="line-clamp-2 text-sm font-medium leading-snug text-zinc-900 dark:text-zinc-50">
+                      {encounterPreview(n.summary)}
+                    </p>
                     <p className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                       <span>
                         {n.session_date ?? "—"} · {n.specialty ?? "Clinical"}
                       </span>
-                      {idx === 0 && encountersNewestFirst.length > 0 ? (
+                      {globalLatestNoteId !== null && n.id === globalLatestNoteId ? (
                         <>
                           <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100">
                             Latest
