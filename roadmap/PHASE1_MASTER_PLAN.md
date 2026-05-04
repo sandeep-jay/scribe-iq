@@ -685,6 +685,12 @@ Use an API version that supports **`chat.completions.parse`** for your SDK; adju
 | 2026-05-03 | Historical: seed artifacts initially tracked as Phase 0 **P0d** / **`phase: "0"`**. **Superseded** by program renumbering (seed planning is **Phase 2**; `phase` / `step` in `phase1_seed_plan.json` are now **`"2"` / `"P2-seed"`**) — see newer history row. |
 | 2026-05-02 | **Program phases 0–3** — Phase 1 `classify_specialties.py` (§4.5); seed planning is **Phase 2** (§4.6); MVP app is **Phase 3**; Phase 0 ends at staging (P0c). Updated §14 gates + §11.1. |
 | 2026-05-03 | **Two-project framing:** **Project L** (`lakehouse/`, `CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`) vs **Project A** (this doc). Stale **`backend/`** cache directory removed; **`data_prep/`** scripts moved to **`lakehouse/scripts/`** (legacy **`data_prep/README.md`** redirects). |
+| 2026-05-03 | Added **`reference-docs/GIT_CHECKPOINTS.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). §18 links here. |
+
+
+## 18. Git checkpoints (experiments)
+
+Before large UI or IA refactors, use a named **checkpoint branch** so you can revert cleanly. Commands, revert options, and the **recorded** checkpoint for this repo: **`reference-docs/GIT_CHECKPOINTS.md`**.
 
 ---
 

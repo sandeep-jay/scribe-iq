@@ -38,3 +38,8 @@ Run backend: `cd backend && uvicorn app.main:app --reload --host 127.0.0.1 --por
 
 Run frontend: `cd frontend && npm run dev`.
 
+
+
+## Git checkpoints
+
+Before large UI experiments, use a **checkpoint branch** (commands and recorded branch/commit): **`reference-docs/GIT_CHECKPOINTS.md`**.
