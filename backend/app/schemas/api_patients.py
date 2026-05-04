@@ -16,6 +16,8 @@ class PatientListItem(BaseModel):
     metadata: dict[str, Any]
     note_count: int
     last_session_date: date | None
+    has_longitudinal: bool = False
+    last_specialty: str | None = None
 
 
 class NotePreview(BaseModel):

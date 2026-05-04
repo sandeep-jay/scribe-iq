@@ -182,7 +182,9 @@ async def list_patients(
                p.name,
                p.metadata,
                COUNT(n.id)::int AS note_count,
-               MAX(n.session_date) AS last_session_date
+               MAX(n.session_date) AS last_session_date,
+               COALESCE(BOOL_OR(n.longitudinal_context IS NOT NULL), false) AS has_longitudinal,
+               MAX(n.specialty) AS last_specialty
         FROM patients p
         LEFT JOIN notes n
           ON n.patient_id = p.id AND n.domain = $1
@@ -204,6 +206,8 @@ async def list_patients(
             metadata=_coerce_json_obj(r["metadata"]),
             note_count=r["note_count"],
             last_session_date=r["last_session_date"],
+            has_longitudinal=bool(r["has_longitudinal"]),
+            last_specialty=r["last_specialty"],
         )
         for r in rows
     ]

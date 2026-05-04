@@ -25,6 +25,19 @@ function soapLine(label: string, value: unknown) {
   );
 }
 
+function collectVitals(sn: Record<string, unknown>, entity: Record<string, unknown>): Array<{ label: string; value: string }> {
+  const vit = asRecord(sn.vitals) ?? asRecord(entity.vitals);
+  if (!vit) return [];
+  const out: Array<{ label: string; value: string }> = [];
+  for (const [k, raw] of Object.entries(vit)) {
+    if (raw === null || raw === undefined) continue;
+    const val = typeof raw === "string" ? raw.trim() : typeof raw === "number" && Number.isFinite(raw) ? String(raw) : "";
+    if (!val) continue;
+    out.push({ label: k.replace(/_/g, " "), value: val });
+  }
+  return out.slice(0, 24);
+}
+
 export default async function EncounterViewerPage({ params }: Props) {
   const raw = await params;
   const patientKey = decodeURIComponent(raw.id);
@@ -70,6 +83,13 @@ export default async function EncounterViewerPage({ params }: Props) {
   const plan = sn.plan;
   const follow = sn.follow_up;
   const fullNote = sn.full_note;
+  const summary = sn.summary;
+
+  const vitals = collectVitals(sn as Record<string, unknown>, entity as Record<string, unknown>);
+  const structuredKeys = new Set(
+    ["chief_complaint", "history", "examination", "assessment", "plan", "follow_up", "full_note", "summary", "vitals"],
+  );
+  const extraStructured = Object.entries(sn).filter(([k, v]) => !structuredKeys.has(k) && v !== null && v !== undefined);
 
   return (
     <div className="space-y-6">
@@ -80,9 +100,19 @@ export default async function EncounterViewerPage({ params }: Props) {
           <p className="text-sm text-zinc-600">{patient.name}</p>
           {preview.specialty ? <p className="text-xs text-zinc-500">Specialty: {preview.specialty}</p> : null}
         </div>
-        <Link className="text-sm text-indigo-600" href={`/chat?patient_id=${encodeURIComponent(patient.id)}`}>
-          Chat about patient →
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled
+            title="Draft persistence requires auth + API (Phase D3). This control is a layout placeholder."
+            className="rounded-lg border border-zinc-200 bg-zinc-100 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400"
+          >
+            Save draft
+          </button>
+          <Link className="text-sm text-indigo-600" href={`/chat?patient_id=${encodeURIComponent(patient.id)}`}>
+            Chat about patient →
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -102,21 +132,60 @@ export default async function EncounterViewerPage({ params }: Props) {
           <header className="mb-3 flex items-center justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-600">Structured note</p>
             <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-100">
-              SOAP + narrative
+              Sectioned workspace (demo)
             </span>
           </header>
           <div className="flex-1 space-y-4 overflow-auto pr-1 text-sm">
+            {vitals.length ? (
+              <div className="rounded-lg border border-sky-200 bg-sky-50/60 p-3 dark:border-sky-900 dark:bg-sky-950/30">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900 dark:text-sky-100">
+                  Vitals / quick facts
+                </p>
+                <p className="mt-1 text-[11px] text-sky-900/80 dark:text-sky-100/80">
+                  Read-only chips parsed from <span className="font-mono">structured_note.vitals</span> (or entity) when present.
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {vitals.map((v) => (
+                    <span
+                      key={v.label}
+                      className="rounded-full border border-sky-200 bg-white px-2.5 py-1 text-[11px] font-medium text-sky-950 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-50"
+                      title={v.value}
+                    >
+                      {v.label}: {v.value.length > 48 ? `${v.value.slice(0, 48)}…` : v.value}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {soapLine("Chief complaint", chief)}
             {soapLine("History", history)}
             {soapLine("Examination", exam)}
             {soapLine("Assessment", assess)}
             {soapLine("Plan", plan)}
             {soapLine("Follow-up", follow)}
+            {soapLine("Summary", summary)}
             {typeof fullNote === "string" && fullNote.trim() ? (
               <div className="space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Full note</p>
                 <p className="whitespace-pre-wrap text-sm text-zinc-900 dark:text-zinc-50">{fullNote.trim()}</p>
               </div>
+            ) : null}
+            {extraStructured.length ? (
+              <details className="rounded-lg border border-dashed border-zinc-300 p-3 text-xs dark:border-zinc-700">
+                <summary className="cursor-pointer font-semibold uppercase tracking-wide text-zinc-600">
+                  Additional structured_note keys ({extraStructured.length})
+                </summary>
+                <div className="mt-3 space-y-3">
+                  {extraStructured.map(([k, v]) => (
+                    <div key={k} className="space-y-1">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">{k}</p>
+                      <pre className="max-h-48 overflow-auto whitespace-pre-wrap rounded bg-zinc-50 p-2 text-[11px] text-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
+                        {typeof v === "string" ? v : JSON.stringify(v, null, 2)}
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              </details>
             ) : null}
           </div>
         </section>

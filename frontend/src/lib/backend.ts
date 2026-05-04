@@ -44,6 +44,10 @@ export type PatientListItem = {
   metadata: Record<string, unknown>;
   note_count: number;
   last_session_date: string | null;
+  /** Any note row carries a longitudinal_context blob */
+  has_longitudinal?: boolean;
+  /** Lexicographic max of note.specialty in the grouped query (demo filter only) */
+  last_specialty?: string | null;
 };
 
 export type PaginatedPatients = {
