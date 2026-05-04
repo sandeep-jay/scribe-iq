@@ -18,7 +18,7 @@ This document is the **UI / product surface plan** for the web app (Next.js + Fa
 
 Already in place (high level):
 
-- **App shell:** top nav (Patients, Chat), theme toggle, main content region.
+- **App shell:** left sidebar (md+) with Patients, Chat, **Docs**; mobile menu + **slim top bar** (patient search placeholder, demo user); theme toggle; main content region.
 - **Patients list:** sortable columns, search, corpus stats.
 - **Patient chart:** **Read / Sources / Codes & map** tabs; pre-meeting summary; **full** care timeline with **scroll anchored to latest** (right); **encounter list** newest-first with **UI pagination (10)**; medication hints when present; generate-note panel.
 - **Encounter viewer:** two-column encounter + context.
@@ -124,4 +124,5 @@ High-fidelity references (patient overview, CCM enrolled view, patients table, a
 | Date | Change |
 |------|--------|
 | 2026-05-04 | Initial UI roadmap: phases A–D, principles, out of scope, open decisions. |
+| 2026-05-04 | Phase A closed: sidebar + `/docs`, top search/user chrome, patient anchors (see repo history). |
 
