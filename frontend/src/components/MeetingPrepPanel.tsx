@@ -40,7 +40,7 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
   }, [data?.summary]);
 
   return (
-    <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-6 text-sm text-indigo-950 dark:border-indigo-900 dark:bg-indigo-950/25 dark:text-indigo-50">
+    <section className="min-w-0 max-w-full rounded-xl border border-indigo-200 bg-indigo-50/60 p-6 text-sm text-indigo-950 dark:border-indigo-900 dark:bg-indigo-950/25 dark:text-indigo-50">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-indigo-800/80 dark:text-indigo-200/90">Pre-Meeting Summary</p>

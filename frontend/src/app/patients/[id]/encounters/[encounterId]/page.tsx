@@ -92,7 +92,7 @@ export default async function EncounterViewerPage({ params }: Props) {
   const extraStructured = Object.entries(sn).filter(([k, v]) => !structuredKeys.has(k) && v !== null && v !== undefined);
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 max-w-full space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase text-zinc-500">Encounter viewer</p>

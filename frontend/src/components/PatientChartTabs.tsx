@@ -231,12 +231,12 @@ export function PatientChartTabs(props: {
   const bundleVersion = strVal(longitudinal?.bundle_version) ?? strVal(longitudinal?.version);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
+    <div className="min-w-0 max-w-full space-y-6">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
         {tabBtn(tab === "read", () => setTab("read"), "Read")}
         {tabBtn(tab === "sources", () => setTab("sources"), "Sources")}
         {tabBtn(tab === "codes", () => setTab("codes"), "Codes & map")}
-        <p className="ml-auto max-w-md text-[11px] text-zinc-500">
+        <p className="ml-auto min-w-0 max-w-md text-[11px] text-zinc-500">
           Clinician-first on <span className="font-medium text-zinc-700 dark:text-zinc-300">Read</span>; longitudinal as
           citations on <span className="font-medium text-zinc-700 dark:text-zinc-300">Sources</span>; demo codes on{" "}
           <span className="font-medium text-zinc-700 dark:text-zinc-300">Codes & map</span>.
@@ -244,8 +244,8 @@ export function PatientChartTabs(props: {
       </div>
 
       {tab === "read" ? (
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr),13.5rem] lg:items-start lg:gap-6">
-        <div className="relative space-y-8">
+        <div className="min-w-0 lg:grid lg:grid-cols-[minmax(0,1fr),13.5rem] lg:items-start lg:gap-6">
+        <div className="relative min-w-0 space-y-8">
           <nav
             className="sticky top-14 z-30 -mx-1 flex flex-wrap items-center gap-2 border-b border-zinc-200/90 bg-white/90 px-1 py-2 backdrop-blur md:top-0 dark:border-zinc-800/90 dark:bg-zinc-950/90"
             aria-label="Jump to section"
@@ -306,7 +306,7 @@ export function PatientChartTabs(props: {
                 </p>
               </div>
             </div>
-            <div ref={timelineScrollRef} className="mt-6 overflow-x-auto pb-2">
+            <div ref={timelineScrollRef} className="mt-6 min-w-0 max-w-full overflow-x-auto pb-2">
               <div className="relative min-w-max px-2">
                 <div className="absolute left-4 right-4 top-[11px] h-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
                 <div className="relative flex gap-0">
@@ -419,7 +419,7 @@ export function PatientChartTabs(props: {
             </section>
           ) : null}
 
-          <section id="encounters-list" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm dark:border-zinc-800">
+          <section id="encounters-list" className="scroll-mt-28 rounded-xl border border-zinc-200 p-6 text-sm min-w-0 dark:border-zinc-800">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Encounters</h2>
             <p className="mt-1 text-xs text-zinc-500">
               Newest sessions first — paginated ({ENCOUNTER_LIST_PAGE_SIZE} per page) so note generation stays in reach
@@ -452,7 +452,7 @@ export function PatientChartTabs(props: {
             </div>
             <ul className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
               {pagedEncounterList.map((n) => (
-                <li key={n.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0">
+                <li key={n.id} className="flex min-w-0 max-w-full flex-wrap items-center justify-between gap-2 py-3 first:pt-0">
                   <div className="min-w-0">
                     <p className="line-clamp-2 text-sm font-medium leading-snug text-zinc-900 dark:text-zinc-50">
                       {encounterPreview(n.summary)}
@@ -474,7 +474,7 @@ export function PatientChartTabs(props: {
                         </>
                       ) : null}
                     </p>
-                    <p className="font-mono text-[10px] text-zinc-400" title={n.external_encounter_id}>
+                    <p className="truncate font-mono text-[10px] text-zinc-400" title={n.external_encounter_id}>
                       {compactEncounterLabel(n.external_encounter_id)}
                     </p>
                   </div>
@@ -497,7 +497,7 @@ export function PatientChartTabs(props: {
           </a>
         </div>
 
-        <aside className="hidden lg:block">
+        <aside className="hidden min-w-0 lg:block">
           <div className="sticky top-24 space-y-2 rounded-xl border border-zinc-200 bg-white p-3 text-xs shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Recent visits</p>
             <p className="text-[11px] text-zinc-500">Newest first — same data as the encounter list.</p>

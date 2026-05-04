@@ -167,7 +167,7 @@ export function PatientsExplorer({
   }, [filtered, sortKey, sortDir]);
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 max-w-full space-y-8">
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Patients</p>
@@ -343,7 +343,7 @@ export function PatientsExplorer({
         </>
       ) : null}
 
-      <section className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <section className="min-w-0 overflow-x-auto overflow-y-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
         <table className="w-full text-left text-sm">
           <thead className="bg-zinc-50 text-xs uppercase text-zinc-500 dark:bg-zinc-900">
             <tr>
