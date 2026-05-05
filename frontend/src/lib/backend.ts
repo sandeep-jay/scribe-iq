@@ -264,14 +264,29 @@ export function responsibleAiAdminUiEnabled(): boolean {
   return process.env.NEXT_PUBLIC_SCRIBE_ADMIN_UI === "true";
 }
 
+export type ResponsibleAiTrustContext = {
+  phi_redaction_enabled: boolean;
+  prompt_and_model_traceability: boolean;
+  audit_storage: string;
+  safety_checks_enabled: boolean;
+};
+
+export type ResponsibleAiSafetyBreakdownItem = {
+  code: string;
+  label: string;
+  count: number;
+};
+
 export type ResponsibleAiMetricsPayload = {
   summary: {
     total_interactions: number;
     success_rate: number;
     avg_latency_ms: number;
+    avg_latency_ms_generated?: number;
     citation_coverage: number;
     safety_flag_count: number;
     human_review_required: number;
+    clinical_review_signals?: number;
   };
   by_type: Record<string, number>;
   by_status: Record<string, number>;
@@ -281,6 +296,8 @@ export type ResponsibleAiMetricsPayload = {
     meeting_prep: number;
     note_generation: number;
   }>;
+  safety_breakdown?: ResponsibleAiSafetyBreakdownItem[];
+  trust_context?: ResponsibleAiTrustContext;
 };
 
 export async function fetchResponsibleAiMetrics(): Promise<ResponsibleAiMetricsPayload> {
@@ -290,6 +307,13 @@ export async function fetchResponsibleAiMetrics(): Promise<ResponsibleAiMetricsP
   });
   return wrap<ResponsibleAiMetricsPayload>(resp);
 }
+
+export type ResponsibleAiLatencyDisplay = {
+  latency_ms: number | null;
+  kind: string;
+  label: string;
+  cached: boolean;
+};
 
 export type ResponsibleAiInteractionRow = {
   id: string;
@@ -303,6 +327,12 @@ export type ResponsibleAiInteractionRow = {
   status: string | null;
   latency_ms: number | null;
   created_at: string | null;
+  citation_count?: number;
+  source_count?: number;
+  run_mode?: string;
+  latency_display?: ResponsibleAiLatencyDisplay;
+  risk_tier?: string;
+  output_preview?: string | null;
 };
 
 export async function fetchResponsibleAiInteractions(opts: {

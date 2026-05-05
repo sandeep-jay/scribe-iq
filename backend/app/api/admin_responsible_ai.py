@@ -12,6 +12,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.config import get_settings
 from app.db import get_conn
+from app.responsible_ai.dashboard_derived import (
+    SAFETY_FLAG_TAXONOMY,
+    count_citations,
+    count_retrieved_sources,
+    derive_latency_display,
+    derive_risk_tier,
+    derive_run_mode,
+    merge_safety_counts,
+    parse_safety_flags,
+)
 
 
 router = APIRouter(prefix="/admin/responsible-ai", tags=["admin-responsible-ai"])
@@ -122,18 +132,66 @@ async def metrics(
 
     success_rate = (ok_i / total_i) if total_i else 0.0
 
+    avg_lat_gen = await conn.fetchval(
+        '''
+        SELECT AVG(latency_ms)::float FROM ai_interactions
+        WHERE latency_ms IS NOT NULL
+          AND NOT (
+            interaction_type = 'meeting_prep'
+            AND COALESCE((governance_json::jsonb ->> 'cached')::boolean, false) = true
+            AND latency_ms <= 5
+          )
+        '''
+    )
+
+    sf_rows = await conn.fetch(
+        '''
+        SELECT safety_flags_json FROM ai_interactions WHERE safety_flags_json IS NOT NULL
+        '''
+    )
+    raw_sf: dict[str, int] = {}
+    for r in sf_rows:
+        raw = r["safety_flags_json"]
+        if isinstance(raw, str):
+            try:
+                raw = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+        if not isinstance(raw, list):
+            continue
+        for flag in raw:
+            if isinstance(flag, dict) and flag.get("code"):
+                code = str(flag["code"])
+                raw_sf[code] = raw_sf.get(code, 0) + 1
+    merged_sf = merge_safety_counts(raw_sf)
+    safety_breakdown = [
+        {"code": code, "label": label, "count": merged_sf.get(code, 0)}
+        for code, label in SAFETY_FLAG_TAXONOMY
+    ]
+
+    trust_context = {
+        "phi_redaction_enabled": True,
+        "prompt_and_model_traceability": True,
+        "audit_storage": "postgres_ai_interactions",
+        "safety_checks_enabled": True,
+    }
+
     return {
         "summary": {
             "total_interactions": total_i,
             "success_rate": round(success_rate, 4),
             "avg_latency_ms": int(avg_lat or 0),
+            "avg_latency_ms_generated": int(avg_lat_gen or 0),
             "citation_coverage": round(float(citation_coverage), 4),
             "safety_flag_count": int(flagged or 0),
             "human_review_required": int(hr or 0),
+            "clinical_review_signals": int(hr or 0),
         },
         "by_type": by_type,
         "by_status": by_status,
         "time_series": time_series,
+        "safety_breakdown": safety_breakdown,
+        "trust_context": trust_context,
     }
 
 
@@ -165,7 +223,8 @@ async def list_interactions(
         f"""
         SELECT id, request_id, interaction_type, patient_id, note_id,
                model_provider, model_name, prompt_version, status, latency_ms,
-               created_at
+               created_at, governance_json, citations_json, retrieved_sources_json,
+               safety_flags_json, output_redacted_preview
         FROM ai_interactions
         {where}
         ORDER BY created_at DESC
@@ -177,6 +236,30 @@ async def list_interactions(
     )
     items = []
     for r in rows:
+        gov = r["governance_json"]
+        cit_j = r["citations_json"]
+        src_j = r["retrieved_sources_json"]
+        sflags = r["safety_flags_json"]
+        c_count = count_citations(cit_j)
+        s_count = count_retrieved_sources(src_j)
+        flags = parse_safety_flags(sflags)
+        lat_ms = int(r["latency_ms"]) if r["latency_ms"] is not None else None
+        lat_disp = derive_latency_display(
+            interaction_type=r["interaction_type"],
+            governance_json=gov,
+            latency_ms=lat_ms,
+        )
+        risk = derive_risk_tier(
+            interaction_type=r["interaction_type"],
+            status=r["status"],
+            citation_count=c_count,
+            source_count=s_count,
+            safety_flags=flags,
+            governance_json=gov,
+        )
+        prev = r["output_redacted_preview"]
+        if isinstance(prev, str) and len(prev) > 320:
+            prev = prev[:320] + "…"
         items.append(
             {
                 "id": str(r["id"]),
@@ -188,8 +271,17 @@ async def list_interactions(
                 "model_name": r["model_name"],
                 "prompt_version": r["prompt_version"],
                 "status": r["status"],
-                "latency_ms": r["latency_ms"],
+                "latency_ms": lat_ms,
                 "created_at": r["created_at"].isoformat() if r["created_at"] else None,
+                "citation_count": c_count,
+                "source_count": s_count,
+                "run_mode": derive_run_mode(
+                    interaction_type=r["interaction_type"],
+                    governance_json=gov,
+                ),
+                "latency_display": lat_disp,
+                "risk_tier": risk,
+                "output_preview": prev,
             }
         )
     total = await conn.fetchval(f"SELECT COUNT(*)::bigint FROM ai_interactions {where}", *args)
@@ -258,7 +350,12 @@ async def safety_flags(conn: Annotated[asyncpg.Connection, Depends(get_conn)]) -
                 if isinstance(flag, dict) and flag.get("code"):
                     code = str(flag["code"])
                     counts[code] = counts.get(code, 0) + 1
-    return {"by_code": counts}
+    merged = merge_safety_counts(counts)
+    breakdown = [
+        {"code": code, "label": label, "count": merged.get(code, 0)}
+        for code, label in SAFETY_FLAG_TAXONOMY
+    ]
+    return {"by_code": merged, "breakdown": breakdown}
 
 
 @router.get("/model-usage")
