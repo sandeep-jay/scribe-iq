@@ -2,7 +2,7 @@
 
 This document inventories **what exists in the repository today** (application, backend API, database, tooling). It complements **plans and roadmaps** (`roadmap/`, Cursor plans) by describing the **current** behavior only.
 
-**Last reviewed:** 2026-05-04 (against the repo tree: `backend/`, `frontend/`, `docker-compose.yml`, `data_prep/`, `reference-docs/`).
+**Last reviewed:** 2026-05-05 (against the repo tree: `backend/`, `frontend/`, `docker-compose.yml`, `data_prep/`, `reference-docs/`).
 
 ---
 
@@ -28,6 +28,8 @@ Short functional read of the baseline; sections below spell out routes, files, a
 
 8. **App shell** — Responsive layout: sidebar (Patients, Chat, Docs) on larger breakpoints, mobile menu, **global patient search** in the header, **dark/light** theme.
 
+9. **Responsible AI Control Center (when enabled)** — Each **`POST /chat`**, **`GET /patients/{id}/meeting-prep`**, and **`POST /notes/generate`** call can **record** a row in **`ai_interactions`** (hashes, redacted previews, governance JSON, latency/tokens where available) and return an **`audit` / `ai_audit`** block with **`interaction_id`** for traceability. **Admin REST APIs** under **`/admin/responsible-ai/*`** (gated by **`RESPONSIBLE_AI_ADMIN_ENABLED`**) expose metrics, interaction list/detail, safety-flag aggregates, and model-usage summaries. The Next.js app can show a **Responsible AI** nav entry and **`/admin/responsible-ai`** pages when **`NEXT_PUBLIC_SCRIBE_ADMIN_UI=true`**; chart/chat/meeting-prep surfaces may link “Why this…?” to an interaction detail page.
+
 ### Platform and operations (supporting behavior)
 
 - **Docker Postgres + pgvector** for local development (host **5433**).
@@ -35,7 +37,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 - **Load corpus into the database** — `load_corpus` / `scribe-load-corpus` upserts from the built corpus; optional **truncate** and optional **OpenAI** embedding fill.
 - **Offline corpus build** — `data_prep/` scripts produce the dataset the loader ingests (not invoked per HTTP request).
 - **Optional API key** on the API (`BACKEND_API_KEY` with `X-API-Key` or Bearer) and **CORS** tuned for local/LAN demos (`CORS_RELAX_LOCAL`).
-- **`GET /health`** reports configured capabilities (e.g. note generation, meeting prep, LLM provider, API auth).
+- **`GET /health`** reports configured capabilities (e.g. note generation, meeting prep, LLM provider, API auth, **Responsible AI admin** when `RESPONSIBLE_AI_ADMIN_ENABLED` is true).
 
 ### Not in this baseline (planned elsewhere)
 
@@ -76,6 +78,7 @@ Root `README.md` summarizes run commands and high-level API behavior.
 |----------|---------|
 | `20260504_001` | `patients`, `notes` with **pgvector** `embedding` column; JSONB metadata; indexes including GIN on `patients.metadata`. |
 | `20260504_002` | `patient_meeting_prep` — cached **meeting prep** summary per patient (`summary_text`, model, prompt version, source fingerprint, `generated_at`). |
+| `20260505_003` | **`ai_interactions`** — Responsible AI **audit** rows (request correlation, interaction type, patient/note linkage, model/provider, prompt/output hashes, redacted previews, JSONB governance + sources, latency/tokens, status, timestamps, indexes). |
 
 Apply: `cd backend && alembic upgrade head` (with `DATABASE_URL` pointing at the Compose instance).
 
@@ -110,19 +113,25 @@ Notable environment-driven flags (see `backend/.env.example`):
 - **Embeddings:** `EMBEDDING_PROVIDER` (`openai` \| `azure` \| `none`), `OPENAI_API_KEY`, dimensions/model names
 - **`NOTE_GENERATION_ENABLED`** — must be `true` for `POST /notes/generate` writes
 - **`MEETING_PREP_ENABLED`** — toggles meeting prep path (default on in settings)
+- **`RESPONSIBLE_AI_ADMIN_ENABLED`** — when `true`, mounts **`/admin/responsible-ai/*`** admin routes and exposes **`responsible_ai_admin_enabled`** on **`GET /health`**; when `false`, those routes are **not registered** (callers get **404**).
 
 ### 3.4 HTTP API (implemented routes)
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/health` | Liveness + flags: `llm_provider`, `note_generation_enabled`, `meeting_prep_enabled`, `api_auth_configured`, etc. |
+| `GET` | `/health` | Liveness + flags: `llm_provider`, `note_generation_enabled`, `meeting_prep_enabled`, `responsible_ai_admin_enabled`, `api_auth_configured`, etc. |
 | `GET` | `/patients` | Paginated patient roster (`domain`, `limit`, `offset`); aggregates note counts / last session / specialty hints. |
 | `GET` | `/patients/stats` | Corpus totals for a `domain`. |
 | `GET` | `/patients/{patient_id}` | Chart payload: metadata, `latest_longitudinal`, medication hints, **note previews** list. |
-| `GET` | `/patients/{patient_id}/meeting-prep` | Groq-backed pre-meeting summary; `?refresh=true` forces refresh; **cached** in `patient_meeting_prep` with fingerprint invalidation. |
+| `GET` | `/patients/{patient_id}/meeting-prep` | Groq-backed pre-meeting summary; `?refresh=true` forces refresh; **cached** in `patient_meeting_prep` with fingerprint invalidation. Response may include **`ai_audit`** (interaction id + governance summary) when audit recording succeeds. |
 | `GET` | `/notes/{note_id}` | Full note: transcript, `structured_note`, `entity_payload`, `longitudinal_context`, `embedding_present`. |
-| `POST` | `/notes/generate` | **Opt-in** structured note generation + DB insert/update; optional embedding write; gated on `NOTE_GENERATION_ENABLED` and LLM keys. |
-| `POST` | `/chat` | **Vector RAG** over `notes.embedding`; returns answer + citations. Returns **503** if no embeddings exist for the domain (by design for optional embed step). |
+| `POST` | `/notes/generate` | **Opt-in** structured note generation + DB insert/update; optional embedding write; gated on `NOTE_GENERATION_ENABLED` and LLM keys. Response may include an **`audit`** block with **`interaction_id`**. |
+| `POST` | `/chat` | **Vector RAG** over `notes.embedding`; returns answer + citations and optional **`audit`** metadata. Returns **503** if no embeddings exist for the domain (by design for optional embed step). |
+| `GET` | `/admin/responsible-ai/metrics` | **Optional.** Aggregate counts / rolling stats over `ai_interactions` (requires `RESPONSIBLE_AI_ADMIN_ENABLED`; same API key rules as other routes when `BACKEND_API_KEY` is set). |
+| `GET` | `/admin/responsible-ai/interactions` | **Optional.** Paginated/filterable list of audit rows. |
+| `GET` | `/admin/responsible-ai/interactions/{interaction_id}` | **Optional.** Single interaction detail for Control Center / debugging. |
+| `GET` | `/admin/responsible-ai/safety-flags` | **Optional.** Aggregated safety-flag counts from stored governance JSON. |
+| `GET` | `/admin/responsible-ai/model-usage` | **Optional.** Model/token/latency aggregates. |
 
 **OpenAPI:** `/docs`, `/redoc`, `/openapi.json` (public when API key middleware is off or for exempt paths).
 
@@ -135,6 +144,8 @@ Notable environment-driven flags (see `backend/.env.example`):
 | `app/embeddings.py` | Query embedding + note embedding helpers for chat / note_generate |
 | `app/meeting_prep_service.py` | Meeting prep generation + cache logic |
 | `app/schemas/*` | Pydantic models for patients, chat, note generation |
+| `app/responsible_ai/*` | Audit logging (including JSONB-safe bindings for `asyncpg`), redaction, hashes, prompt registry, safety heuristics, source trace normalization |
+| `app/api/admin_responsible_ai.py` | Admin router for `/admin/responsible-ai/*` (mounted from `main` when the Settings flag is true) |
 
 ---
 
@@ -150,12 +161,14 @@ Notable environment-driven flags (see `backend/.env.example`):
 | `/patients/[id]/encounters/[encounterId]` | **Encounter viewer** for a single note/encounter. |
 | `/chat` | RAG chat UI; optional `?patient_id=` preset; handles backend **503** when embeddings missing. |
 | `/docs` | Static page pointing to in-repo `roadmap/` and `reference-docs/`. |
+| `/admin/responsible-ai` | **Optional.** Responsible AI Control Center (metrics + interaction list) when **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`** is enabled. |
+| `/admin/responsible-ai/[interactionId]` | **Optional.** Single interaction detail (matches backend admin GET by id). |
 
 ### 4.2 Major components
 
 | Component | Responsibility |
 |-----------|----------------|
-| `AppShell` | Sidebar (Patients, Chat, Docs) on `md+`; mobile menu; sticky **global search** + `ThemeToggle` |
+| `AppShell` | Sidebar (Patients, Chat, Docs, optional **Responsible AI** when admin UI flag is on) on `md+`; mobile menu; sticky **global search** + `ThemeToggle` |
 | `GlobalSearchHeader` | Patient search; on `/patients` ties to **`usePatientsListSearchQuery`** / URL `q`; on other routes Enter navigates to patients with query |
 | `PatientsExplorer` | List UX: sorting, chips, advanced panel, stats fetch |
 | `PatientChartTabs` | Chart tabs, meeting prep, timeline scroll behavior, encounter pagination, codes/sources UI |
@@ -165,7 +178,9 @@ Notable environment-driven flags (see `backend/.env.example`):
 
 ### 4.3 API client (`frontend/src/lib/backend.ts`)
 
-Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetchPatients`, `fetchPatient`, `fetchMeetingPrep`, `fetchNote`, `postChat`, `postGenerateNote`, optional **`X-API-Key`** / env base URL for demos.
+Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetchPatients`, `fetchPatient`, `fetchMeetingPrep`, `fetchNote`, `postChat`, `postGenerateNote`, optional **`X-API-Key`** / env base URL for demos; when admin UI is on, **Responsible AI** fetchers for metrics, interaction list, and interaction detail.
+
+**Env (frontend):** `NEXT_PUBLIC_SCRIBE_API_BASE`, optional **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`**, optional **`NEXT_PUBLIC_SCRIBE_BACKEND_API_KEY`** if the backend uses `BACKEND_API_KEY`. Documented in **`.env_example`** (repo root) and **`frontend/.env.example`**.
 
 ---
 
@@ -195,6 +210,7 @@ Items discussed in roadmaps / Cursor plans but **not** present as first-class fe
 | Document | Use |
 |----------|-----|
 | `roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
+| `roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Responsible AI Control Center product/engineering plan (see **status** at top of that file) |
 | `roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
 | `reference-docs/GIT_CHECKPOINTS.md` | Branch/checkpoint workflow |
 | `reference-docs/CLinical_Note_LLM.md` | Clinical note / LLM phases |
@@ -207,3 +223,4 @@ Items discussed in roadmaps / Cursor plans but **not** present as first-class fe
 |------|--------|
 | 2026-05-04 | Initial **implemented baseline** inventory (repo survey). |
 | 2026-05-04 | Added **Functional summary** (end-user flows, platform ops, not-implemented). |
+| 2026-05-05 | Documented **Responsible AI Control Center**: `ai_interactions` migration, `app/responsible_ai/`, admin APIs, env flags, frontend admin routes, audit fields on chat/meeting-prep/note generate. |

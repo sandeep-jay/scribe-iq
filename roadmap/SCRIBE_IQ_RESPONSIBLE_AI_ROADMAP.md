@@ -2,9 +2,17 @@
 
 This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (what exists today), and **`roadmap/PHASE1_MASTER_PLAN.md`** / **`roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
 
-**Status:** planned (not yet implemented unless baseline inventory says otherwise).
+**Status:** **implemented** in the repository (see **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** for routes, env flags, and schema). Remaining roadmap items (for example a formal review queue table) may still be future work.
 
-**Last updated:** 2026-05-04
+**Last updated:** 2026-05-05
+
+### Implementation snapshot (2026-05)
+
+- **Database:** Alembic **`20260505_003`** — table **`ai_interactions`**.
+- **Backend package:** `backend/app/responsible_ai/` (audit, redaction, hashes, prompt registry, safety checks, source trace); **`POST /chat`**, **`GET …/meeting-prep`**, **`POST /notes/generate`** record interactions and return **`audit` / `ai_audit`** metadata where applicable.
+- **Admin API:** `GET /admin/responsible-ai/metrics`, `…/interactions`, `…/interactions/{id}`, `…/safety-flags`, `…/model-usage` when **`RESPONSIBLE_AI_ADMIN_ENABLED=true`**.
+- **Frontend:** `NEXT_PUBLIC_SCRIBE_ADMIN_UI` enables nav + **`/admin/responsible-ai`** pages and “Why this…?” links.
+- **Operational note:** JSONB columns for audit inserts use serialized JSON for **`asyncpg`** compatibility.
 
 ---
 

@@ -33,6 +33,7 @@ Postgres, and Azure per **`roadmap/PHASE1_MASTER_PLAN.md`**.
 - **Corpus stats**: `GET /patients/stats` — total patients + notes for the domain.
 - **Note generation**: `POST /notes/generate` — requires `NOTE_GENERATION_ENABLED=true` and `GROQ_API_KEY`.
 - **RAG chat** (`POST /chat`) is **deferred until embeddings exist** — needs `OPENAI_API_KEY` and `python -m scripts.load_corpus --embed`. Until then the UI shows a banner; use the patient **Pre-Meeting Summary** for Groq-grounded narrative.
+- **Responsible AI:** optional audit trail + **`/admin/responsible-ai`** APIs and Next.js admin UI — see **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** and **`roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md`**; enable with `RESPONSIBLE_AI_ADMIN_ENABLED` (backend) and `NEXT_PUBLIC_SCRIBE_ADMIN_UI` (frontend).
 
 Run backend: `cd backend && uvicorn app.main:app --reload --host 127.0.0.1 --port 8000` (apply migrations: `alembic upgrade head`).
 

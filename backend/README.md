@@ -83,6 +83,12 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 - Cached row in `patient_meeting_prep` (see Alembic `20260504_002`).
 - Disable with `MEETING_PREP_ENABLED=false`.
 
+## Responsible AI Control Center (audit + admin)
+
+- **Migration:** `20260505_003` → table **`ai_interactions`** (run `alembic upgrade head`).
+- **Env:** `RESPONSIBLE_AI_ADMIN_ENABLED=true` registers **`GET /admin/responsible-ai/*`** (metrics, interactions list/detail, safety-flags, model-usage) and sets **`responsible_ai_admin_enabled`** on **`GET /health`**. When `false`, admin routes are omitted (**404**).
+- **Wiring:** `POST /chat`, `GET /patients/{id}/meeting-prep`, and `POST /notes/generate` write audit rows via `app/responsible_ai/` and may return **`audit` / `ai_audit`** metadata. Full inventory: **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**.
+
 ## RAG chat status
 
 `POST /chat` stays **503** until at least one `notes.embedding` exists for the domain. This sprint intentionally treats embeddings as optional; use meeting prep for AI narrative on charts.
