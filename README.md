@@ -44,3 +44,13 @@ Run frontend: `cd frontend && npm run dev`.
 ## Git checkpoints
 
 Before large UI experiments, use a **checkpoint branch** (commands and recorded branch/commit): **`reference-docs/GIT_CHECKPOINTS.md`**.
+
+
+## TDD workflow
+
+Use Red -> Green -> Refactor for every feature and bug fix. Start by writing (or updating) a failing test, make the minimum change to pass, then refactor while keeping tests green.
+
+Local pre-push checklist:
+
+- Backend: `cd backend && .venv/bin/tox -e lint,py311`
+- Frontend: `cd frontend && npm run lint && npm run test:e2e`

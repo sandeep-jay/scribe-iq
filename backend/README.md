@@ -93,3 +93,16 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 
 `POST /chat` stays **503** until at least one `notes.embedding` exists for the domain. This sprint intentionally treats embeddings as optional; use meeting prep for AI narrative on charts.
 
+
+
+## Test and lint (TDD)
+
+Adopt Red -> Green -> Refactor for backend changes: write/update a failing test first, implement the minimal fix, then refactor.
+
+Run local quality checks:
+
+```bash
+cd backend
+source .venv/bin/activate
+tox -e lint,py311
+```
