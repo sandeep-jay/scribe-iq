@@ -38,6 +38,9 @@ include = ["app*", "scripts*"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 addopts = "-ra --strict-markers --strict-config"
+markers = [
+  "integration: tests that require a live Postgres database",
+]
 filterwarnings = [
   "error::DeprecationWarning",
 ]
