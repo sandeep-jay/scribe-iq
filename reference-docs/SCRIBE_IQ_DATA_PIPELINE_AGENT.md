@@ -1,5 +1,5 @@
 # Scribe-IQ — Data Generation Pipeline
-## Full Cursor Prompt
+## Full Implementation Prompt
 
 ---
 
@@ -1436,9 +1436,9 @@ data/clinical_corpus/
 
 ---
 
-## Execution Order for Cursor
+## Execution Order for the Coding Agent
 
-Paste this entire document into Cursor as a project brief. Then ask Cursor to:
+Use this document as a project brief, then ask the coding agent to:
 
 1. `Create the full repository structure`
 2. `Implement utils/mappings.py, utils/io_utils.py, utils/synthea_utils.py`

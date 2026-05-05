@@ -5,7 +5,7 @@ Clinical documentation / RAG demo — see **`roadmap/PHASE1_MASTER_PLAN.md`**.
 ## Data pipeline (canonical)
 
 The **50-patient Synthea + note pool + Groq** corpus builder lives in **`data_prep/`**.
-Implementation brief: **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_CURSOR.md`**.
+Implementation brief: **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**.
 
 ```bash
 cd data_prep

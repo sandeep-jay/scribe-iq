@@ -1,5 +1,5 @@
 # Scribe-IQ — Simplified Implementation (CORRECTED)
-## Bug Fixes Applied From Cursor Review
+## Bug Fixes Applied From Agent Review
 
 ---
 
@@ -28,7 +28,7 @@
 05.5_extract_longitudinal_context.py
 
 Extracts longitudinal context for golden patient encounters.
-CORRECTED VERSION: Fixes from Cursor review applied.
+CORRECTED VERSION: Fixes from agent review applied.
 """
 
 from pathlib import Path
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 06_adapt_notes.py
 
 Adapts notes with longitudinal context.
-CORRECTED VERSION: Fixes all bugs from Cursor review.
+CORRECTED VERSION: Fixes all bugs from agent review.
 
 Key fixes:
 - Groq client in main(), not at import
@@ -704,7 +704,7 @@ diff /tmp/run1.jsonl data/staging/patient_longitudinal_context.jsonl
 
 ## Summary of Corrections
 
-✅ All bugs from Cursor review fixed  
+✅ All bugs from agent review fixed  
 ✅ Uses existing ACI reservations (no duplicate logic)  
 ✅ Single file for all notes (prior + showcase)  
 ✅ Deterministic output (file order)  
@@ -712,4 +712,4 @@ diff /tmp/run1.jsonl data/staging/patient_longitudinal_context.jsonl
 ✅ Proper utils integration  
 ✅ Env-based configuration  
 
-This version is ready for Cursor to implement.
+This version is ready for the coding agent to implement.

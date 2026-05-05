@@ -1192,7 +1192,7 @@ except anthropic.APIError as e:
 
 ---
 
-## Next Steps for Cursor
+## Next Steps for the Coding Agent
 
 1. **Start with Phase 1** - Set up both projects
 2. **Run database scripts** - Import Synthea data

@@ -184,7 +184,7 @@ This V2 plan compares current implementation with the attached UI references and
 
 ## 12. Transcription and note generation service (product + backend alignment)
 
-This section mirrors the **Cursor plan** *Transcription and note generation service* (same repo’s implementation intent: ASR behind FastAPI, transcript in **Generate note** flow, existing LLM note path). It is here so roadmap readers see **UI, data flow, and vendor options** in one place.
+This section mirrors the **agent plan** *Transcription and note generation service* (same repo’s implementation intent: ASR behind FastAPI, transcript in **Generate note** flow, existing LLM note path). It is here so roadmap readers see **UI, data flow, and vendor options** in one place.
 
 ### 12.1 Two capabilities, one demo story
 
@@ -224,6 +224,57 @@ This section mirrors the **Cursor plan** *Transcription and note generation serv
 
 ---
 
+
+## 13. Performance improvement plan (frontend + backend + streaming)
+
+This section records the active performance remediation strategy and complements implementation-focused docs by defining measurable latency targets and phased delivery.
+
+### 13.1 Objectives and measurable targets
+
+- Reduce `/patients` and `/patients/[id]` route p95 by **30–50%** in production-like mode.
+- Reduce `/chat` retrieval DB segment p95 by **>50%** after index work.
+- Keep Responsible AI admin dashboard p95 under **500 ms** for moderate data volume.
+- Reduce perceived wait-to-first-content for AI generation features to **<1.5 s** on warm paths using SSE streaming.
+
+### 13.2 Observed bottleneck areas
+
+1. **Frontend delivery/hydration**
+   - Heavy read routes use uncached fetch behavior and route-level waterfalls in some pages.
+   - Patient detail surfaces include large client-side render/hydration sections.
+2. **Backend query/index gaps**
+   - Vector retrieval path and patient timeline queries need stronger index coverage as corpus size grows.
+   - Admin analytics rely on repeated full/serial aggregates.
+3. **Flow orchestration and runtime mode**
+   - Chat/prep generation paths accumulate latency from serial steps.
+   - Dev mode (`next dev`, `uvicorn --reload`) inflates perceived latency versus production mode.
+
+### 13.3 Phased execution
+
+| Phase | Focus | Core outcomes |
+|------|--------|----------------|
+| **P0 Baseline** | Measurement harness | Cold/warm route/API timing baselines; profiling checklist in `reference-docs/`. |
+| **P1 Frontend fast wins** | Caching + waterfalls | Route-level cache strategy for stable reads; remove serialized fetch chains where possible. |
+| **P2 Backend index optimization** | Query plan efficiency | Add/validate vector and composite indexes for chat, patient timeline, and prep/admin filters. |
+| **P3 Backend flow optimization** | Latency accumulation | Overlap independent I/O in generation flows; reduce repeated aggregate scans in admin endpoints. |
+| **P3b SSE streaming** | Perceived responsiveness | Add SSE generation endpoints for chat, meeting prep, and note generation while preserving non-stream compatibility. |
+| **P4 Runtime hardening** | Environment realism | Document production-like perf run modes; validate Docker/Postgres resource and config assumptions. |
+| **P5 Guardrails** | Regression prevention | Lightweight perf checks and endpoint timing visibility for ongoing releases. |
+
+### 13.4 SSE streaming scope (agreed)
+
+- **Transport:** Server-Sent Events (SSE).
+- **Surfaces:** chat, meeting prep summary generation, note generation.
+- **Compatibility:** keep existing non-stream endpoints as fallback.
+- **Audit/trust handling:** write one terminal audit record per completed/cancelled stream with explicit status.
+
+### 13.5 Implementation notes and risks
+
+- Introduce a common SSE event envelope (`start`, `token`, `progress`, `done`, `error`) and one frontend parser utility to avoid drift.
+- Treat stream disconnects as explicit cancellable states (do not silently mark success).
+- Apply index migrations in controlled windows and verify with `EXPLAIN ANALYZE` before/after snapshots.
+- Separate baseline measurements for **dev mode** and **production-like mode** to avoid false conclusions.
+
+
 ## Document history
 
 | Date | Change |
@@ -234,4 +285,5 @@ This section mirrors the **Cursor plan** *Transcription and note generation serv
 | 2026-05-04 | Added **V2 UI Implementation Plan** with data-feasibility gates from current backend contracts and reference-screen comparison. |
 | 2026-05-04 | Added **§12 Transcription and note generation service** (ASR + note path, batch/streaming UX, OpenAI / local / GCP matrix, trust/exit criteria). |
 | 2026-05-04 | Intro cross-link to **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (implemented inventory). |
+| 2026-05-05 | Added **§13 Performance improvement plan** with phased latency remediation and SSE streaming scope (chat + prep + note generation). |
 
