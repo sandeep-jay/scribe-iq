@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -178,13 +177,13 @@ async def list_patients(
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
 ) -> PaginatedPatients:
-    total_row, rows = await asyncio.gather(
-        conn.fetchrow(
-            "SELECT COUNT(*)::int AS c FROM patients WHERE domain = $1",
-            domain,
-        ),
-        conn.fetch(
-            """
+    total_row = await conn.fetchrow(
+        "SELECT COUNT(*)::int AS c FROM patients WHERE domain = $1",
+        domain,
+    )
+    assert total_row is not None
+    rows = await conn.fetch(
+        """
         SELECT p.id,
                p.external_id,
                p.name,
@@ -200,11 +199,10 @@ async def list_patients(
         GROUP BY p.id
         ORDER BY p.name ASC
         LIMIT $2 OFFSET $3
-            """ ,
-            domain,
-            limit,
-            offset,
-        ),
+        """ ,
+        domain,
+        limit,
+        offset,
     )
     assert total_row is not None
 
@@ -442,20 +440,23 @@ async def get_patient(
 ) -> PatientDetail:
     pid = await resolve_patient_id(conn, patient_id)
 
-    prow, cnt_row, lng_rows, note_rows = await asyncio.gather(
-        conn.fetchrow(
+    prow = await conn.fetchrow(
             """
             SELECT id, external_id, name, metadata
             FROM patients
             WHERE id = $1::uuid
             """ ,
             pid,
-        ),
-        conn.fetchrow(
-            "SELECT COUNT(*)::int AS c FROM notes WHERE patient_id = $1::uuid",
-            pid,
-        ),
-        conn.fetch(
+        )
+    assert prow is not None
+
+    cnt_row = await conn.fetchrow(
+        "SELECT COUNT(*)::int AS c FROM notes WHERE patient_id = $1::uuid",
+        pid,
+    )
+    assert cnt_row is not None
+
+    lng_rows = await conn.fetch(
             """
             SELECT longitudinal_context
             FROM notes
@@ -464,8 +465,9 @@ async def get_patient(
             LIMIT 50
             """ ,
             pid,
-        ),
-        conn.fetch(
+        )
+
+    note_rows = await conn.fetch(
             """
             SELECT id,
                    external_encounter_id,
@@ -480,10 +482,7 @@ async def get_patient(
             LIMIT 100
             """ ,
             pid,
-        ),
-    )
-    assert prow is not None
-    assert cnt_row is not None
+        )
 
     meta = _coerce_json_obj(prow["metadata"])
 

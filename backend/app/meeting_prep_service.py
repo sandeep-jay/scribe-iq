@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 from datetime import date, datetime
 from typing import Any
@@ -125,8 +124,7 @@ async def meeting_prep_context_bundle(
         "display_name": meta.get("display_name"),
     }
 
-    lng_rows, note_rows = await asyncio.gather(
-        conn.fetch(
+    lng_rows = await conn.fetch(
             """
             SELECT longitudinal_context
             FROM notes
@@ -135,11 +133,12 @@ async def meeting_prep_context_bundle(
               AND longitudinal_context IS NOT NULL
             ORDER BY session_date DESC NULLS LAST, created_at DESC
             LIMIT 50
-            """,
+            """ ,
             patient_id,
             domain,
-        ),
-        conn.fetch(
+        )
+
+    note_rows = await conn.fetch(
             """
             SELECT id AS note_id,
                    session_date,
@@ -150,11 +149,11 @@ async def meeting_prep_context_bundle(
             WHERE patient_id = $1::uuid AND domain = $2
             ORDER BY session_date DESC NULLS LAST, created_at DESC
             LIMIT 18
-            """,
+            """ ,
             patient_id,
             domain,
-        ),
-    )
+        )
+
     lng = _pick_richest_longitudinal(lng_rows)
 
     visits: list[dict[str, Any]] = []
