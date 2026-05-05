@@ -1,6 +1,6 @@
 # Scribe IQ — implemented baseline (current code)
 
-This document inventories **what exists in the repository today** (application, backend API, database, tooling). It complements **plans and roadmaps** (`roadmap/`, Cursor plans) by describing the **current** behavior only.
+This document inventories **what exists in the repository today** (application, backend API, database, tooling). It complements **plans and roadmaps** (`roadmap/`, coding agent plans) by describing the **current** behavior only.
 
 **Last reviewed:** 2026-05-05 (against the repo tree: `backend/`, `frontend/`, `docker-compose.yml`, `data_prep/`, `reference-docs/`).
 
@@ -54,7 +54,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 | `frontend/` | Next.js (App Router) UI: patients, chart, encounter, chat, in-app docs pointer. |
 | `backend/` | FastAPI API, Postgres access, LLM/embeddings helpers, Alembic migrations, corpus loader. |
 | `docker-compose.yml` | Local **Postgres 16 + pgvector** (`pgvector/pgvector:pg16`), host port **5433**. |
-| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_CURSOR.md`. |
+| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`. |
 | `data/` | Staging and corpus outputs (e.g. `data/staging/`); loader reads packaged corpus paths per `backend/scripts/load_corpus.py` and `backend/README.md`. |
 | `scripts/dev_smoke.sh` | Quick Compose + `GET /health` smoke check. |
 | `roadmap/` | Product/UI/master plans (**not** a substitute for this inventory). |
@@ -189,7 +189,7 @@ Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetc
 Under **`data_prep/`**: scripted pipeline to build the clinical corpus (patient selection, note matching, adaptation, validation, manifest). Documented in:
 
 - `data_prep/README.md`
-- `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_CURSOR.md`
+- `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`
 
 This is **not** invoked by the FastAPI server at request time; it produces inputs for `load_corpus`.
 
@@ -197,9 +197,9 @@ This is **not** invoked by the FastAPI server at request time; it produces input
 
 ## 6. Explicitly not in this baseline (planned elsewhere)
 
-Items discussed in roadmaps / Cursor plans but **not** present as first-class features in the surveyed tree:
+Items discussed in roadmaps / agent plans but **not** present as first-class features in the surveyed tree:
 
-- **Audio transcription** service (`POST /transcribe`, Whisper/GCP providers) — see `roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12 and the Cursor plan *Transcription and note generation service*.
+- **Audio transcription** service (`POST /transcribe`, Whisper/GCP providers) — see `roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12 and the coding agent plan *Transcription and note generation service*.
 - **LangGraph** agent layer for notes (deferred for MVP linear pipeline).
 - **Production auth** (SSO, multi-tenant RBAC) beyond optional shared API key.
 

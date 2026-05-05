@@ -1,5 +1,5 @@
 # Scribe-IQ — Simplified Implementation for 19 Golden Patients
-## Cursor Implementation Plan (No Over-Engineering Edition)
+## Implementation Plan (No Over-Engineering Edition)
 
 ---
 
@@ -931,7 +931,7 @@ diff \
 
 ---
 
-## Cursor Instructions
+## Coding Agent Instructions
 
 1. **Create directory structure** as shown above
 2. **Implement scripts in order:** 05.5 → 06 → 06.5 → update 07

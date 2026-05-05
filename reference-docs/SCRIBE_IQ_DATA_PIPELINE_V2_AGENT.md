@@ -1,5 +1,5 @@
 # Scribe-IQ — Data Generation Pipeline v2
-## Cursor Implementation Brief (Reviewed + Corrected)
+## Implementation Brief (Reviewed + Corrected)
 
 ---
 
@@ -1587,7 +1587,7 @@ The canonical pipeline is `data_prep/`. Do not create competing scripts in `lake
 
 ---
 
-## Instructions for Cursor
+## Instructions for the Coding Agent
 
 Paste this document as a project brief. Then:
 

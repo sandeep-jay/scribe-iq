@@ -1,6 +1,6 @@
 # RAG Documentation Assistant — Design Document
 
-> Internal reference for implementation in Cursor.
+> Internal reference for implementation by the coding agent.
 > All decisions locked. Do not deviate without updating this doc first.
 
 ---
