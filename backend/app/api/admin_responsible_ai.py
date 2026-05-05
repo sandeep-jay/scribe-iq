@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -106,7 +106,7 @@ async def metrics(
         "failed": int(failed or 0),
     }
 
-    since = datetime.now(timezone.utc) - timedelta(days=days)
+    since = datetime.now(UTC) - timedelta(days=days)
     ts_rows = await conn.fetch(
         """
         SELECT date_trunc('day', created_at AT TIME ZONE 'UTC')::date AS d,
