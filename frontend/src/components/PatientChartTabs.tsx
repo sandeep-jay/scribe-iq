@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { MeetingPrepPanel } from "@/components/MeetingPrepPanel";
+import { DeferredMeetingPrepPanel } from "@/components/DeferredMeetingPrepPanel";
 
 export type JourneyNote = {
   id: string;
@@ -276,7 +276,7 @@ export function PatientChartTabs(props: {
           </nav>
 
           <div id="chart-prep" className="scroll-mt-28 space-y-2">
-            <MeetingPrepPanel patientId={patientId} />
+            <DeferredMeetingPrepPanel patientId={patientId} />
             <div className="flex flex-wrap justify-end gap-2">
               <button
                 type="button"

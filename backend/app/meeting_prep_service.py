@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from datetime import date, datetime
 from typing import Any
@@ -124,36 +125,37 @@ async def meeting_prep_context_bundle(
         "display_name": meta.get("display_name"),
     }
 
-    lng_rows = await conn.fetch(
-        """
-        SELECT longitudinal_context
-        FROM notes
-        WHERE patient_id = $1::uuid
-          AND domain = $2
-          AND longitudinal_context IS NOT NULL
-        ORDER BY session_date DESC NULLS LAST, created_at DESC
-        LIMIT 80
-        """,
-        patient_id,
-        domain,
+    lng_rows, note_rows = await asyncio.gather(
+        conn.fetch(
+            """
+            SELECT longitudinal_context
+            FROM notes
+            WHERE patient_id = $1::uuid
+              AND domain = $2
+              AND longitudinal_context IS NOT NULL
+            ORDER BY session_date DESC NULLS LAST, created_at DESC
+            LIMIT 50
+            """,
+            patient_id,
+            domain,
+        ),
+        conn.fetch(
+            """
+            SELECT id AS note_id,
+                   session_date,
+                   specialty,
+                   structured_note->>'summary' AS summary,
+                   left(structured_note->>'full_note', 1200) AS full_note_excerpt
+            FROM notes
+            WHERE patient_id = $1::uuid AND domain = $2
+            ORDER BY session_date DESC NULLS LAST, created_at DESC
+            LIMIT 18
+            """,
+            patient_id,
+            domain,
+        ),
     )
     lng = _pick_richest_longitudinal(lng_rows)
-
-    note_rows = await conn.fetch(
-        """
-        SELECT id AS note_id,
-               session_date,
-               specialty,
-               structured_note->>'summary' AS summary,
-               left(structured_note->>'full_note', 1200) AS full_note_excerpt
-        FROM notes
-        WHERE patient_id = $1::uuid AND domain = $2
-        ORDER BY session_date DESC NULLS LAST, created_at DESC
-        LIMIT 18
-        """,
-        patient_id,
-        domain,
-    )
 
     visits: list[dict[str, Any]] = []
     for r in note_rows:

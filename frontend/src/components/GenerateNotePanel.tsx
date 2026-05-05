@@ -41,7 +41,8 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
   useEffect(() => {
     let alive = true;
     setLoadError(null);
-    (async () => {
+
+    const load = async () => {
       try {
         const h = await fetchBackendHealth();
         if (!alive) return;
@@ -51,9 +52,18 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
         setHealth(null);
         setLoadError((e as Error).message);
       }
-    })();
+    };
+
+    const usingIdle = typeof window !== "undefined" && "requestIdleCallback" in window;
+    const sched =
+      usingIdle
+        ? window.requestIdleCallback(() => void load(), { timeout: 1200 })
+        : window.setTimeout(() => void load(), 1);
+
     return () => {
       alive = false;
+      if (usingIdle) window.cancelIdleCallback(sched as number);
+      else window.clearTimeout(sched as number);
     };
   }, []);
 
