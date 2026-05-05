@@ -1,0 +1,209 @@
+# Scribe IQ — implemented baseline (current code)
+
+This document inventories **what exists in the repository today** (application, backend API, database, tooling). It complements **plans and roadmaps** (`roadmap/`, Cursor plans) by describing the **current** behavior only.
+
+**Last reviewed:** 2026-05-04 (against the repo tree: `backend/`, `frontend/`, `docker-compose.yml`, `data_prep/`, `reference-docs/`).
+
+---
+
+## Functional summary (what works today)
+
+Short functional read of the baseline; sections below spell out routes, files, and schema.
+
+### End-user and demo flows
+
+1. **Browse patients** — Paginated roster with sorting, filter chips, advanced filter area, and corpus stats. Search filters the list and is reflected in the URL as **`?q=`** on `/patients`.
+
+2. **Open a patient chart** — Demographics/metadata, longitudinal snippets and medication hints, a **pre-meeting summary** (Groq-backed when configured) with refresh, cached vs degraded behavior, and model metadata.
+
+3. **Explore clinical history** — **Read**, **Sources**, and **Codes & map** tabs; a **care timeline** with horizontal scroll; **encounter list** with UI pagination (10 per page); for many visits, the timeline can use **month buckets** so the strip stays usable.
+
+4. **Open one encounter** — Full encounter/note view from **`GET /notes/{id}`**: transcript, structured note, entities, longitudinal context, and whether an embedding exists.
+
+5. **Generate a structured note from a transcript** — **Generate note** on the chart accepts transcript (plus optional specialty/session fields), checks **backend health** and **`NOTE_GENERATION_ENABLED`**, then calls **`POST /notes/generate`** to create or update a note via the LLM when enabled.
+
+6. **RAG chat** — **`POST /chat`** runs vector search over stored note embeddings and returns an answer with **citations**. If there are **no embeddings** for the domain, the API returns **503** and the UI should surface that (chat stays optional until embeddings are loaded).
+
+7. **In-app docs pointer** — `/docs` points readers to Markdown under `roadmap/` and `reference-docs/`.
+
+8. **App shell** — Responsive layout: sidebar (Patients, Chat, Docs) on larger breakpoints, mobile menu, **global patient search** in the header, **dark/light** theme.
+
+### Platform and operations (supporting behavior)
+
+- **Docker Postgres + pgvector** for local development (host **5433**).
+- **Alembic migrations** for `patients`, `notes` (including vector embeddings), and **`patient_meeting_prep`** cache.
+- **Load corpus into the database** — `load_corpus` / `scribe-load-corpus` upserts from the built corpus; optional **truncate** and optional **OpenAI** embedding fill.
+- **Offline corpus build** — `data_prep/` scripts produce the dataset the loader ingests (not invoked per HTTP request).
+- **Optional API key** on the API (`BACKEND_API_KEY` with `X-API-Key` or Bearer) and **CORS** tuned for local/LAN demos (`CORS_RELAX_LOCAL`).
+- **`GET /health`** reports configured capabilities (e.g. note generation, meeting prep, LLM provider, API auth).
+
+### Not in this baseline (planned elsewhere)
+
+- **Audio → transcript** (no `/transcribe`; no Whisper/GCP ASR in app code yet) — see `roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12.
+- **LangGraph**-style agent orchestration for notes.
+- **Enterprise SSO / multi-tenant RBAC** beyond the optional shared API secret.
+
+---
+
+## 1. Repository layout (application-relevant)
+
+| Area | Role |
+|------|------|
+| `frontend/` | Next.js (App Router) UI: patients, chart, encounter, chat, in-app docs pointer. |
+| `backend/` | FastAPI API, Postgres access, LLM/embeddings helpers, Alembic migrations, corpus loader. |
+| `docker-compose.yml` | Local **Postgres 16 + pgvector** (`pgvector/pgvector:pg16`), host port **5433**. |
+| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_CURSOR.md`. |
+| `data/` | Staging and corpus outputs (e.g. `data/staging/`); loader reads packaged corpus paths per `backend/scripts/load_corpus.py` and `backend/README.md`. |
+| `scripts/dev_smoke.sh` | Quick Compose + `GET /health` smoke check. |
+| `roadmap/` | Product/UI/master plans (**not** a substitute for this inventory). |
+
+Root `README.md` summarizes run commands and high-level API behavior.
+
+---
+
+## 2. Infrastructure and runtime
+
+### 2.1 Postgres (Docker)
+
+- **Image:** `pgvector/pgvector:pg16`
+- **Volume:** `scribe_iq_pgdata`
+- **Credentials / DB:** `rag` / `rag_dev_password` / `rag_dev` (see `docker-compose.yml`)
+- **Host port:** `5433` → container `5432` (avoids clashing with a local Postgres on `5432`)
+
+### 2.2 Database schema (Alembic)
+
+| Revision | Purpose |
+|----------|---------|
+| `20260504_001` | `patients`, `notes` with **pgvector** `embedding` column; JSONB metadata; indexes including GIN on `patients.metadata`. |
+| `20260504_002` | `patient_meeting_prep` — cached **meeting prep** summary per patient (`summary_text`, model, prompt version, source fingerprint, `generated_at`). |
+
+Apply: `cd backend && alembic upgrade head` (with `DATABASE_URL` pointing at the Compose instance).
+
+### 2.3 Corpus load (backend)
+
+- **Script:** `backend/scripts/load_corpus.py` (console entry: `scribe-load-corpus`)
+- **Modes:** upsert JSONL corpus; optional `--truncate`; optional `--embed` (OpenAI embeddings → `notes.embedding`)
+- **Env:** `DATABASE_URL`, and for embeddings `OPENAI_API_KEY` (see `backend/README.md`)
+
+---
+
+## 3. Backend (FastAPI)
+
+### 3.1 App entry and lifecycle
+
+- **Module:** `app.main:create_app` / `app` instance
+- **Lifespan:** creates an **asyncpg** pool from `Settings.database_url` and stores it on `app.state.db_pool`
+
+### 3.2 Middleware and CORS
+
+| Layer | Behavior |
+|-------|----------|
+| **`OptionalApiKeyMiddleware`** | If `BACKEND_API_KEY` is set, all routes except `/`, `/health`, `/docs`, `/redoc`, `/openapi.json` require `Authorization: Bearer <key>` or `X-API-Key: <key>`. If unset, no auth gate. |
+| **CORS** | Origins from `CORS_ORIGINS` (comma-separated). If `CORS_RELAX_LOCAL=true`, also allows regex for `localhost` / `127.0.0.1` on any port and `192.168.*` (LAN demos). |
+
+### 3.3 Configuration (`app.config.Settings`)
+
+Notable environment-driven flags (see `backend/.env.example`):
+
+- **`DATABASE_URL`**, **`BACKEND_API_KEY`** (optional)
+- **LLM:** `LLM_PROVIDER` (`groq` \| `azure`), Groq/Azure OpenAI fields, `GROQ_API_KEY`, etc.
+- **Embeddings:** `EMBEDDING_PROVIDER` (`openai` \| `azure` \| `none`), `OPENAI_API_KEY`, dimensions/model names
+- **`NOTE_GENERATION_ENABLED`** — must be `true` for `POST /notes/generate` writes
+- **`MEETING_PREP_ENABLED`** — toggles meeting prep path (default on in settings)
+
+### 3.4 HTTP API (implemented routes)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/health` | Liveness + flags: `llm_provider`, `note_generation_enabled`, `meeting_prep_enabled`, `api_auth_configured`, etc. |
+| `GET` | `/patients` | Paginated patient roster (`domain`, `limit`, `offset`); aggregates note counts / last session / specialty hints. |
+| `GET` | `/patients/stats` | Corpus totals for a `domain`. |
+| `GET` | `/patients/{patient_id}` | Chart payload: metadata, `latest_longitudinal`, medication hints, **note previews** list. |
+| `GET` | `/patients/{patient_id}/meeting-prep` | Groq-backed pre-meeting summary; `?refresh=true` forces refresh; **cached** in `patient_meeting_prep` with fingerprint invalidation. |
+| `GET` | `/notes/{note_id}` | Full note: transcript, `structured_note`, `entity_payload`, `longitudinal_context`, `embedding_present`. |
+| `POST` | `/notes/generate` | **Opt-in** structured note generation + DB insert/update; optional embedding write; gated on `NOTE_GENERATION_ENABLED` and LLM keys. |
+| `POST` | `/chat` | **Vector RAG** over `notes.embedding`; returns answer + citations. Returns **503** if no embeddings exist for the domain (by design for optional embed step). |
+
+**OpenAPI:** `/docs`, `/redoc`, `/openapi.json` (public when API key middleware is off or for exempt paths).
+
+### 3.5 Supporting modules (non-route)
+
+| Module | Role |
+|--------|------|
+| `app/db.py` | Request-scoped DB access from pool |
+| `app/llm.py` | Groq/Azure chat + JSON structured outputs for note generation |
+| `app/embeddings.py` | Query embedding + note embedding helpers for chat / note_generate |
+| `app/meeting_prep_service.py` | Meeting prep generation + cache logic |
+| `app/schemas/*` | Pydantic models for patients, chat, note generation |
+
+---
+
+## 4. Frontend (Next.js)
+
+### 4.1 Routes (App Router)
+
+| Path | Description |
+|------|-------------|
+| `/` | Root entry per `frontend/src/app/page.tsx` |
+| `/patients` | **Patients explorer**: sortable table, filter chips, advanced filters, corpus stats; search synced to **`?q=`** on this route. |
+| `/patients/[id]` | **Patient chart**: tabs (Read / Sources / Codes & map), meeting prep, timeline + encounter list with **pagination (10)** and **month-bucketed** timeline when visit count is high; generate-note panel. |
+| `/patients/[id]/encounters/[encounterId]` | **Encounter viewer** for a single note/encounter. |
+| `/chat` | RAG chat UI; optional `?patient_id=` preset; handles backend **503** when embeddings missing. |
+| `/docs` | Static page pointing to in-repo `roadmap/` and `reference-docs/`. |
+
+### 4.2 Major components
+
+| Component | Responsibility |
+|-----------|----------------|
+| `AppShell` | Sidebar (Patients, Chat, Docs) on `md+`; mobile menu; sticky **global search** + `ThemeToggle` |
+| `GlobalSearchHeader` | Patient search; on `/patients` ties to **`usePatientsListSearchQuery`** / URL `q`; on other routes Enter navigates to patients with query |
+| `PatientsExplorer` | List UX: sorting, chips, advanced panel, stats fetch |
+| `PatientChartTabs` | Chart tabs, meeting prep, timeline scroll behavior, encounter pagination, codes/sources UI |
+| `MeetingPrepPanel` | Fetches meeting prep; refresh; degraded/cached/model display |
+| `GenerateNotePanel` | Transcript textarea, specialty/session fields, **postGenerateNote** with backend health + note-generation flags |
+| `ThemeToggle` | Dark/light |
+
+### 4.3 API client (`frontend/src/lib/backend.ts`)
+
+Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetchPatients`, `fetchPatient`, `fetchMeetingPrep`, `fetchNote`, `postChat`, `postGenerateNote`, optional **`X-API-Key`** / env base URL for demos.
+
+---
+
+## 5. Data pipeline (offline, implemented)
+
+Under **`data_prep/`**: scripted pipeline to build the clinical corpus (patient selection, note matching, adaptation, validation, manifest). Documented in:
+
+- `data_prep/README.md`
+- `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_CURSOR.md`
+
+This is **not** invoked by the FastAPI server at request time; it produces inputs for `load_corpus`.
+
+---
+
+## 6. Explicitly not in this baseline (planned elsewhere)
+
+Items discussed in roadmaps / Cursor plans but **not** present as first-class features in the surveyed tree:
+
+- **Audio transcription** service (`POST /transcribe`, Whisper/GCP providers) — see `roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12 and the Cursor plan *Transcription and note generation service*.
+- **LangGraph** agent layer for notes (deferred for MVP linear pipeline).
+- **Production auth** (SSO, multi-tenant RBAC) beyond optional shared API key.
+
+---
+
+## 7. Related documents
+
+| Document | Use |
+|----------|-----|
+| `roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
+| `roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
+| `reference-docs/GIT_CHECKPOINTS.md` | Branch/checkpoint workflow |
+| `reference-docs/CLinical_Note_LLM.md` | Clinical note / LLM phases |
+
+---
+
+## Document history
+
+| Date | Change |
+|------|--------|
+| 2026-05-04 | Initial **implemented baseline** inventory (repo survey). |
+| 2026-05-04 | Added **Functional summary** (end-user flows, platform ops, not-implemented). |

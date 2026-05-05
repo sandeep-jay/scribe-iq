@@ -1,6 +1,6 @@
 # Scribe IQ — UI roadmap
 
-This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`roadmap/PHASE1_MASTER_PLAN.md`** (data + backend) and **`reference-docs/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
+This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`reference-docs/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
 
 ---
 
@@ -119,6 +119,111 @@ High-fidelity references (patient overview, CCM enrolled view, patients table, a
 
 ---
 
+## 11. V2 UI Implementation Plan (reference-aligned, data-feasible)
+
+This V2 plan compares current implementation with the attached UI references and gates each upgrade by current API/data support.
+
+### 11.1 Data feasibility assessment (current backend contracts)
+
+**Directly feasible now (no backend schema change):**
+- Patients table visual upgrade: row density, avatar treatment, action affordances, token chips that map to existing filters.
+- Global + local search UX polish using existing patient fields (`name`, `external_id`, `last_specialty`, `last_session_date`, `note_count`).
+- Patient dashboard composition changes using existing payloads from `GET /patients/{id}` (`metadata`, `notes`, `longitudinal_medication_hints`, `latest_longitudinal`).
+- Encounter view hierarchy polish using existing `GET /notes/{id}` (`structured_note`, `entity_payload`, `longitudinal_context`).
+- Meeting-prep states/copy polish using existing `GET /patients/{id}/meeting-prep` (`degraded`, `cached`, `model`, `generated_at`).
+
+**Partially feasible (UI can mock, but data quality/meaning is weak):**
+- “Risk / eligibility / care program / open tasks” dashboard cards can be shown from synthetic metadata, but clinical semantics are not standardized yet.
+- “Active medications” can be inferred from longitudinal hints; this is not a medication reconciliation source of truth.
+- Advanced filters like insurer/status/reason/room can render UI controls, but most are not first-class indexed fields in `/patients` yet.
+
+**Not truly feasible yet (needs backend/domain expansion):**
+- Real task/worklist pipelines (assigned-to-me, due dates, completion state machine).
+- Operational encounter-flow fields (room, staff queue position, waiting-time telemetry) as trusted structured data.
+- Full interaction timeline/workflow authoring (CRM-like event log with persistence, ownership, audit semantics).
+
+### 11.2 V2 scope (what we implement now)
+
+1. **Patients Explorer parity (reference-inspired header + filters)**
+   - Add top tokenized filter bar and keyword/filter popover pattern.
+   - Keep URL-backed search as source of truth (`?q=`), avoid duplicate global/local behavior.
+   - Preserve current sorting and chips while improving visual hierarchy.
+
+2. **Advanced Search mode (left rail pattern)**
+   - Add optional advanced mode with a left filter rail (recent/saved cues + field stack).
+   - Wire only to fields we currently have confidence in (`name`, `external_id`, specialty text, date range over `last_session_date`, longitudinal/note-count chips).
+   - Clearly label non-backed controls as “demo filter” until backend support exists.
+
+3. **Patient chart V2 composition**
+   - Recompose read view into carded dashboard sections (summary strip, clinical center, utility side column).
+   - Keep timeline + encounters as canonical clinical history artifacts; do not duplicate conflicting summaries.
+   - Maintain current sticky/scroll behavior: stable app rail, scrollable patient content region.
+
+4. **Encounter workspace V2 polish**
+   - Strengthen section grouping (HPI, vitals, exam/assessment/plan) from existing structured payloads.
+   - Improve specialty/date prominence and source traceability panels without inventing unsupported data fields.
+
+5. **System-level consistency pass**
+   - Unify chip/badge styles, action iconography, and spacing density across patients/chart/encounter surfaces.
+   - Keep dark-mode and responsive behavior aligned with current shell constraints.
+
+### 11.3 Defer-to-V3 items (backend/data prerequisites)
+
+- True care-management work queues and ownership semantics.
+- Rich operational visit-state dashboards (room/staff/wait-time/order pipelines).
+- Structured interaction-history persistence beyond current note/longitudinal model.
+
+### 11.4 Acceptance checks for V2
+
+- Route parity: `/patients`, `/patients/[id]`, `/patients/[id]/encounters/[encounterId]` remain functional.
+- No regression in global patient search behavior and URL sync.
+- UI states explicitly distinguish **supported clinical data** vs **demo/inferred** chips/cards.
+- Build/typecheck pass before merge.
+
+---
+
+## 12. Transcription and note generation service (product + backend alignment)
+
+This section mirrors the **Cursor plan** *Transcription and note generation service* (same repo’s implementation intent: ASR behind FastAPI, transcript in **Generate note** flow, existing LLM note path). It is here so roadmap readers see **UI, data flow, and vendor options** in one place.
+
+### 12.1 Two capabilities, one demo story
+
+| Capability | Role | UI touchpoint |
+|------------|------|----------------|
+| **Transcription (ASR)** | Audio (or finalized chunks) → **plain transcript** (optional segments, language). | **Generate note** panel: file upload, optional mic **record → stop → transcribe**, optional chunked/streaming-oriented session UX. |
+| **Note generation** | **Clinician-edited** transcript + existing encounter/specialty context → structured note via current backend/LLM. | Same panel after edit; errors must read as **note** failures, not ASR failures. |
+
+**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `reference-docs/CLinical_Note_LLM.md`).
+
+### 12.2 Batch vs streaming-oriented ingestion (both in scope for planning)
+
+- **Batch:** single upload → one transcription job (simplest path for demos).
+- **Streaming-oriented:** either **record-stop → one blob** (reuses batch endpoint) or **session + chunks → finalize** on the server under the same duration/byte caps; UI should distinguish **receiving audio**, **transcribing**, and **final text**.
+
+### 12.3 Provider matrix (config-driven)
+
+| Provider | Env-style flag | Batch | True partial streaming | Notes |
+|----------|------------------|-------|-------------------------|--------|
+| OpenAI Whisper API | `api` (default) | Yes | No (finalize-only) | Fastest integration; good for CI/demo. |
+| Local `faster-whisper` | `local` | Yes | No | Optional dependency group; dev/offline. |
+| **GCP Speech-to-Text (v2)** | `gcp` | Yes (sync short; async + GCS for longer jobs) | Yes (bidirectional streaming, interim/final) | Optional; use for **live partial** captions and Google-cloud-native stacks. |
+
+**GCP (summary):** service account or ADC (`GOOGLE_APPLICATION_CREDENTIALS` / workload identity), `roles/speech.client`, project + region + model/recognizer config; verify **pricing and quotas** at implementation time (`https://cloud.google.com/speech-to-text/pricing`). Prefer shipping **Whisper batch → GCP batch → GCP streaming** to limit integration risk.
+
+### 12.4 UX and trust requirements
+
+- Show **provider + model** (when known) and elapsed time for ASR; keep **backend health** gating consistent with meeting-prep / LLM patterns.
+- **Never conflate** transcription errors with note-generation (LLM) errors—copy and toasts should name the stage (`pipeline_stage`-style clarity).
+- **Non-goals (near term):** sub-200 ms word-level captions as a hard requirement without a streaming-native provider; production diarization guarantees (optional later + honest labeling).
+
+### 12.5 Exit criteria (when this slice is “done” for the roadmap)
+
+- Transcript can be produced from **upload** and from **mic stop** without breaking the existing generate-note path.
+- Oversize / over-duration audio rejected with clear validation messaging.
+- Optional GCP path documented in `backend/.env.example` when implemented; UI unchanged aside from surfaced provider metadata.
+
+---
+
 ## Document history
 
 | Date | Change |
@@ -126,4 +231,7 @@ High-fidelity references (patient overview, CCM enrolled view, patients table, a
 | 2026-05-04 | Initial UI roadmap: phases A–D, principles, out of scope, open decisions. |
 | 2026-05-04 | Phase A closed: sidebar + `/docs`, top search/user chrome, patient anchors (see repo history). |
 | 2026-05-04 | Phases B–D implemented on branch `feature/ui-roadmap-bcd`: patients findability, chart rail + month timeline, encounter workspace shell. |
+| 2026-05-04 | Added **V2 UI Implementation Plan** with data-feasibility gates from current backend contracts and reference-screen comparison. |
+| 2026-05-04 | Added **§12 Transcription and note generation service** (ASR + note path, batch/streaming UX, OpenAI / local / GCP matrix, trust/exit criteria). |
+| 2026-05-04 | Intro cross-link to **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (implemented inventory). |
 

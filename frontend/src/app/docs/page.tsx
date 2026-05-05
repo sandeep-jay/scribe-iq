@@ -33,6 +33,9 @@ export default function DocsPage() {
       <section className="rounded-xl border border-zinc-200 p-5 text-sm dark:border-zinc-800">
         <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">UI roadmap (Phase A–D)</p>
         <p className="mt-2 text-zinc-600 dark:text-zinc-300">
+          See <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md</code> for a concise inventory of <strong>implemented</strong> API, UI, and database behavior.
+        </p>
+        <p className="mt-2 text-zinc-600 dark:text-zinc-300">
           See <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">roadmap/SCRIBE_IQ_UI_ROADMAP.md</code> for shell, discoverability, patients index, chart depth, and encounter workspace plans.
         </p>
       </section>
