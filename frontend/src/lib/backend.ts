@@ -335,10 +335,17 @@ export type ResponsibleAiInteractionRow = {
   output_preview?: string | null;
 };
 
+export type ResponsibleAiInteractionsPayload = {
+  items: ResponsibleAiInteractionRow[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
 export async function fetchResponsibleAiInteractions(opts: {
   limit?: number;
   offset?: number;
-} = {}): Promise<{ items: ResponsibleAiInteractionRow[]; total: number }> {
+} = {}): Promise<ResponsibleAiInteractionsPayload> {
   const q = new URLSearchParams({
     limit: String(opts.limit ?? 50),
     offset: String(opts.offset ?? 0),
@@ -347,7 +354,7 @@ export async function fetchResponsibleAiInteractions(opts: {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<{ items: ResponsibleAiInteractionRow[]; total: number }>(resp);
+  return wrap<ResponsibleAiInteractionsPayload>(resp);
 }
 
 export async function fetchResponsibleAiInteraction(id: string): Promise<Record<string, unknown>> {

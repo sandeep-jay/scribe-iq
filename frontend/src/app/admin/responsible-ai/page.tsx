@@ -37,11 +37,16 @@ function riskBadge(tier: string) {
   );
 }
 
+const INTERACTIONS_PAGE_SIZE = 25;
+
 export default function ResponsibleAiControlCenterPage() {
   const [health, setHealth] = useState<BackendHealth | null>(null);
   const [metrics, setMetrics] = useState<ResponsibleAiMetricsPayload | null>(null);
   const [rows, setRows] = useState<ResponsibleAiInteractionRow[]>([]);
   const [total, setTotal] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [interactionsBusy, setInteractionsBusy] = useState(false);
+  const [interactionsErr, setInteractionsErr] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -49,16 +54,10 @@ export default function ResponsibleAiControlCenterPage() {
     let cancelled = false;
     (async () => {
       try {
-        const [h, m, list] = await Promise.all([
-          fetchBackendHealth(),
-          fetchResponsibleAiMetrics(),
-          fetchResponsibleAiInteractions({ limit: 50 }),
-        ]);
+        const [h, m] = await Promise.all([fetchBackendHealth(), fetchResponsibleAiMetrics()]);
         if (!cancelled) {
           setHealth(h);
           setMetrics(m);
-          setRows(list.items);
-          setTotal(list.total);
         }
       } catch (e) {
         if (!cancelled) setErr(e instanceof Error ? e.message : "Failed to load admin metrics.");
@@ -68,6 +67,47 @@ export default function ResponsibleAiControlCenterPage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const offset = pageIndex * INTERACTIONS_PAGE_SIZE;
+    setInteractionsBusy(true);
+    setInteractionsErr(null);
+    (async () => {
+      try {
+        const list = await fetchResponsibleAiInteractions({
+          limit: INTERACTIONS_PAGE_SIZE,
+          offset,
+        });
+        if (!cancelled) {
+          setRows(list.items);
+          setTotal(list.total);
+          setExpanded(null);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setRows([]);
+          setInteractionsErr(e instanceof Error ? e.message : "Failed to load interactions.");
+        }
+      } finally {
+        if (!cancelled) setInteractionsBusy(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pageIndex]);
+
+  useEffect(() => {
+    if (total <= 0) return;
+    const offset = pageIndex * INTERACTIONS_PAGE_SIZE;
+    if (offset >= total) setPageIndex(Math.max(0, Math.ceil(total / INTERACTIONS_PAGE_SIZE) - 1));
+  }, [total, pageIndex]);
+
+  const pageStart = total === 0 ? 0 : pageIndex * INTERACTIONS_PAGE_SIZE + 1;
+  const pageEnd = total === 0 ? 0 : Math.min(total, pageIndex * INTERACTIONS_PAGE_SIZE + rows.length);
+  const canPrev = pageIndex > 0 && !interactionsBusy;
+  const canNext = total > 0 && pageIndex * INTERACTIONS_PAGE_SIZE + rows.length < total && !interactionsBusy;
 
   const trust = metrics?.trust_context;
   const ragEnabled =
@@ -186,8 +226,45 @@ export default function ResponsibleAiControlCenterPage() {
       ) : null}
 
       <div>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Recent interactions</h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Total: {total}</p>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Recent interactions</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Total: {total}
+              {total > 0 ? (
+                <span className="text-zinc-500">
+                  {" "}
+                  · Showing{" "}
+                  <span className="tabular-nums font-medium text-zinc-700 dark:text-zinc-200">
+                    {pageStart}–{pageEnd}
+                  </span>
+                </span>
+              ) : null}
+              {interactionsBusy ? <span className="text-zinc-400"> · Loading…</span> : null}
+            </p>
+            {interactionsErr ? (
+              <p className="mt-2 text-xs text-red-600 dark:text-red-400">{interactionsErr}</p>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={!canPrev}
+              onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+              className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={!canNext}
+              onClick={() => setPageIndex((p) => p + 1)}
+              className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            >
+              Next
+            </button>
+          </div>
+        </div>
         <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
           <table className="min-w-full text-left text-sm">
             <thead className="bg-zinc-50 text-xs font-semibold uppercase text-zinc-500 dark:bg-zinc-900/50">
@@ -268,15 +345,55 @@ export default function ResponsibleAiControlCenterPage() {
                   </Fragment>
                 );
               })}
-              {!rows.length && !err ? (
+              {!rows.length && !err && !interactionsBusy && !interactionsErr ? (
                 <tr>
                   <td className="px-3 py-6 text-center text-zinc-500" colSpan={13}>
                     No interactions logged yet.
                   </td>
                 </tr>
               ) : null}
+              {!rows.length && interactionsBusy ? (
+                <tr>
+                  <td className="px-3 py-6 text-center text-zinc-500" colSpan={13}>
+                    Loading interactions…
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+          <span>
+            Page size {INTERACTIONS_PAGE_SIZE}
+            {total > 0 ? (
+              <>
+                {" "}
+                · Page{" "}
+                <span className="tabular-nums font-medium text-zinc-700 dark:text-zinc-200">{pageIndex + 1}</span> of{" "}
+                <span className="tabular-nums font-medium text-zinc-700 dark:text-zinc-200">
+                  {Math.max(1, Math.ceil(total / INTERACTIONS_PAGE_SIZE))}
+                </span>
+              </>
+            ) : null}
+          </span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              disabled={!canPrev}
+              onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+              className="rounded border border-zinc-300 bg-white px-2 py-1 font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={!canNext}
+              onClick={() => setPageIndex((p) => p + 1)}
+              className="rounded border border-zinc-300 bg-white px-2 py-1 font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
