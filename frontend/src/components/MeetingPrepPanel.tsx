@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import Link from "next/link";
+
 import type { MeetingPrepPayload } from "@/lib/backend";
-import { fetchMeetingPrep } from "@/lib/backend";
+import { fetchMeetingPrep, responsibleAiAdminUiEnabled } from "@/lib/backend";
 
 export function MeetingPrepPanel({ patientId }: { patientId: string }) {
   const [data, setData] = useState<MeetingPrepPayload | null>(null);
@@ -92,6 +94,16 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
             Model {data.model} · prompt {data.prompt_version} · {data.cached ? "served from cache" : "freshly generated"} ·{" "}
             {new Date(data.generated_at).toLocaleString()}
           </p>
+          {responsibleAiAdminUiEnabled() && data.ai_audit ? (
+            <p className="text-[11px]">
+              <Link
+                href={`/admin/responsible-ai/${data.ai_audit.interaction_id}`}
+                className="font-medium text-indigo-800 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-950 dark:text-indigo-200"
+              >
+                Why this summary?
+              </Link>
+            </p>
+          ) : null}
         </div>
       ) : null}
     </section>

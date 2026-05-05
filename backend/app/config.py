@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     # Groq-backed GET /patients/{id}/meeting-prep (cached in patient_meeting_prep).
     meeting_prep_enabled: bool = True
 
+    # GET /admin/responsible-ai/* when true (404 when false).
+    responsible_ai_admin_enabled: bool = False
+
 
 _settings: Settings | None = None
 

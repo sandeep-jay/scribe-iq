@@ -67,6 +67,15 @@ class NoteDetail(BaseModel):
     embedding_present: bool
 
 
+class MeetingPrepAiAudit(BaseModel):
+    interaction_id: UUID
+    cached: bool
+    source_fingerprint: str | None = None
+    prompt_version: str
+    source_count: int
+    safety_status: str
+
+
 class CorpusPatientStats(BaseModel):
     domain: str
     total_patients: int
@@ -81,4 +90,5 @@ class MeetingPrepResponse(BaseModel):
     prompt_version: str
     model: str
     degraded: bool = False
+    ai_audit: MeetingPrepAiAudit | None = None
 

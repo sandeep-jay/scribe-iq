@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import chat as chat_routes
 from app.api import note_generate as note_generate_routes
+from app.api import admin_responsible_ai as admin_responsible_ai_routes
 from app.api import notes as notes_routes
 from app.api import patients as patient_routes
 from app.config import cors_origin_list, get_settings
@@ -56,6 +57,7 @@ def create_app() -> FastAPI:
             "llm_provider": settings.llm_provider,
             "note_generation_enabled": settings.note_generation_enabled,
             "meeting_prep_enabled": settings.meeting_prep_enabled,
+            "responsible_ai_admin_enabled": settings.responsible_ai_admin_enabled,
             "api_auth_configured": key_set,
         }
 
@@ -63,6 +65,8 @@ def create_app() -> FastAPI:
     application.include_router(chat_routes.router)
     application.include_router(note_generate_routes.router)
     application.include_router(notes_routes.router)
+    if settings.responsible_ai_admin_enabled:
+        application.include_router(admin_responsible_ai_routes.router)
     return application
 
 

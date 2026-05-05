@@ -35,6 +35,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const patientsActive = pathname === "/patients" || pathname.startsWith("/patients/");
   const chatActive = pathname.startsWith("/chat");
   const docsActive = pathname.startsWith("/docs");
+  const adminRaActive = pathname.startsWith("/admin/responsible-ai");
+  const showResponsibleAiAdmin = process.env.NEXT_PUBLIC_SCRIBE_ADMIN_UI === "true";
 
   const sidebarNav = (
     <nav className="flex flex-col gap-1">
@@ -47,6 +49,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Link href="/docs" className={navLinkClass(docsActive)} onClick={closeMobile}>
         Docs
       </Link>
+      {showResponsibleAiAdmin ? (
+        <Link
+          href="/admin/responsible-ai"
+          className={navLinkClass(adminRaActive)}
+          onClick={closeMobile}
+        >
+          Responsible AI
+        </Link>
+      ) : null}
     </nav>
   );
 

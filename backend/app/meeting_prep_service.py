@@ -141,7 +141,8 @@ async def meeting_prep_context_bundle(
 
     note_rows = await conn.fetch(
         """
-        SELECT session_date,
+        SELECT id AS note_id,
+               session_date,
                specialty,
                structured_note->>'summary' AS summary,
                left(structured_note->>'full_note', 1200) AS full_note_excerpt
@@ -165,6 +166,7 @@ async def meeting_prep_context_bundle(
             sd_out = str(sd) if sd is not None else None
         visits.append(
             {
+                "note_id": str(r["note_id"]),
                 "session_date": sd_out,
                 "specialty": r["specialty"],
                 "summary": (r["summary"] or "").strip(),

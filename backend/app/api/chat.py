@@ -5,15 +5,23 @@ from __future__ import annotations
 import json
 import logging
 from typing import Annotated
+from uuid import uuid4
 
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.api.patients import resolve_patient_id
+from app.config import get_settings
 from app.db import get_conn
 from app.embeddings import embed_query_text
 from app.llm import groq_chat_complete
-from app.schemas.api_chat import ChatCitation, ChatRequest, ChatResponse
+from app.responsible_ai.audit_logger import insert_ai_interaction
+from app.responsible_ai.hashes import sha256_hex
+from app.responsible_ai.prompt_registry import CHAT_RAG_V1
+from app.responsible_ai.redaction import redact_preview
+from app.responsible_ai.safety_checks import aggregate_safety_status, evaluate_chat
+from app.responsible_ai.source_trace import trace_from_chat_rows
+from app.schemas.api_chat import ChatAuditBlock, ChatCitation, ChatRequest, ChatResponse
 
 logger = logging.getLogger(__name__)
 
@@ -55,9 +63,13 @@ def _lc_block(raw) -> str | None:
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
+    request: Request,
     body: ChatRequest,
     conn: Annotated[asyncpg.Connection, Depends(get_conn)],
 ) -> ChatResponse:
+    settings = get_settings()
+    req_id = (request.headers.get("x-request-id") or "").strip() or str(uuid4())
+
     if body.domain != body.domain.strip() or not body.domain:
         raise HTTPException(status_code=400, detail="Invalid domain.")
 
@@ -180,10 +192,57 @@ async def chat(
     msg_list.append({"role": "user", "content": body.message.strip()})
 
     try:
-        answer = await groq_chat_complete(msg_list)
+        groq_res = await groq_chat_complete(msg_list)
     except RuntimeError as e:
         logger.warning("llm_unavailable %s", e)
         raise HTTPException(status_code=503, detail=str(e)) from e
 
-    return ChatResponse(answer=answer, citations=citations)
+    answer = groq_res.text
+    trace_payload = trace_from_chat_rows(
+        [{"note_id": r["note_id"], "cosine_sim": float(r["cosine_sim"])} for r in rows]
+    )
+    citations_payload = [{"note_id": str(c.note_id), "similarity": c.similarity} for c in citations]
+    safety_flags = evaluate_chat(answer=answer, citations_count=len(citations))
+    safety_status = aggregate_safety_status(safety_flags)
+    sys_hash = sha256_hex(sys_prompt)
+    inp_hash = sha256_hex(body.message.strip())
+    out_hash = sha256_hex(answer)
+    pid_str = str(patient_uuid) if patient_uuid else None
 
+    interaction_id = await insert_ai_interaction(
+        conn,
+        request_id=req_id,
+        interaction_type="chat",
+        patient_id=pid_str,
+        note_id=None,
+        model_provider=settings.llm_provider,
+        model_name=groq_res.model,
+        prompt_version=CHAT_RAG_V1,
+        system_prompt_hash=sys_hash,
+        input_hash=inp_hash,
+        output_hash=out_hash,
+        input_redacted_preview=redact_preview(body.message),
+        output_redacted_preview=redact_preview(answer),
+        retrieved_sources_json=trace_payload,
+        citations_json=citations_payload,
+        safety_flags_json=safety_flags,
+        governance_json={"prompt_version": CHAT_RAG_V1},
+        latency_ms=groq_res.latency_ms,
+        input_tokens=groq_res.prompt_tokens,
+        output_tokens=groq_res.completion_tokens,
+        status="success",
+        error_message=None,
+    )
+
+    return ChatResponse(
+        answer=answer,
+        citations=citations,
+        audit=ChatAuditBlock(
+            interaction_id=interaction_id,
+            model=groq_res.model,
+            prompt_version=CHAT_RAG_V1,
+            source_count=len(citations),
+            safety_status=safety_status,
+            latency_ms=groq_res.latency_ms,
+        ),
+    )

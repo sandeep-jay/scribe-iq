@@ -40,6 +40,13 @@ class StructuredGeneratedNote(BaseModel):
         return data
 
 
+class NoteGenerationAudit(BaseModel):
+    interaction_id: UUID
+    prompt_version: str
+    requires_human_review: bool = True
+    safety_status: str
+
+
 class GenerateNoteRequest(BaseModel):
     patient_id: str = Field(description="Patient UUID string or external_id")
     transcript: str = Field(min_length=1, max_length=200_000)
@@ -62,3 +69,4 @@ class GenerateNoteResponse(BaseModel):
     structured_note: dict[str, Any]
     embedding_written: bool
     replaced_existing: bool
+    audit: NoteGenerationAudit | None = None

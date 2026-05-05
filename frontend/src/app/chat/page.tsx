@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
-import type { ChatCitation } from "@/lib/backend";
-import { apiBase, postChat } from "@/lib/backend";
+import type { ChatAuditBlock, ChatCitation } from "@/lib/backend";
+import { apiBase, postChat, responsibleAiAdminUiEnabled } from "@/lib/backend";
 
 type Role = "user" | "assistant";
 
@@ -23,6 +23,7 @@ function ChatSurface() {
   const [input, setInput] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [lastCit, setLastCit] = useState<ChatCitation[]>([]);
+  const [lastAudit, setLastAudit] = useState<ChatAuditBlock | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +49,7 @@ function ChatSurface() {
       if (patientId) payload.patient_id = patientId;
       const resp = await postChat(payload);
       setLastCit(resp.citations);
+      setLastAudit(resp.audit ?? null);
       setRows((xs) => [...xs, { role: "assistant", text: resp.answer }]);
       setInput("");
     } catch (e) {
@@ -138,6 +140,21 @@ function ChatSurface() {
 
       <aside className="min-w-0 space-y-4 rounded-xl border border-zinc-200 p-4 text-sm dark:border-zinc-800">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Citations</h2>
+        {responsibleAiAdminUiEnabled() && lastAudit ? (
+          <div className="rounded-lg border border-zinc-200 bg-white p-3 text-xs dark:border-zinc-800 dark:bg-zinc-950">
+            <p className="font-semibold text-zinc-800 dark:text-zinc-100">Traceability</p>
+            <p className="mt-1 text-[11px] text-zinc-600 dark:text-zinc-300">
+              Model {lastAudit.model ?? "—"} · {lastAudit.prompt_version} · {lastAudit.source_count} sources ·{" "}
+              {lastAudit.safety_status} · {lastAudit.latency_ms}ms
+            </p>
+            <Link
+              className="mt-2 inline-block font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              href={`/admin/responsible-ai/${lastAudit.interaction_id}`}
+            >
+              Why this answer?
+            </Link>
+          </div>
+        ) : null}
         {lastCit.length === 0 ? (
           <p className="text-zinc-500">Send a prompt to hydrate retrieved excerpts.</p>
         ) : (

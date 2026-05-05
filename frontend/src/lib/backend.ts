@@ -26,6 +26,8 @@ export type BackendHealth = {
   service?: string;
   llm_provider?: string;
   note_generation_enabled?: boolean;
+  meeting_prep_enabled?: boolean;
+  responsible_ai_admin_enabled?: boolean;
   api_auth_configured?: boolean;
 };
 
@@ -63,6 +65,15 @@ export type CorpusPatientStats = {
   total_notes: number;
 };
 
+export type MeetingPrepAiAudit = {
+  interaction_id: string;
+  cached: boolean;
+  source_fingerprint: string | null;
+  prompt_version: string;
+  source_count: number;
+  safety_status: string;
+};
+
 export type MeetingPrepPayload = {
   patient_id: string;
   summary: string;
@@ -72,6 +83,7 @@ export type MeetingPrepPayload = {
   model: string;
   /** True when summary was assembled locally (no Groq or Groq call failed). */
   degraded?: boolean;
+  ai_audit?: MeetingPrepAiAudit | null;
 };
 
 
@@ -121,9 +133,19 @@ export type ChatCitation = {
   external_encounter_id: string | null;
 };
 
+export type ChatAuditBlock = {
+  interaction_id: string;
+  model: string | null;
+  prompt_version: string;
+  source_count: number;
+  safety_status: string;
+  latency_ms: number;
+};
+
 export type ChatResponsePayload = {
   answer: string;
   citations: ChatCitation[];
+  audit?: ChatAuditBlock | null;
 };
 
 export type GenerateNoteRequestPayload = {
@@ -136,12 +158,20 @@ export type GenerateNoteRequestPayload = {
   replace_existing?: boolean;
 };
 
+export type NoteGenerationAudit = {
+  interaction_id: string;
+  prompt_version: string;
+  requires_human_review: boolean;
+  safety_status: string;
+};
+
 export type GenerateNoteResponsePayload = {
   note_id: string;
   external_encounter_id: string;
   structured_note: Record<string, unknown>;
   embedding_written: boolean;
   replaced_existing: boolean;
+  audit?: NoteGenerationAudit | null;
 };
 
 
@@ -228,3 +258,74 @@ export async function postGenerateNote(
   });
   return wrap<GenerateNoteResponsePayload>(resp);
 }
+
+
+export function responsibleAiAdminUiEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_SCRIBE_ADMIN_UI === "true";
+}
+
+export type ResponsibleAiMetricsPayload = {
+  summary: {
+    total_interactions: number;
+    success_rate: number;
+    avg_latency_ms: number;
+    citation_coverage: number;
+    safety_flag_count: number;
+    human_review_required: number;
+  };
+  by_type: Record<string, number>;
+  by_status: Record<string, number>;
+  time_series: Array<{
+    date: string;
+    chat: number;
+    meeting_prep: number;
+    note_generation: number;
+  }>;
+};
+
+export async function fetchResponsibleAiMetrics(): Promise<ResponsibleAiMetricsPayload> {
+  const resp = await fetch(`${apiBase()}/admin/responsible-ai/metrics`, {
+    cache: "no-store",
+    headers: { ...authHeaders() },
+  });
+  return wrap<ResponsibleAiMetricsPayload>(resp);
+}
+
+export type ResponsibleAiInteractionRow = {
+  id: string;
+  request_id: string;
+  interaction_type: string;
+  patient_id: string | null;
+  note_id: string | null;
+  model_provider: string | null;
+  model_name: string | null;
+  prompt_version: string | null;
+  status: string | null;
+  latency_ms: number | null;
+  created_at: string | null;
+};
+
+export async function fetchResponsibleAiInteractions(opts: {
+  limit?: number;
+  offset?: number;
+} = {}): Promise<{ items: ResponsibleAiInteractionRow[]; total: number }> {
+  const q = new URLSearchParams({
+    limit: String(opts.limit ?? 50),
+    offset: String(opts.offset ?? 0),
+  });
+  const resp = await fetch(`${apiBase()}/admin/responsible-ai/interactions?${q}`, {
+    cache: "no-store",
+    headers: { ...authHeaders() },
+  });
+  return wrap<{ items: ResponsibleAiInteractionRow[]; total: number }>(resp);
+}
+
+export async function fetchResponsibleAiInteraction(id: string): Promise<Record<string, unknown>> {
+  const enc = encodeURIComponent(id);
+  const resp = await fetch(`${apiBase()}/admin/responsible-ai/interactions/${enc}`, {
+    cache: "no-store",
+    headers: { ...authHeaders() },
+  });
+  return wrap<Record<string, unknown>>(resp);
+}
+

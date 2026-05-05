@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from typing import Annotated
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.db import get_conn
 from app.config import get_settings
@@ -19,8 +19,15 @@ from app.meeting_prep_service import (
     meeting_prep_context_bundle,
     meeting_prep_messages,
 )
+
+from app.responsible_ai.audit_logger import insert_ai_interaction
+from app.responsible_ai.hashes import sha256_hex
+from app.responsible_ai.redaction import redact_preview
+from app.responsible_ai.safety_checks import aggregate_safety_status, evaluate_meeting_prep
+from app.responsible_ai.source_trace import trace_from_meeting_prep_visits
 from app.schemas.api_patients import (
     CorpusPatientStats,
+    MeetingPrepAiAudit,
     MeetingPrepResponse,
     NotePreview,
     PaginatedPatients,
@@ -236,12 +243,14 @@ async def patient_corpus_stats(
 
 @router.get("/patients/{patient_id}/meeting-prep", response_model=MeetingPrepResponse)
 async def get_meeting_prep(
+    request: Request,
     patient_id: str,
     conn: Annotated[asyncpg.Connection, Depends(get_conn)],
     domain: str = Query(default="clinical"),
     refresh: bool = Query(default=False, description="Force regeneration even if cache is fresh."),
 ) -> MeetingPrepResponse:
     settings = get_settings()
+    req_id = (request.headers.get("x-request-id") or "").strip() or str(uuid4())
     if not settings.meeting_prep_enabled:
         raise HTTPException(
             status_code=403,
@@ -253,6 +262,73 @@ async def get_meeting_prep(
     if bundle is None:
         raise HTTPException(status_code=404, detail="Patient not found")
     fp, facts = bundle
+
+    visits_raw = facts.get("recent_encounters_newest_first") or []
+    visit_ids = [
+        str(v.get("note_id"))
+        for v in visits_raw
+        if isinstance(v, dict) and v.get("note_id")
+    ]
+    trace_payload = trace_from_meeting_prep_visits(list(visits_raw), fingerprint=fp)
+
+    async def _audit_block(
+        *,
+        summary: str,
+        model: str,
+        pv: str,
+        cached: bool,
+        degraded: bool,
+        groq_res,
+        latency_override_ms: int | None,
+    ) -> MeetingPrepAiAudit:
+        flags = evaluate_meeting_prep(summary=summary, visit_note_ids=visit_ids)
+        safety_status = aggregate_safety_status(flags)
+        sta = "degraded" if degraded else "success"
+        inp_hash = sha256_hex(json.dumps(facts, default=str)[:60_000])
+        out_hash = sha256_hex(summary)
+        sys_hash = sha256_hex(f"{MEETING_PREP_PROMPT_VERSION}|meeting_prep_system")
+        lat = latency_override_ms if latency_override_ms is not None else (
+            groq_res.latency_ms if groq_res is not None else 1
+        )
+        itok = groq_res.prompt_tokens if groq_res is not None else None
+        otok = groq_res.completion_tokens if groq_res is not None else None
+        mname = groq_res.model if groq_res is not None else model
+        iid = await insert_ai_interaction(
+            conn,
+            request_id=req_id,
+            interaction_type="meeting_prep",
+            patient_id=str(pid),
+            note_id=None,
+            model_provider=settings.llm_provider,
+            model_name=mname,
+            prompt_version=pv,
+            system_prompt_hash=sys_hash,
+            input_hash=inp_hash,
+            output_hash=out_hash,
+            input_redacted_preview=redact_preview(json.dumps(facts, default=str)[:8000]),
+            output_redacted_preview=redact_preview(summary),
+            retrieved_sources_json=trace_payload,
+            citations_json=None,
+            safety_flags_json=flags,
+            governance_json={
+                "cached": cached,
+                "source_fingerprint": fp,
+                "degraded": degraded,
+            },
+            latency_ms=lat,
+            input_tokens=itok,
+            output_tokens=otok,
+            status=sta,
+            error_message=None,
+        )
+        return MeetingPrepAiAudit(
+            interaction_id=iid,
+            cached=cached,
+            source_fingerprint=fp,
+            prompt_version=pv,
+            source_count=len(visit_ids),
+            safety_status=safety_status,
+        )
 
     if not refresh:
         cached = await conn.fetchrow(
@@ -266,6 +342,16 @@ async def get_meeting_prep(
         )
         if cached and cached["source_fingerprint"] == fp:
             mdl = str(cached["model"] or "")
+            degraded = mdl == "deterministic-fallback"
+            ai_audit = await _audit_block(
+                summary=cached["summary_text"],
+                model=cached["model"],
+                pv=cached["prompt_version"],
+                cached=True,
+                degraded=degraded,
+                groq_res=None,
+                latency_override_ms=1,
+            )
             return MeetingPrepResponse(
                 patient_id=pid,
                 summary=cached["summary_text"],
@@ -273,16 +359,19 @@ async def get_meeting_prep(
                 cached=True,
                 prompt_version=cached["prompt_version"],
                 model=cached["model"],
-                degraded=mdl == "deterministic-fallback",
+                degraded=degraded,
+                ai_audit=ai_audit,
             )
 
     log = logging.getLogger(__name__)
     groq_key = (settings.groq_api_key or "").strip()
     degraded = False
+    groq_res = None
     if groq_key:
         try:
             msgs = meeting_prep_messages(facts)
-            summary = await groq_chat_complete(msgs, temperature=0.2, max_tokens=900)
+            groq_res = await groq_chat_complete(msgs, temperature=0.2, max_tokens=900)
+            summary = groq_res.text
             model = settings.groq_chat_model
             pv = MEETING_PREP_PROMPT_VERSION
         except Exception as e:
@@ -322,6 +411,15 @@ async def get_meeting_prep(
         pid,
     )
     assert row2 is not None
+    ai_audit = await _audit_block(
+        summary=summary,
+        model=model,
+        pv=pv,
+        cached=False,
+        degraded=degraded,
+        groq_res=groq_res,
+        latency_override_ms=None,
+    )
     return MeetingPrepResponse(
         patient_id=pid,
         summary=summary,
@@ -330,7 +428,9 @@ async def get_meeting_prep(
         prompt_version=pv,
         model=model,
         degraded=degraded,
+        ai_audit=ai_audit,
     )
+
 
 @router.get("/patients/{patient_id}", response_model=PatientDetail)
 async def get_patient(

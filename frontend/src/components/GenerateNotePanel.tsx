@@ -8,7 +8,9 @@ import {
   apiBase,
   fetchBackendHealth,
   postGenerateNote,
+  responsibleAiAdminUiEnabled,
   type BackendHealth,
+  type NoteGenerationAudit,
 } from "@/lib/backend";
 
 type Props = {
@@ -34,6 +36,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<string | null>(null);
+  const [lastAudit, setLastAudit] = useState<NoteGenerationAudit | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -147,6 +150,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
       setLastResult(
         `${mode} note ${resp.note_id} · encounter ${resp.external_encounter_id}${resp.embedding_written ? " · embedding written" : ""}.`,
       );
+      setLastAudit(resp.audit ?? null);
       if (!resp.replaced_existing) {
         setTranscript("");
       }
@@ -245,6 +249,16 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
       {lastResult ? (
         <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900 dark:border-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-100">
           {lastResult}
+        </p>
+      ) : null}
+      {responsibleAiAdminUiEnabled() && lastAudit ? (
+        <p className="text-xs">
+          <Link
+            href={`/admin/responsible-ai/${lastAudit.interaction_id}`}
+            className="font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 dark:text-indigo-300"
+          >
+            Why this draft?
+          </Link>
         </p>
       ) : null}
     </section>

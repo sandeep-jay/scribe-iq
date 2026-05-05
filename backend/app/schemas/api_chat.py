@@ -21,6 +21,15 @@ class ChatCitation(BaseModel):
     external_encounter_id: str | None = None
 
 
+class ChatAuditBlock(BaseModel):
+    interaction_id: UUID
+    model: str | None = None
+    prompt_version: str
+    source_count: int
+    safety_status: str
+    latency_ms: int
+
+
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=16384)
     patient_id: str | None = Field(
@@ -38,3 +47,4 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     citations: list[ChatCitation]
+    audit: ChatAuditBlock | None = None
