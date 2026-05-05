@@ -2,10 +2,20 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 from uuid import UUID
 
 import asyncpg
+
+
+def _jsonb_param(val: Any) -> str | None:
+    """asyncpg encodes JSONB from str; pass serialized JSON for dict/list."""
+    if val is None:
+        return None
+    if isinstance(val, str):
+        return val
+    return json.dumps(val, default=str)
 
 
 async def insert_ai_interaction(
@@ -60,10 +70,10 @@ async def insert_ai_interaction(
         output_hash,
         input_redacted_preview,
         output_redacted_preview,
-        retrieved_sources_json,
-        citations_json,
-        safety_flags_json,
-        governance_json,
+        _jsonb_param(retrieved_sources_json),
+        _jsonb_param(citations_json),
+        _jsonb_param(safety_flags_json),
+        _jsonb_param(governance_json),
         latency_ms,
         input_tokens,
         output_tokens,
