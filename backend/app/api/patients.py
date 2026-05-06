@@ -1,17 +1,26 @@
-"""Patient read endpoints (T4)."""
+"""Patient read endpoints (T4) and chart utilities (meeting prep, stats).
+
+Meeting prep combines cached Postgres summaries with optional Groq generation. Logs use structured
+events: ``INFO`` for cache hits and generation outcomes, ``DEBUG`` for branch decisions, ``WARNING``
+for expected degradations (e.g., Groq unavailable with deterministic fallback). Do not log raw chart text.
+"""
 
 from __future__ import annotations
 
 from typing import Annotated
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import asyncpg
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
+from app.request_id import get_request_id
 from app.db import get_conn
 from app.config import get_settings
 from app.llm import groq_chat_complete
-import logging
+
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 from app.meeting_prep_service import (
     MEETING_PREP_PROMPT_VERSION,
@@ -251,18 +260,35 @@ async def get_meeting_prep(
     refresh: bool = Query(default=False, description="Force regeneration even if cache is fresh."),
 ) -> MeetingPrepResponse:
     settings = get_settings()
-    req_id = (request.headers.get("x-request-id") or "").strip() or str(uuid4())
+    req_id = get_request_id(request)
+    logger.info(
+        "meeting_prep_started",
+        request_id=req_id,
+        domain=domain,
+        refresh=bool(refresh),
+    )
+
     if not settings.meeting_prep_enabled:
+        logger.warning("meeting_prep_disabled", request_id=req_id)
         raise HTTPException(
             status_code=403,
             detail="Meeting prep disabled. Set MEETING_PREP_ENABLED=true in backend/.env.",
         )
 
     pid = await resolve_patient_id(conn, patient_id)
+    logger.debug("meeting_prep_patient_resolved", request_id=req_id, patient_uuid=str(pid))
+
     bundle = await meeting_prep_context_bundle(conn, patient_id=pid, domain=domain)
     if bundle is None:
+        logger.warning("meeting_prep_patient_not_found", request_id=req_id)
         raise HTTPException(status_code=404, detail="Patient not found")
     fp, facts = bundle
+    logger.debug(
+        "meeting_prep_bundle_ok",
+        request_id=req_id,
+        fingerprint=fp,
+        visit_count=len(facts.get("recent_encounters_newest_first") or []),
+    )
 
     visits_raw = facts.get("recent_encounters_newest_first") or []
     visit_ids = [
@@ -332,6 +358,7 @@ async def get_meeting_prep(
         )
 
     if not refresh:
+        logger.debug("meeting_prep_cache_lookup", request_id=req_id, domain=domain)
         cached = await conn.fetchrow(
             """
             SELECT summary_text, source_fingerprint, generated_at, model, prompt_version
@@ -344,6 +371,13 @@ async def get_meeting_prep(
         if cached and cached["source_fingerprint"] == fp:
             mdl = str(cached["model"] or "")
             degraded = mdl == "deterministic-fallback"
+            logger.info(
+                "meeting_prep_cache_hit",
+                request_id=req_id,
+                degraded=degraded,
+                model=mdl,
+            )
+
             ai_audit = await _audit_block(
                 summary=cached["summary_text"],
                 model=cached["model"],
@@ -363,25 +397,44 @@ async def get_meeting_prep(
                 degraded=degraded,
                 ai_audit=ai_audit,
             )
+        elif cached:
+            logger.info(
+                "meeting_prep_cache_stale",
+                request_id=req_id,
+                stored_fp_preview=str(cached["source_fingerprint"])[:16],
+                current_fp_preview=str(fp)[:16],
+            )
+        else:
+            logger.debug("meeting_prep_cache_miss", request_id=req_id, domain=domain)
 
-    log = logging.getLogger(__name__)
     groq_key = (settings.groq_api_key or "").strip()
     degraded = False
     groq_res = None
     if groq_key:
+        logger.debug("meeting_prep_groq_key_present", request_id=req_id)
         try:
             msgs = meeting_prep_messages(facts)
+            logger.debug("meeting_prep_groq_call_started", request_id=req_id, model=settings.groq_chat_model)
             groq_res = await groq_chat_complete(msgs, temperature=0.2, max_tokens=900)
             summary = groq_res.text
             model = settings.groq_chat_model
             pv = MEETING_PREP_PROMPT_VERSION
+            logger.info(
+                "meeting_prep_groq_succeeded",
+                request_id=req_id,
+                model=model,
+                latency_ms=groq_res.latency_ms,
+                prompt_tokens=groq_res.prompt_tokens,
+                completion_tokens=groq_res.completion_tokens,
+            )
         except Exception as e:
-            log.warning("meeting_prep: Groq unavailable (%s); using deterministic fallback", e)
+            logger.warning("meeting_prep_groq_unavailable", request_id=req_id, error=str(e))
             summary = deterministic_meeting_prep_summary(facts)
             model = "deterministic-fallback"
             pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
             degraded = True
     else:
+        logger.info("meeting_prep_no_groq_key", request_id=req_id)
         summary = deterministic_meeting_prep_summary(facts)
         model = "deterministic-fallback"
         pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
@@ -420,6 +473,12 @@ async def get_meeting_prep(
         degraded=degraded,
         groq_res=groq_res,
         latency_override_ms=None,
+    )
+    logger.info(
+        "meeting_prep_regenerated",
+        request_id=req_id,
+        degraded=degraded,
+        interaction_id=ai_audit.interaction_id,
     )
     return MeetingPrepResponse(
         patient_id=pid,

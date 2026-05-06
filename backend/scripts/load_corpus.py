@@ -3,13 +3,17 @@
 Run from repo `backend/`:
 
   pip install -e .
-  python -m scripts.load_corpus [--truncate] [--embed]
+  python -m scripts.load_corpus [--truncate] [--embed] [-v|--verbose]
   # or: scribe-load-corpus [--truncate] [--embed]
+
+``-v`` enables DEBUG checkpoints (counts and paths only). ``-q`` keeps WARNING+.
+Structured logs use :mod:`logging` on stderr; never emit note bodies or transcripts.
 """
 
 from __future__ import annotations
 
 import argparse
+import logging
 import json
 import os
 import re
@@ -23,6 +27,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from psycopg2.extras import Json, execute_batch
 from tqdm import tqdm
+
+log = logging.getLogger(__name__)
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -218,6 +224,21 @@ def load_corpus(*, truncate: bool) -> tuple[int, int]:
     longitudinal_by_encounter = {r["encounter_id"]: r for r in _read_jsonl(longitudinal_path)}
     dialogue_by_encounter = {r["encounter_id"]: r["dialogue_text"] for r in dialogue_rows}
 
+    log.info(
+        "load_corpus_started truncate=%s patients=%s encounters=%s notes=%s dialogues=%s longitudinal_encounters=%s",
+        truncate,
+        len(patients_rows),
+        len(encounters_rows),
+        len(notes_rows),
+        len(dialogue_rows),
+        len(longitudinal_by_encounter),
+    )
+    log.debug(
+        "load_corpus_inputs dialogue_path_exists=%s dialogue_path=%s",
+        dialogue_path.is_file(),
+        dialogue_path,
+    )
+
     conn = psycopg2.connect(_connect_dsn())
     conn.autocommit = False
 
@@ -235,6 +256,7 @@ def load_corpus(*, truncate: bool) -> tuple[int, int]:
 
     with conn.cursor() as cur:
         if truncate:
+            log.debug("load_corpus_truncate branch=destructive_reset tables=notes,patients")
             cur.execute("TRUNCATE TABLE notes CASCADE")
             cur.execute("TRUNCATE TABLE patients CASCADE")
 
@@ -290,7 +312,7 @@ def load_corpus(*, truncate: bool) -> tuple[int, int]:
             )
 
         if orphan_encounters:
-            print(f"WARN: {orphan_encounters} notes lacked matching encounter rows (nullable fields).")
+            log.warning("%s notes lacked matching encounter rows (nullable fields).", orphan_encounters)
 
         sql_note = """
             INSERT INTO notes (
@@ -347,7 +369,7 @@ def embed_notes(*, model: str, dimensions: int | None) -> int:
     load_dotenv(BACKEND_ROOT / ".env")
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        print("SKIP: OPENAI_API_KEY not set — cannot embed.")
+        log.warning("embed_notes_skipped reason=no_openai_api_key")
         return 0
 
     conn = psycopg2.connect(_connect_dsn())
@@ -362,6 +384,9 @@ def embed_notes(*, model: str, dimensions: int | None) -> int:
         )
         rows = cur.fetchall()
     conn.close()
+
+    log.info("embed_notes_selected_rows count=%s model=%s dimensions=%s", len(rows), model, dimensions)
+    log.debug("embed_notes_batching batch_size=32")
 
     client = OpenAI(api_key=api_key)
     batch_size = 32
@@ -399,7 +424,7 @@ def embed_notes(*, model: str, dimensions: int | None) -> int:
                 updated += 1
 
     conn.close()
-    print(f"Embedded {updated} notes (dimensions={embed_dim_expect}).")
+    log.info("embed_notes_complete updated=%s dimensions=%s", updated, embed_dim_expect)
     return updated
 
 
@@ -424,10 +449,27 @@ def main() -> None:
         type=int,
         default=int(os.getenv("OPENAI_EMBEDDINGS_DIMENSIONS") or "1536"),
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable DEBUG logs (counts, paths, truncate branch).",
+    )
+    parser.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="Warnings and errors only.",
+    )
     args = parser.parse_args()
 
+    if args.verbose and args.quiet:
+        parser.error("Cannot combine --verbose and --quiet")
+    level = logging.DEBUG if args.verbose else logging.WARNING if args.quiet else logging.INFO
+    logging.basicConfig(level=level, format="%(levelname)s %(message)s", force=True)
+
     npat, nnote = load_corpus(truncate=args.truncate)
-    print(f"Loaded patients={npat} notes={nnote}")
+    log.info("load_corpus_complete patients=%s notes=%s", npat, nnote)
 
     if args.embed:
         embed_notes(model=args.embed_model, dimensions=args.embed_dim)
