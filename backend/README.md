@@ -14,6 +14,13 @@ cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
 cp .env.example .env   # edit keys when using LLM/embeddings
+
+Logging:
+
+- `LOG_LEVEL` controls verbosity (default: `INFO`).
+- `LOG_JSON=true` switches logs to JSON (recommended in production).
+- Each response includes an `X-Request-ID` header for request correlation.
+
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
