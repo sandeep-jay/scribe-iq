@@ -1,8 +1,8 @@
 # Scribe IQ — implemented baseline (current code)
 
-This document inventories **what exists in the repository today** (application, backend API, database, tooling). It complements **plans and roadmaps** (`roadmap/`, coding agent plans) by describing the **current** behavior only.
+This document inventories **what exists in the repository today** (application, backend API, database, tooling). It complements **plans and roadmaps** (`docs/roadmap/`, coding agent plans) by describing the **current** behavior only.
 
-**Last reviewed:** 2026-05-05 (against the repo tree: `backend/`, `frontend/`, `docker-compose.yml`, `data_prep/`, `reference-docs/`).
+**Last reviewed:** 2026-05-05 (against the repo tree: `backend/`, `frontend/`, `docker-compose.yml`, `data_prep/`, `docs/architecture/`, `docs/reference/`).
 
 ---
 
@@ -24,7 +24,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 
 6. **RAG chat** — **`POST /chat`** runs vector search over stored note embeddings and returns an answer with **citations**. If there are **no embeddings** for the domain, the API returns **503** and the UI should surface that (chat stays optional until embeddings are loaded).
 
-7. **In-app docs pointer** — `/docs` points readers to Markdown under `roadmap/` and `reference-docs/`.
+7. **In-app docs pointer** — `/docs` points readers to Markdown under `docs/roadmap/` and `docs/reference/`.
 
 8. **App shell** — Responsive layout: sidebar (Patients, Chat, Docs) on larger breakpoints, mobile menu, **global patient search** in the header, **dark/light** theme.
 
@@ -41,7 +41,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 
 ### Not in this baseline (planned elsewhere)
 
-- **Audio → transcript** (no `/transcribe`; no Whisper/GCP ASR in app code yet) — see `roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12.
+- **Audio → transcript** (no `/transcribe`; no Whisper/GCP ASR in app code yet) — see `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12.
 - **LangGraph**-style agent orchestration for notes.
 - **Enterprise SSO / multi-tenant RBAC** beyond the optional shared API secret.
 
@@ -54,10 +54,10 @@ Short functional read of the baseline; sections below spell out routes, files, a
 | `frontend/` | Next.js (App Router) UI: patients, chart, encounter, chat, in-app docs pointer. |
 | `backend/` | FastAPI API, Postgres access, LLM/embeddings helpers, Alembic migrations, corpus loader. |
 | `docker-compose.yml` | Local **Postgres 16 + pgvector** (`pgvector/pgvector:pg16`), host port **5433**. |
-| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`. |
+| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`. |
 | `data/` | Staging and corpus outputs (e.g. `data/staging/`); loader reads packaged corpus paths per `backend/scripts/load_corpus.py` and `backend/README.md`. |
 | `scripts/dev_smoke.sh` | Quick Compose + `GET /health` smoke check. |
-| `roadmap/` | Product/UI/master plans (**not** a substitute for this inventory). |
+| `docs/roadmap/` | Product/UI/master plans (**not** a substitute for this inventory). |
 | `docs/design/` | HTML UI mockups (`docs/design/mockups/`) and screenshot references (`docs/design/references/`). |
 
 Root `README.md` summarizes run commands and high-level API behavior.
@@ -161,7 +161,7 @@ Notable environment-driven flags (see `backend/.env.example`):
 | `/patients/[id]` | **Patient chart**: tabs (Read / Sources / Codes & map), meeting prep, timeline + encounter list with **pagination (10)** and **month-bucketed** timeline when visit count is high; generate-note panel. |
 | `/patients/[id]/encounters/[encounterId]` | **Encounter viewer** for a single note/encounter. |
 | `/chat` | RAG chat UI; optional `?patient_id=` preset; handles backend **503** when embeddings missing. |
-| `/docs` | Static page pointing to in-repo `roadmap/` and `reference-docs/`. |
+| `/docs` | Static page pointing to in-repo `docs/roadmap/` and `docs/reference/`. |
 | `/admin/responsible-ai` | **Optional.** Responsible AI Control Center (metrics + interaction list) when **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`** is enabled. |
 | `/admin/responsible-ai/[interactionId]` | **Optional.** Single interaction detail (matches backend admin GET by id). |
 
@@ -190,7 +190,7 @@ Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetc
 Under **`data_prep/`**: scripted pipeline to build the clinical corpus (patient selection, note matching, adaptation, validation, manifest). Documented in:
 
 - `data_prep/README.md`
-- `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`
+- `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`
 
 This is **not** invoked by the FastAPI server at request time; it produces inputs for `load_corpus`.
 
@@ -202,7 +202,7 @@ Corpus builds may emit **generated Markdown** under `data/` (for example `data/c
 
 Items discussed in roadmaps / agent plans but **not** present as first-class features in the surveyed tree:
 
-- **Audio transcription** service (`POST /transcribe`, Whisper/GCP providers) — see `roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12 and the coding agent plan *Transcription and note generation service*.
+- **Audio transcription** service (`POST /transcribe`, Whisper/GCP providers) — see `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` §12 and the coding agent plan *Transcription and note generation service*.
 - **LangGraph** agent layer for notes (deferred for MVP linear pipeline).
 - **Production auth** (SSO, multi-tenant RBAC) beyond optional shared API key.
 
@@ -212,11 +212,11 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 
 | Document | Use |
 |----------|-----|
-| `roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
-| `roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Responsible AI Control Center product/engineering plan (see **status** at top of that file) |
-| `roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
-| `reference-docs/GIT_CHECKPOINTS.md` | Branch/checkpoint workflow |
-| `reference-docs/CLinical_Note_LLM.md` | Clinical note / LLM phases |
+| `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
+| `docs/roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Responsible AI Control Center product/engineering plan (see **status** at top of that file) |
+| `docs/roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
+| `docs/reference/GIT_CHECKPOINTS.md` | Branch/checkpoint workflow |
+| `docs/reference/CLinical_Note_LLM.md` | Clinical note / LLM phases |
 | `docs/README.md` | Documentation map (roadmaps + references + archives) |
 | `docs/archive/README.md` | Superseded long prompts / duplicate guides |
 

@@ -1,4 +1,4 @@
-> **Archived (2026-05-05).** Superseded by **`reference-docs/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`** and **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only.
+> **Archived (2026-05-05).** Superseded by **`docs/reference/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`** and **`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only.
 
 ---
 

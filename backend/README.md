@@ -1,6 +1,6 @@
 # Scribe-IQ Backend
 
-FastAPI service for the clinical RAG demo. See [`../roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`](../roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md).
+FastAPI service for the clinical RAG demo. See [`../docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`](../docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md).
 
 ## Setup
 
@@ -87,7 +87,7 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 
 - **Migration:** `20260505_003` → table **`ai_interactions`** (run `alembic upgrade head`).
 - **Env:** `RESPONSIBLE_AI_ADMIN_ENABLED=true` registers **`GET /admin/responsible-ai/*`** (metrics, interactions list/detail, safety-flags, model-usage) and sets **`responsible_ai_admin_enabled`** on **`GET /health`**. When `false`, admin routes are omitted (**404**).
-- **Wiring:** `POST /chat`, `GET /patients/{id}/meeting-prep`, and `POST /notes/generate` write audit rows via `app/responsible_ai/` and may return **`audit` / `ai_audit`** metadata. Full inventory: **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**.
+- **Wiring:** `POST /chat`, `GET /patients/{id}/meeting-prep`, and `POST /notes/generate` write audit rows via `app/responsible_ai/` and may return **`audit` / `ai_audit`** metadata. Full inventory: **`docs/architecture/IMPLEMENTED_BASELINE.md`**.
 
 ## RAG chat status
 

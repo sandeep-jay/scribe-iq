@@ -7,28 +7,29 @@ Start here for **human-maintained** specs, roadmaps, and archives. Generated cor
 | Topic | Location |
 |--------|-----------|
 | Run / demo overview | [README.md](../README.md) |
-| **As-built inventory** (API, schema, flags) | [reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md](../reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md) |
-| Corpus build (canonical brief) | [reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md](../reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md) |
+| Architecture / current narrative | [architecture/CURRENT.md](architecture/CURRENT.md) |
+| **As-built inventory** (API, schema, flags) | [architecture/IMPLEMENTED_BASELINE.md](architecture/IMPLEMENTED_BASELINE.md) |
+| Corpus build (canonical brief) | [reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md](reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md) |
 | Data prep commands | [data_prep/README.md](../data_prep/README.md) |
 | Backend notes | [backend/README.md](../backend/README.md) |
 | Frontend notes | [frontend/README.md](../frontend/README.md) |
 | Design (mockups + screenshots) | [design/README.md](design/README.md) |
 
-## Roadmaps (`roadmap/`)
+## Roadmaps (`docs/roadmap/`)
 
-- [PHASE1_MASTER_PLAN.md](../roadmap/PHASE1_MASTER_PLAN.md) — architecture / Phase 1 framing (see banner for **current** vs historical paths)
-- [SCRIBE_IQ_UI_ROADMAP.md](../roadmap/SCRIBE_IQ_UI_ROADMAP.md) — UI and related product surface
-- [SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](../roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) — Responsible AI Control Center
-- [SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](../roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) — v1 checklist (status refreshed against baseline)
+- [PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) — architecture / Phase 1 framing (see banner for **current** vs historical paths)
+- [SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) — UI and related product surface
+- [SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) — Responsible AI Control Center
+- [SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) — v1 checklist (status refreshed against baseline)
 
-## Reference docs (`reference-docs/`)
+## Reference docs (`docs/reference/`)
 
 Long-form design and engineering references that are still **current**, including:
 
-- [Clinical_Note_LLM.md](../reference-docs/Clinical_Note_LLM.md), [SCRIBE_IQ_DESIGN_PHASE1.md](../reference-docs/SCRIBE_IQ_DESIGN_PHASE1.md)
-- [SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md](../reference-docs/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md)
-- [CLINICAL_LAKEHOUSE_PROPOSAL_V2.md](../reference-docs/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md) — architectural proposal (historical context; see banner)
-- [GIT_CHECKPOINTS.md](../reference-docs/GIT_CHECKPOINTS.md)
+- [Clinical_Note_LLM.md](reference/Clinical_Note_LLM.md), [SCRIBE_IQ_DESIGN_PHASE1.md](reference/SCRIBE_IQ_DESIGN_PHASE1.md)
+- [SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md](reference/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md)
+- [CLINICAL_LAKEHOUSE_PROPOSAL_V2.md](reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md) — architectural proposal (historical context; see banner)
+- [GIT_CHECKPOINTS.md](reference/GIT_CHECKPOINTS.md)
 
 ## Archive (`docs/archive/`)
 

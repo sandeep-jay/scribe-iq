@@ -1,4 +1,4 @@
-> **Archived (2026-05-05).** Superseded by **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only. See **`docs/history/EVOLUTION.md`**.
+> **Archived (2026-05-05).** Superseded by **`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only. See **`docs/history/EVOLUTION.md`**.
 
 ---
 
@@ -63,7 +63,7 @@ scribe-iq/
       manifest.json
       audit_report.md
       dataset_card.md
-  roadmap/
+  docs/roadmap/
     CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
 ```
 
