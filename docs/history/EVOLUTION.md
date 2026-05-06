@@ -4,8 +4,8 @@ This file summarizes **layout and documentation** evolution so newcomers are not
 
 ## Corpus and lakehouse lineage
 
-1. **Early-phase lakehouse-oriented tooling** was proposed and documented in **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`** and older **`docs/roadmap/PHASE1_MASTER_PLAN.md`** sections that referenced a **`lakehouse/`** script tree.
-2. **Current canonical offline builder** for the demo corpus is **`data_prep/`** (see root **`README.md`** and **`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**). Scripts live under `data_prep/scripts/` with supporting README text.
+1. **Early-phase lakehouse-oriented tooling** was proposed and documented in **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`** and older **`docs/roadmap/PHASE1_MASTER_PLAN.md`** sections that referenced a **`lakehouse/`** script tree.
+2. **Current canonical offline builder** for the demo corpus is **`data_prep/`** (see root **`README.md`** and **`docs/reference/corpus_offline_pipeline_v2_brief.md`**). Scripts live under `data_prep/scripts/` with supporting README text.
 3. **Optional local archive:** **`lakehouse-old/`** may exist on a developer machine (often gitignored). It is **not** the supported path for new work.
 
 ## Documentation hygiene (2026-05)

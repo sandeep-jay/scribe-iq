@@ -1,6 +1,6 @@
 # Scribe IQ — UI roadmap
 
-This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`docs/reference/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
+This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`docs/reference/contributing_git_checkpoints.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
 
 ---
 
@@ -193,7 +193,7 @@ This section mirrors the **agent plan** *Transcription and note generation servi
 | **Transcription (ASR)** | Audio (or finalized chunks) → **plain transcript** (optional segments, language). | **Generate note** panel: file upload, optional mic **record → stop → transcribe**, optional chunked/streaming-oriented session UX. |
 | **Note generation** | **Clinician-edited** transcript + existing encounter/specialty context → structured note via current backend/LLM. | Same panel after edit; errors must read as **note** failures, not ASR failures. |
 
-**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `docs/reference/CLinical_Note_LLM.md`).
+**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `docs/reference/rag_clinical_note_llm_design.md`).
 
 ### 12.2 Batch vs streaming-oriented ingestion (both in scope for planning)
 

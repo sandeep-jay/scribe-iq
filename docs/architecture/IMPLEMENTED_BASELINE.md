@@ -54,7 +54,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 | `frontend/` | Next.js (App Router) UI: patients, chart, encounter, chat, in-app docs pointer. |
 | `backend/` | FastAPI API, Postgres access, LLM/embeddings helpers, Alembic migrations, corpus loader. |
 | `docker-compose.yml` | Local **Postgres 16 + pgvector** (`pgvector/pgvector:pg16`), host port **5433**. |
-| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`. |
+| `data_prep/` | Canonical **corpus build** pipeline (Synthea + notes scripts `01`–`09`); see `data_prep/README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`. |
 | `data/` | Staging and corpus outputs (e.g. `data/staging/`); loader reads packaged corpus paths per `backend/scripts/load_corpus.py` and `backend/README.md`. |
 | `scripts/dev_smoke.sh` | Quick Compose + `GET /health` smoke check. |
 | `docs/roadmap/` | Product/UI/master plans (**not** a substitute for this inventory). |
@@ -190,7 +190,7 @@ Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetc
 Under **`data_prep/`**: scripted pipeline to build the clinical corpus (patient selection, note matching, adaptation, validation, manifest). Documented in:
 
 - `data_prep/README.md`
-- `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`
+- `docs/reference/corpus_offline_pipeline_v2_brief.md`
 
 This is **not** invoked by the FastAPI server at request time; it produces inputs for `load_corpus`.
 
@@ -215,8 +215,8 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 | `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
 | `docs/roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Responsible AI Control Center product/engineering plan (see **status** at top of that file) |
 | `docs/roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
-| `docs/reference/GIT_CHECKPOINTS.md` | Branch/checkpoint workflow |
-| `docs/reference/CLinical_Note_LLM.md` | Clinical note / LLM phases |
+| `docs/reference/contributing_git_checkpoints.md` | Branch/checkpoint workflow |
+| `docs/reference/rag_clinical_note_llm_design.md` | Clinical note / LLM phases |
 | `docs/README.md` | Documentation map (roadmaps + references + archives) |
 | `docs/archive/README.md` | Superseded long prompts / duplicate guides |
 

@@ -9,7 +9,7 @@ Maintained index: **`docs/README.md`** · architecture hub **`docs/architecture/
 ## Data pipeline (canonical)
 
 The **50-patient Synthea + note pool + Groq** corpus builder lives in **`data_prep/`**.
-Implementation brief: **`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**.
+Implementation brief: **`docs/reference/corpus_offline_pipeline_v2_brief.md`**.
 
 ```bash
 cd data_prep
@@ -23,7 +23,7 @@ pip install -r requirements.txt
 Earlier **Project L** staging scripts (AGBonnet, HF classifiers) are preserved under
 **`lakehouse-old/`** for reference only. Do not extend them; use **`data_prep/`** for new work.
 
-Architecture notes: **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**.
+Architecture notes: **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`**.
 
 ## Application MVP
 
@@ -47,7 +47,7 @@ Run frontend: `cd frontend && npm run dev`.
 
 ## Git checkpoints
 
-Before large UI experiments, use a **checkpoint branch** (commands and recorded branch/commit): **`docs/reference/GIT_CHECKPOINTS.md`**.
+Before large UI experiments, use a **checkpoint branch** (commands and recorded branch/commit): **`docs/reference/contributing_git_checkpoints.md`**.
 
 
 ## TDD workflow

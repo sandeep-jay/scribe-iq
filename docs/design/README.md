@@ -4,8 +4,8 @@ Visual design references for the web UI: **HTML mockups** (interactive prototype
 
 Canonical written design specs remain Markdown under **`docs/reference/`**:
 
-- [`docs/reference/SCRIBE_IQ_DESIGN_PHASE1.md`](../reference/SCRIBE_IQ_DESIGN_PHASE1.md)
-- [`docs/reference/Clinical_Note_LLM.md`](../reference/Clinical_Note_LLM.md)
+- [`docs/reference/rag_app_phase1_mvp_design.md`](../reference/rag_app_phase1_mvp_design.md)
+- [`docs/reference/rag_clinical_note_llm_design.md`](../reference/rag_clinical_note_llm_design.md)
 
 Documentation map: [`docs/README.md`](../README.md).
 

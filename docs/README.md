@@ -35,24 +35,24 @@ Start here for **human-maintained** specs, roadmaps, and archives. Generated cor
 
 ## Reference docs — corpus / `data_prep/` pipeline
 
-**Execution source of truth for scripts `01`–`09`:** [reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md](reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md)
+**Execution source of truth for scripts `01`–`09`:** [reference/corpus_offline_pipeline_v2_brief.md](reference/corpus_offline_pipeline_v2_brief.md)
 
 Supporting specs:
 
-- [reference/ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md](reference/ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md) — adapt notes + longitudinal context (script `06` contract)
-- [reference/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md](reference/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md) — **appendix** (implementation corrections narrative); canonical runner detail lives in the V2 brief above
+- [reference/data_prep_adapt_notes_longitudinal_design.md](reference/data_prep_adapt_notes_longitudinal_design.md) — adapt notes + longitudinal context (script `06` contract)
+- [archive/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md](archive/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md) — **supersession stub**; merged implementation corrections live in the corpus brief **Appendix** above
 
 ## Reference docs — application design
 
-- [reference/CLinical_Note_LLM.md](reference/CLinical_Note_LLM.md), [reference/SCRIBE_IQ_DESIGN_PHASE1.md](reference/SCRIBE_IQ_DESIGN_PHASE1.md)
+- [reference/rag_clinical_note_llm_design.md](reference/rag_clinical_note_llm_design.md), [reference/rag_app_phase1_mvp_design.md](reference/rag_app_phase1_mvp_design.md)
 
 ## Historical precursor — AGBonnet / “lakehouse” lineage
 
-- [reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md](reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md) — architectural proposal (historical; see banner). Archived runnable precursors: [lakehouse-old/README.md](../lakehouse-old/README.md)
+- [archive/agbonnet_lakehouse_precursor_proposal_v2.md](archive/agbonnet_lakehouse_precursor_proposal_v2.md) — architectural proposal (historical; see banner). Archived runnable precursors: [lakehouse-old/README.md](../lakehouse-old/README.md)
 
 ## Process
 
-- [reference/GIT_CHECKPOINTS.md](reference/GIT_CHECKPOINTS.md) — checkpoint branches before large UI/IA experiments
+- [reference/contributing_git_checkpoints.md](reference/contributing_git_checkpoints.md) — checkpoint branches before large UI/IA experiments
 
 ## Archive (`docs/archive/`)
 
