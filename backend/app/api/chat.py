@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import json
-import logging
+
+import structlog
 from typing import Annotated
 from uuid import uuid4
 
@@ -23,7 +24,7 @@ from app.responsible_ai.safety_checks import aggregate_safety_status, evaluate_c
 from app.responsible_ai.source_trace import trace_from_chat_rows
 from app.schemas.api_chat import ChatAuditBlock, ChatCitation, ChatRequest, ChatResponse
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(tags=["chat"])
 

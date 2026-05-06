@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import json
-import logging
+
+import structlog
 import uuid
 from typing import Annotated
 from uuid import uuid4
@@ -29,7 +30,7 @@ from app.schemas.note_generation import (
     StructuredGeneratedNote,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(tags=["notes"])
 

@@ -11,7 +11,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from app.db import get_conn
 from app.config import get_settings
 from app.llm import groq_chat_complete
-import logging
+
+import structlog
 
 from app.meeting_prep_service import (
     MEETING_PREP_PROMPT_VERSION,
@@ -364,7 +365,7 @@ async def get_meeting_prep(
                 ai_audit=ai_audit,
             )
 
-    log = logging.getLogger(__name__)
+    log = structlog.get_logger(__name__)
     groq_key = (settings.groq_api_key or "").strip()
     degraded = False
     groq_res = None
