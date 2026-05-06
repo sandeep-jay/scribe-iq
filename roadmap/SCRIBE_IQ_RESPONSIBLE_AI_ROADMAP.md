@@ -1,6 +1,6 @@
 # Scribe IQ — Responsible AI Control Center (roadmap)
 
-This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (what exists today), and **`roadmap/PHASE1_MASTER_PLAN.md`** / **`roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
+This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`docs/README.md`** (documentation index), **`roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (what exists today), and **`roadmap/PHASE1_MASTER_PLAN.md`** / **`roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
 
 **Status:** **implemented** in the repository (see **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** for routes, env flags, and schema). Remaining roadmap items (for example a formal review queue table) may still be future work.
 
