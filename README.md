@@ -1,6 +1,7 @@
 # Scribe IQ
 
-Clinical documentation / RAG demo — see **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
+Clinical documentation / RAG demo — start with **`docs/README.md`** (full map) · deep framing in **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
+
 ## Documentation map
 
 Maintained index: **`docs/README.md`** · architecture hub **`docs/architecture/README.md`**. Short evolution timeline: **`docs/history/EVOLUTION.md`**. Superseded drafts: **`docs/archive/`**.
@@ -27,7 +28,7 @@ Architecture notes: **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`
 
 ## Application MVP
 
-After the corpus exists under **`data/clinical_corpus/`**, implement **`backend/`**, **`frontend/`**,
+After the corpus exists under **`data/clinical_corpus_v2/`** (see **`data_prep/README.md`** for build outputs and legacy `clinical_corpus_v1/`), implement **`backend/`**, **`frontend/`**,
 Postgres, and Azure per **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
 
 ## Web app (FastAPI + Next)

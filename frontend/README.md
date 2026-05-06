@@ -18,6 +18,8 @@ npm install
 npm run dev
 ```
 
+Lint and E2E (parity with root README checklist): `npm run lint && npm run test:e2e`.
+
 Open [http://localhost:3000](http://localhost:3000). Configure backend URL and feature flags using [`frontend/.env.example`](./.env.example); authoritative flag inventory lives in [`docs/architecture/IMPLEMENTED_BASELINE.md`](../docs/architecture/IMPLEMENTED_BASELINE.md).
 
 ## Framework reference
