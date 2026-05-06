@@ -198,6 +198,7 @@ What landed (high level):
 
 | Document | Role |
 |----------|------|
+| `docs/README.md` | Documentation index (roadmaps, references, archives) |
 | `reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md` | What is implemented today |
 | `roadmap/SCRIBE_IQ_UI_ROADMAP.md` | Overall UI roadmap |
 | `roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 master plan |
