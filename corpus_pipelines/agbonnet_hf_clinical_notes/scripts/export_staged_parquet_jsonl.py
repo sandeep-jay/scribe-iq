@@ -5,9 +5,9 @@ Export staged corpus Parquet (from manifest) to JSONL under data/staging/.
 One JSON object per line; UTF-8. Reuses the Parquet row order. No DB / Azure.
 
 Usage (repo root):
-    python lakehouse/scripts/export_staged_parquet_jsonl.py
+    python corpus_pipelines/agbonnet_hf_clinical_notes/scripts/export_staged_parquet_jsonl.py
 
-See lakehouse/README.md.
+See corpus_pipelines/agbonnet_hf_clinical_notes/README.md.
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ import pyarrow.parquet as pq
 
 
 def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    return Path(__file__).resolve().parents[3]
 
 
 def _json_val(v: Any) -> Any:

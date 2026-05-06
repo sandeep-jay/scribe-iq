@@ -2,7 +2,7 @@
 """Task 0 — Inspect Hugging Face dataset before Phase 1 (Phase 0).
 
 Usage:
-    cd lakehouse
+    cd corpus_pipelines/agbonnet_hf_clinical_notes
     python -m venv .venv && source .venv/bin/activate
     pip install -r requirements.txt
     python scripts/validate_dataset.py

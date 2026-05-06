@@ -8,7 +8,7 @@ Reads data/staging/manifest.json and the Parquet path in the first split; writes
 
 Model: anaschahid/medical-specialty-classifier (HF transformers, local inference).
 
-See `docs/roadmap/PHASE1_MASTER_PLAN.md` §4.5 and `../README.md` (precursor `lakehouse-old` overview).
+See `docs/roadmap/PHASE1_MASTER_PLAN.md` §4.5 and `../README.md` (see pipeline README).
 
 """
 from __future__ import annotations
@@ -31,7 +31,7 @@ MODEL_ID = "anaschahid/medical-specialty-classifier"
 
 
 def _repo_root_from_script() -> Path:
-    return Path(__file__).resolve().parents[2]
+    return Path(__file__).resolve().parents[3]
 
 
 def _resolve_device(preference: str) -> str:

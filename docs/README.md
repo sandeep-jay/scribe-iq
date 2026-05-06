@@ -2,6 +2,12 @@
 
 Start here for **human-maintained** specs, roadmaps, and archives. Generated corpus outputs may include Markdown under `data/` (see **Generated artifacts** below).
 
+## Reading order (new contributors)
+
+1. [architecture/CURRENT.md](architecture/CURRENT.md) — short “what runs now” spine  
+2. [reference/corpus_offline_pipeline_v2_brief.md](reference/corpus_offline_pipeline_v2_brief.md) — offline corpus / `data_prep/` pipeline source of truth  
+3. [architecture/README.md](architecture/README.md) — architecture hub (baseline + pillar README links)
+
 ## Architecture (current state)
 
 | Topic | Location |
@@ -17,18 +23,19 @@ Start here for **human-maintained** specs, roadmaps, and archives. Generated cor
 | Backend (FastAPI) | [backend/README.md](../backend/README.md) |
 | Frontend (Next.js) | [frontend/README.md](../frontend/README.md) |
 | Offline corpus builder (`data_prep/`) | [data_prep/README.md](../data_prep/README.md) |
-| Archived AGBonnet / precursor (`lakehouse-old/`) | [lakehouse-old/README.md](../lakehouse-old/README.md) |
+| AGBonnet HF clinical notes (`corpus_pipelines/agbonnet_hf_clinical_notes/`) | [corpus_pipelines/agbonnet_hf_clinical_notes/README.md](../corpus_pipelines/agbonnet_hf_clinical_notes/README.md) |
 
 ## Quick links
 
 | Topic | Location |
 |--------|-----------|
 | Run / demo overview | [README.md](../README.md) |
+| Contributor guides (setup + when to update docs) | [guides/README.md](guides/README.md) |
 | Design (mockups + screenshots) | [design/README.md](design/README.md) |
 
 ## Roadmaps (`docs/roadmap/`)
 
-- [PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) — architecture / Phase 1 framing (historical `lakehouse/` paths → lineage; archived scripts: `lakehouse-old/`)
+- [PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) — architecture / Phase 1 framing (historical `lakehouse/` paths → lineage; archived scripts: `corpus_pipelines/agbonnet_hf_clinical_notes/`)
 - [SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) — UI and related product surface
 - [SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) — Responsible AI Control Center
 - [SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) — v1 checklist (status refreshed against baseline)
@@ -48,11 +55,7 @@ Supporting specs:
 
 ## Historical precursor — AGBonnet / “lakehouse” lineage
 
-- [archive/agbonnet_lakehouse_precursor_proposal_v2.md](archive/agbonnet_lakehouse_precursor_proposal_v2.md) — architectural proposal (historical; see banner). Archived runnable precursors: [lakehouse-old/README.md](../lakehouse-old/README.md)
-
-## Process
-
-- [reference/contributing_git_checkpoints.md](reference/contributing_git_checkpoints.md) — checkpoint branches before large UI/IA experiments
+- [reference/agbonnet_lakehouse_precursor_proposal_v2.md](reference/agbonnet_lakehouse_precursor_proposal_v2.md) — architectural proposal (historical; see banner). Archived runnable precursors: [corpus_pipelines/agbonnet_hf_clinical_notes/README.md](../corpus_pipelines/agbonnet_hf_clinical_notes/README.md)
 
 ## Archive (`docs/archive/`)
 
@@ -62,9 +65,9 @@ Superseded prompts and drafts kept for history: [archive/README.md](archive/READ
 
 Short timeline of how layouts and docs evolved: [history/EVOLUTION.md](history/EVOLUTION.md).
 
-## Hygiene work plan
+## Hygiene work plan (completed)
 
-Active checklist for this documentation pass: [WORK_PLAN_DOC_HYGIENE.md](WORK_PLAN_DOC_HYGIENE.md).
+Historical checklist for the 2026-05 documentation pass: [WORK_PLAN_DOC_HYGIENE.md](WORK_PLAN_DOC_HYGIENE.md) (see banner at top of that file). Summary: [history/EVOLUTION.md](history/EVOLUTION.md).
 
 ## Generated artifacts
 

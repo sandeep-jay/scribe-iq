@@ -1,6 +1,6 @@
 # Scribe IQ — UI roadmap
 
-This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`docs/reference/contributing_git_checkpoints.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
+This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), and **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today). **No implementation commitments** are implied by ordering; adjust as priorities shift.
 
 ---
 

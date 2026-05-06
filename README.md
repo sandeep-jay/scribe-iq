@@ -1,6 +1,6 @@
 # Scribe IQ
 
-Clinical documentation / RAG demo — start with **`docs/README.md`** (full map) · deep framing in **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
+Clinical documentation / RAG demo — start with **`docs/README.md`** (full map) · contributor setup in **`docs/guides/README.md`** · deep framing in **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
 
 ## Documentation map
 
@@ -19,12 +19,12 @@ pip install -r requirements.txt
 # … then run scripts 01–09; see data_prep/README.md
 ```
 
-## Archived: `lakehouse-old/`
+## Archived: `corpus_pipelines/agbonnet_hf_clinical_notes/`
 
 Earlier **Project L** staging scripts (AGBonnet, HF classifiers) are preserved under
-**`lakehouse-old/`** for reference only. Do not extend them; use **`data_prep/`** for new work.
+**`corpus_pipelines/agbonnet_hf_clinical_notes/`** for reference only. Do not extend them; use **`data_prep/`** for new work.
 
-Architecture notes: **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`**.
+Architecture notes: **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`**.
 
 ## Application MVP
 
@@ -44,11 +44,6 @@ Run backend: `cd backend && uvicorn app.main:app --reload --host 127.0.0.1 --por
 
 Run frontend: `cd frontend && npm run dev`.
 
-
-
-## Git checkpoints
-
-Before large UI experiments, use a **checkpoint branch** (commands and recorded branch/commit): **`docs/reference/contributing_git_checkpoints.md`**.
 
 
 ## TDD workflow

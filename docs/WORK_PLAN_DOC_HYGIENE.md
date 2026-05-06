@@ -1,8 +1,10 @@
 # Work plan: documentation hygiene, truth repair, and evolution trail
 
-**Branch:** `docs/hygiene-pass`  
+> **Status (completed pass, 2026-05):** The goals below were carried out on `main` (see git history on `docs/hygiene-pass` and follow-up merges). Treat this file as a **historical checklist**, not an active branch plan. For the condensed narrative, see [`docs/history/EVOLUTION.md`](history/EVOLUTION.md).
+
+**Branch (historical):** `docs/hygiene-pass`  
 **Scope:** Documentation and naming only (no application behavior changes in this pass unless a doc fix requires a trivial string in code comments—avoid if possible).  
-**Last updated:** 2026-05-05
+**Last updated:** 2026-05-05 (work plan frozen 2026-05-06)
 
 ---
 
@@ -31,7 +33,7 @@
 - Links or filenames that encode a **vendor assistant** (for example legacy filenames that embed a vendor-specific tool name).
 - Instructions that assume a specific commercial **pair-programming tool**, its config directories, or proprietary rules format.
 
-**Broken reference found on disk (not necessarily tracked):** `lakehouse-old/README.md` may still point at a pipeline document path that does not exist under `docs/reference/`. During this pass, if that README is ever committed or distributed, repoint it to the canonical pipeline brief (today: `docs/reference/corpus_offline_pipeline_v2_brief.md` or its renamed successor—see §5).
+**Broken reference found on disk (not necessarily tracked):** `corpus_pipelines/agbonnet_hf_clinical_notes/README.md` may still point at a pipeline document path that does not exist under `docs/reference/`. During this pass, if that README is ever committed or distributed, repoint it to the canonical pipeline brief (today: `docs/reference/corpus_offline_pipeline_v2_brief.md` or its renamed successor—see §5).
 
 ---
 
@@ -71,8 +73,8 @@
 
 ### PR D3 — Truth repair and roadmap consistency
 
-- `docs/roadmap/PHASE1_MASTER_PLAN.md`: banner + correct **active** corpus path (`data_prep/`), clarify **optional local** `lakehouse-old/` vs obsolete `lakehouse/` naming in prose.
-- `docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`: banner: historical / architectural; active build is `data_prep/`.
+- `docs/roadmap/PHASE1_MASTER_PLAN.md`: banner + correct **active** corpus path (`data_prep/`), clarify **optional local** `corpus_pipelines/agbonnet_hf_clinical_notes/` vs obsolete `lakehouse/` naming in prose.
+- `docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`: banner: historical / architectural; active build is `data_prep/`.
 - `docs/reference/corpus_offline_pipeline_v2_brief.md`: remove or correct any “`lakehouse/` is the live tree” implication; align with README.
 - `docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`: refresh task table **or** mark file as historical with pointer to baseline.
 - `docs/roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md`: reconcile “implemented” with engineering checklist (completed vs open backlog).
