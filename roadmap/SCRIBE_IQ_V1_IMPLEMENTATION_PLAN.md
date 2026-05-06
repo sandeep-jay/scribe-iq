@@ -6,11 +6,14 @@ last_updated: 2026-05-03
 
 # Scribe-IQ V1 Implementation Plan — Chat-first RAG
 
+> **Note (2026-05):** This plan was written as an execution checklist. Task statuses were refreshed against `reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`. For **current** behavior and flags, treat the baseline as authoritative; this file remains useful for mockup links and original v1 intent.
+
+
 **Overview:** Postgres + pgvector; **chat-first** v1; **Groq** chat now with **Azure-ready** abstraction; **one transcript per patient** for encounter demo; **longitudinal context** loaded from staged JSONL (**per encounter**) — **no LLM** to rebuild patient summary on page load; **LLM structured note** only on **new transcript** or **explicit regenerate**; **minimal `structured_note` ingest** + embeddings.
 
 **Design references:**
 
-- Backend / RAG: [`app docs/CLinical_Note_LLM.md`](../app%20docs/CLinical_Note_LLM.md), [`app docs/SCRIBE_IQ_DESIGN_PHASE1.md`](../app%20docs/SCRIBE_IQ_DESIGN_PHASE1.md)
+- Backend / RAG: [`reference-docs/Clinical_Note_LLM.md`](../reference-docs/Clinical_Note_LLM.md), [`reference-docs/SCRIBE_IQ_DESIGN_PHASE1.md`](../reference-docs/SCRIBE_IQ_DESIGN_PHASE1.md)
 - **UI (mandatory layout reference):** static mockups below — Next.js screens should match **structure, hierarchy, and main copy blocks** unless explicitly revised.
 
 ## Task checklist (execution order)
@@ -22,10 +25,10 @@ last_updated: 2026-05-03
 | T2 | Alembic: patients, notes, external ids, longitudinal JSONB + `embedding vector(1536)` (IVF index deferred) | code done — run locally |
 | T3 | Loader + embedding (`scripts.load_corpus`; `--embed` + `OPENAI_API_KEY`) | done (load); embed optional |
 | T4 | Read APIs (`GET /patients`, `/patients/{id}`, `/notes/{id}`) — longitudinal via latest note blob | done |
-| T5 | `POST /chat` RAG + citations + smoke eval | pending |
-| T6 | `POST /notes/generate` + guarded persist | pending |
-| T7 | Frontend: routes + screens per **mockups** (+ `/chat` per Phase1 design) | pending |
-| T8 | Encounter viewer: transcript + note panels per encounter mockup | pending |
+| T5 | `POST /chat` RAG + citations + smoke eval | done (503 until embeddings loaded for domain) |
+| T6 | `POST /notes/generate` + guarded persist | done (flag-gated; see baseline) |
+| T7 | Frontend: routes + screens per **mockups** (+ `/chat` per Phase1 design) | done |
+| T8 | Encounter viewer: transcript + note panels per encounter mockup | done |
 
 ---
 
@@ -66,4 +69,4 @@ Implement with **Tailwind + shadcn/ui** (per design docs); **parity target** is 
 ## Document history
 
 - **2026-05-03:** Filled file (was empty). Added **mandatory mockup-linked** T7/T8 subtasks.
-
+- **2026-05-06:** Refreshed task statuses vs **`SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**; design-doc links now point at **`reference-docs/`**; see **`docs/history/EVOLUTION.md`**.

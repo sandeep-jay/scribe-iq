@@ -1,5 +1,8 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
+> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`). Historical prose below still mentions **`lakehouse/`** as early-phase tooling naming—treat those sections as **design lineage**, not as mandatory filesystem paths today. Optional local remnants may exist under **`lakehouse-old/`** (often gitignored). Documentation map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
+
+
 > **Two projects**
 >
 > | Project | Purpose | Where |

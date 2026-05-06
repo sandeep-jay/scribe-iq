@@ -24,27 +24,26 @@
 
 ```
 scribe-iq/                          ← repo root
-  lakehouse/                        ← EXISTING: proposals, architecture docs
+  reference-docs/                   ← architecture proposals + long-form references
     CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
     ...
 
-  data_prep/                        ← NEW: this pipeline lives here
+  data_prep/                        ← CANONICAL: offline corpus builder for this repo
     scripts/
     utils/
     requirements.txt
     README.md
 
-  data/                             ← shared data dir, outside both
+  data/                             ← shared data dir
     raw/
     staging/
     clinical_corpus/
 
-  backend/                          ← future
-  frontend/                         ← future
+  backend/
+  frontend/
 ```
 
-**Rule:** `lakehouse/` = architecture documentation and proposals (read-only reference).
-`data_prep/` = the actual pipeline that generates the corpus. They do not overlap.
+**Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`reference-docs/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`lakehouse-old/`** directory may exist on some machines and is **not** part of the supported layout.
 
 ---
 
@@ -113,7 +112,7 @@ scribe-iq/
       manifest.json
       audit_report.md
       dataset_card.md
-  lakehouse/
+  reference-docs/
     CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
 ```
 
@@ -1578,12 +1577,11 @@ Scripts 01-05 are idempotent (safe to re-run, they overwrite output).
 | 09 validate | seconds |
 | **Total** | **~2 hours** |
 
-## Relation to lakehouse/
+## Relation to lakehouse-era proposals
 
-`lakehouse/` contains architecture proposals and documentation (read-only).
-`data_prep/` is the implementation. They do not overlap.
-The canonical pipeline is `data_prep/`. Do not create competing scripts in `lakehouse/`.
-```
+**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`reference-docs/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`** and **`docs/history/EVOLUTION.md`**.
+
+Do not recreate a competing **`lakehouse/scripts`** tree for new work.
 
 ---
 

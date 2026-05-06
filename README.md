@@ -1,6 +1,10 @@
 # Scribe IQ
 
 Clinical documentation / RAG demo — see **`roadmap/PHASE1_MASTER_PLAN.md`**.
+## Documentation map
+
+Maintained index of specs and archives: **`docs/README.md`**. Short evolution timeline: **`docs/history/EVOLUTION.md`**. Superseded drafts: **`docs/archive/`**.
+
 
 ## Data pipeline (canonical)
 
