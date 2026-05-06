@@ -32,6 +32,7 @@ Start here for **human-maintained** specs, roadmaps, and archives. Generated cor
 | Run / demo overview | [README.md](../README.md) |
 | Contributor guides (setup + when to update docs) | [guides/README.md](guides/README.md) |
 | Design (mockups + screenshots) | [design/README.md](design/README.md) |
+| README / social showcase images | [assets/showcase/readme/](assets/showcase/readme/) · [assets/showcase/social/og.png](assets/showcase/social/og.png) |
 
 ## Roadmaps (`docs/roadmap/`)
 

@@ -2,6 +2,30 @@
 
 Clinical documentation / RAG demo — start with **`docs/README.md`** (full map) · contributor setup in **`docs/guides/README.md`** · deep framing in **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
 
+## Screenshots
+
+Downsampled PNGs for the README live under **`docs/assets/showcase/readme/`**. Only these showcase exports are versioned in git (full-window captures stay local). The UI is backed by a **synthetic Synthea cohort**—see on-screen labels. A **1200×630** hero crop for social cards is at **`docs/assets/showcase/social/og.png`** (centered on pre-meeting summary + timeline).
+
+### Patient list
+
+![Patient list with cohort stats and filters](docs/assets/showcase/readme/readme-patient-list.png)
+
+### Patient chart
+
+![Patient context, Synthea profile, and chart tabs](docs/assets/showcase/readme/readme-patient-chart.png)
+
+### Pre-meeting summary
+
+![Pre-meeting summary with care timeline](docs/assets/showcase/readme/readme-meeting-prep.png)
+
+### Encounter viewer
+
+![Clinical dialogue alongside structured note](docs/assets/showcase/readme/readme-encounter-viewer.png)
+
+### Responsible AI
+
+![Responsible AI control center](docs/assets/showcase/readme/readme-responsible-ai.png)
+
 ## Documentation map
 
 Maintained index: **`docs/README.md`** · architecture hub **`docs/architecture/README.md`**. Short evolution timeline: **`docs/history/EVOLUTION.md`**. Superseded drafts: **`docs/archive/`**.

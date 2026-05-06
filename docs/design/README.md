@@ -15,3 +15,8 @@ Documentation map: [`docs/README.md`](../README.md).
 |------|------|
 | [`mockups/`](mockups/) | Static HTML prototypes (patient list, chart, encounter, login chrome). Linked from [`docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`](../roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md). |
 | [`references/`](references/) | Screenshot captures used as IA / visual references during iteration (formerly `ui-references/`). |
+
+## Public showcase (repository)
+
+Downsampled images embedded in the repository root [`README.md`](../../README.md) live under [`assets/showcase/readme/`](../assets/showcase/readme/). A **1200×630** Open Graph-style crop is at [`assets/showcase/social/og.png`](../assets/showcase/social/og.png).
+
