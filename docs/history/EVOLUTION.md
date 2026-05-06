@@ -15,7 +15,7 @@ This file summarizes **layout and documentation** evolution so newcomers are not
   - Former **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_AGENT.md`** → **`docs/archive/SCRIBE_IQ_DATA_PIPELINE_AGENT.md`** (v1 prompt)
   - Former **`reference-docs/SCRIBE_IQ_SIMPLIFIED_IMPLEMENTATION_AGENT.md`** → **`docs/archive/SCRIBE_IQ_SIMPLIFIED_IMPLEMENTATION_AGENT.md`**
   - Former **`app docs/SCRIBE_IQ_APP_IMPLEMENTATION_GUIDE.md`** → **`docs/archive/SCRIBE_IQ_APP_IMPLEMENTATION_GUIDE.md`** (duplicate narrative)
-- **`app docs/`** retains **HTML mockups**; duplicate Markdown was removed in favor of **`reference-docs/`**.
+- **`design/mockups/`** holds **HTML mockups**; **`design/references/`** holds PNG screenshots (formerly **`ui-references/`**). Duplicate Markdown was removed in favor of **`reference-docs/`**.
 
 ## Application capabilities
 
