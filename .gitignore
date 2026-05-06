@@ -7,6 +7,9 @@ __pycache__/
 *.py[cod]
 .coverage
 .coverage.*
+.tox/
+.ruff_cache/
+htmlcov/
 
 # Released binary (download from Synthea GitHub releases)
 synthea-with-dependencies.jar

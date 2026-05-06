@@ -63,4 +63,16 @@ Scripts append `data_prep` to `sys.path`, so you may also run
 - `data/staging/*.jsonl` — intermediate artifacts
 - `data/clinical_corpus_v2/` — final JSONL + `manifest.json`, `audit_report.md`, `dataset_card.md` (older runs may still have `clinical_corpus_v1/`)
 
+## Script logging
+
+Most Python scripts support shared CLI logging flags from `utils/cli_logging.py`:
+
+- `-v` / `--verbose` → `DEBUG` checkpoints (branch/source decisions)
+- default → `INFO` milestones (phase starts, counts, output paths)
+- `-q` / `--quiet` → warnings/errors only
+- `--log-json` → JSON lines on stderr
+
+Shell scripts use `[INFO]/[WARN]/[ERROR]` prefixes and write operational logs to stderr.
+Keep logs PHI-safe: do not print note/transcript bodies in routine runs.
+
 Documentation map (repository-wide): [`docs/README.md`](../docs/README.md).

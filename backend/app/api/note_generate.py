@@ -1,4 +1,10 @@
-"""Guarded transcript -> structured_note persistence (T6)."""
+"""Guarded transcript -> structured_note persistence (T6).
+
+Writes are **opt-in** via ``NOTE_GENERATION_ENABLED``. The handler validates structured JSON from Groq,
+persists to ``notes``, optionally backfills embeddings, and writes an ``ai_interactions`` audit row.
+
+Logging: ``INFO`` for milestones; ``DEBUG`` for branch selection and dimensions (no transcript text).
+"""
 
 from __future__ import annotations
 
@@ -7,12 +13,12 @@ import json
 import structlog
 import uuid
 from typing import Annotated
-from uuid import uuid4
 
 import asyncpg
 import asyncpg.exceptions
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from app.request_id import get_request_id
 from app.api.patients import resolve_patient_id
 from app.config import get_settings
 from app.db import get_conn
@@ -100,9 +106,18 @@ async def generate_note(
     conn: Annotated[asyncpg.Connection, Depends(get_conn)],
 ) -> GenerateNoteResponse:
     settings = get_settings()
-    req_id = (request.headers.get("x-request-id") or "").strip() or str(uuid4())
+    req_id = get_request_id(request)
+
+    logger.info(
+        "note_generate_started",
+        request_id=req_id,
+        replace_existing=bool(body.replace_existing),
+        has_external_encounter_id=bool((body.external_encounter_id or "").strip()),
+        transcript_chars=len((body.transcript or "").strip()),
+    )
 
     if not settings.note_generation_enabled:
+        logger.warning("note_generate_disabled", request_id=req_id)
         raise HTTPException(
             status_code=403,
             detail="Note generation disabled. Set NOTE_GENERATION_ENABLED=true in backend/.env for trusted demos.",
@@ -110,22 +125,37 @@ async def generate_note(
 
     patient_uuid = await resolve_patient_id(conn, body.patient_id)
     transcript = body.transcript.strip()
+    logger.debug("note_generate_patient_resolved", request_id=req_id, transcript_chars=len(transcript))
 
     msgs = [
         {"role": "system", "content": NOTE_GEN_SYSTEM_PROMPT},
         {"role": "user", "content": f"Transcript:\n{transcript}"},
     ]
 
+    logger.debug(
+        "note_generate_llm_call_started",
+        request_id=req_id,
+        provider=settings.llm_provider,
+        temperature=0.15,
+    )
     try:
         groq_res = await groq_chat_json_completion(msgs, temperature=0.15)
         raw_json = groq_res.text
         payload = json.loads(raw_json)
         structured = StructuredGeneratedNote.model_validate(payload)
     except (json.JSONDecodeError, RuntimeError, ValueError) as e:
-        logger.warning("note_generation_validation_failed err=%s", e)
+        logger.warning("note_generation_validation_failed", request_id=req_id, error=str(e))
         raise HTTPException(status_code=502, detail=f"LLM structured output rejected: {e}") from e
 
     structured_blob = structured.as_jsonb_obj()
+    logger.info(
+        "note_generate_structured_ok",
+        request_id=req_id,
+        model=groq_res.model,
+        latency_ms=groq_res.latency_ms,
+        prompt_tokens=groq_res.prompt_tokens,
+        completion_tokens=groq_res.completion_tokens,
+    )
     embedding_written = False
     encounter_id = (
         body.external_encounter_id.strip()
@@ -134,6 +164,7 @@ async def generate_note(
     )
 
     if body.replace_existing:
+        logger.debug("note_generate_replace_path", request_id=req_id, encounter_key_set=bool(encounter_id))
         if not encounter_id:
             raise HTTPException(
                 status_code=400,
@@ -161,7 +192,10 @@ async def generate_note(
             encounter_id,
         )
         if not prow:
+            logger.warning("note_generate_replace_missing_row", request_id=req_id)
             raise HTTPException(status_code=404, detail="Note not found for replace_existing.")
+
+        logger.info("note_generate_replace_row_found", request_id=req_id, note_id=str(prow["id"]))
 
         note_id = prow["id"]
         final_encounter = prow["external_encounter_id"]
@@ -176,6 +210,9 @@ async def generate_note(
                 note_id,
             )
             embedding_written = True
+            logger.debug("note_generate_embedding_replace_written", request_id=req_id, note_id=str(note_id))
+        else:
+            logger.debug("note_generate_embedding_replace_skipped", request_id=req_id, note_id=str(note_id))
 
         audit = await _audit_note_row(
             conn,
@@ -188,6 +225,13 @@ async def generate_note(
             settings=settings,
         )
 
+        logger.info(
+            "note_generate_replace_complete",
+            request_id=req_id,
+            note_id=str(note_id),
+            embedding_written=embedding_written,
+            interaction_id=audit.interaction_id,
+        )
         return GenerateNoteResponse(
             note_id=note_id,
             external_encounter_id=str(final_encounter),
@@ -196,6 +240,8 @@ async def generate_note(
             replaced_existing=True,
             audit=audit,
         )
+
+    logger.debug("note_generate_insert_path", request_id=req_id, encounter_key_set=bool(encounter_id))
 
     new_encounter_id = encounter_id or f"generated-{uuid.uuid4()}"
 
@@ -222,7 +268,7 @@ async def generate_note(
             body.session_date,
         )
     except asyncpg.exceptions.UniqueViolationError:
-        logger.info("duplicate encounter id %s", new_encounter_id)
+        logger.warning("note_generate_duplicate_encounter_id", request_id=req_id, encounter_id=new_encounter_id)
         raise HTTPException(
             status_code=409,
             detail=(
@@ -234,6 +280,7 @@ async def generate_note(
     assert ins is not None
     note_id = ins["id"]
     final_encounter = ins["external_encounter_id"]
+    logger.info("note_generate_insert_ok", request_id=req_id, note_id=str(note_id), external_encounter_id=str(final_encounter))
 
     lit = await embed_and_vector_literal(
         compose_note_embed_input(structured_blob, transcript)
@@ -245,6 +292,9 @@ async def generate_note(
             note_id,
         )
         embedding_written = True
+        logger.debug("note_generate_embedding_insert_written", request_id=req_id, note_id=str(note_id))
+    else:
+        logger.debug("note_generate_embedding_insert_skipped", request_id=req_id, note_id=str(note_id))
 
     audit = await _audit_note_row(
         conn,
@@ -255,6 +305,14 @@ async def generate_note(
         structured_blob=structured_blob,
         transcript=transcript,
         settings=settings,
+    )
+
+    logger.info(
+        "note_generate_insert_complete",
+        request_id=req_id,
+        note_id=str(note_id),
+        embedding_written=embedding_written,
+        interaction_id=audit.interaction_id,
     )
 
     return GenerateNoteResponse(

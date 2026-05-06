@@ -20,3 +20,17 @@ def test_auth_required_with_backend_key(monkeypatch, client_with_conn):
 
         ok = tc.get("/admin/responsible-ai/interactions", headers={"Authorization": "Bearer secret-key"})
         assert ok.status_code == 200
+
+
+def test_auth_denial_emits_structured_warning(monkeypatch, client_with_conn, caplog):
+    import logging
+
+    from conftest import FakeConn
+
+    monkeypatch.setenv("BACKEND_API_KEY", "secret-key")
+    caplog.set_level(logging.WARNING)
+    with client_with_conn(FakeConn()) as tc:
+        tc.get("/admin/responsible-ai/interactions")
+    joined = " ".join(r.getMessage() for r in caplog.records)
+    assert "api_key_denied" in joined
+

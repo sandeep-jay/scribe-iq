@@ -1,9 +1,17 @@
 """
-09_validate_corpus.py — run from data_prep/
+09_validate_corpus.py — validate assembled ``clinical_corpus_v2`` JSONL invariants.
+
+Run::
+
+  python data_prep/scripts/09_validate_corpus.py [-v|--verbose]
+
+Writes ``audit_report.md`` beside the corpus. Use ``-v`` for DEBUG checkpoints about
+which input shards exist on disk (boolean flags only — no PHI).
 """
 from __future__ import annotations
 
 
+import argparse
 import sys
 from pathlib import Path as _Path
 
@@ -15,7 +23,13 @@ if str(_DP_ROOT) not in sys.path:
 from collections import Counter
 from pathlib import Path
 
+import logging
+
+from utils.cli_logging import add_logging_arguments, configure_cli_logging, logging_args_from_ns
 from utils.io_utils import load_jsonl
+
+log = logging.getLogger(__name__)
+
 
 def _load_jsonl(path: Path) -> list:
     if not path.exists():
@@ -28,6 +42,19 @@ CORPUS = REPO_ROOT / "data/clinical_corpus_v2"
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Validate clinical_corpus_v2 JSONL bundle.")
+    add_logging_arguments(parser)
+    ns = parser.parse_args()
+    configure_cli_logging(**logging_args_from_ns(ns))
+
+    log.info("corpus_validate_started corpus_dir=%s", CORPUS)
+    log.debug(
+        "corpus_validate_inputs_present patients=%s encounters=%s notes=%s dialogues=%s",
+        (CORPUS / "patients.jsonl").is_file(),
+        (CORPUS / "encounters.jsonl").is_file(),
+        (CORPUS / "notes.jsonl").is_file(),
+        (CORPUS / "dialogues.jsonl").is_file(),
+    )
     patients = list(load_jsonl(CORPUS / "patients.jsonl"))
     encounters = list(load_jsonl(CORPUS / "encounters.jsonl"))
     notes = list(load_jsonl(CORPUS / "notes.jsonl"))
@@ -67,44 +94,46 @@ def main() -> None:
     score_vals = [e["match_score"] for e in encounters]
     avg_score = sum(score_vals) / len(score_vals) if score_vals else 0.0
 
-    print("=" * 55)
-    print("CORPUS AUDIT")
-    print("=" * 55)
-    print("\nSCALE")
-    print(f"  Patients:      {len(patients)}")
-    print(f"  Encounters:    {len(encounters)}")
-    print(f"  Notes:         {len(notes)}")
-    print(f"  Dialogues:     {len(dialogues)}")
-    print(f"  Conditions:    {len(conditions)}")
-    print(f"  Medications:   {len(medications)}")
-    print("\nSHOWCASE")
-    print(f"  Total showcase:             {len(showcase_enc_ids)}")
-    print(f"  Showcase with any dialogue: {len(showcase_with_dlg)}")
-    print(f"  Showcase with ACI dialogue: {len(showcase_aci_dlg)}")
-    print(f"  Showcase with no dialogue:  {len(showcase_no_dlg)}")
-    print("\nSPECIALTY DISTRIBUTION")
+    log.info("=" * 55)
+    log.info("CORPUS AUDIT")
+    log.info("=" * 55)
+    log.info("\nSCALE")
+    log.info(f"  Patients:      {len(patients)}")
+    log.info(f"  Encounters:    {len(encounters)}")
+    log.info(f"  Notes:         {len(notes)}")
+    log.info(f"  Dialogues:     {len(dialogues)}")
+    log.info(f"  Conditions:    {len(conditions)}")
+    log.info(f"  Medications:   {len(medications)}")
+    log.info("\nSHOWCASE")
+    log.info(f"  Total showcase:             {len(showcase_enc_ids)}")
+    log.info(f"  Showcase with any dialogue: {len(showcase_with_dlg)}")
+    log.info(f"  Showcase with ACI dialogue: {len(showcase_aci_dlg)}")
+    log.info(f"  Showcase with no dialogue:  {len(showcase_no_dlg)}")
+    log.info("\nSPECIALTY DISTRIBUTION")
     for spec, count in sorted(specialty_dist.items(), key=lambda x: -x[1]):
-        print(f"  {spec:<30} {count}")
-    print("\nNOTE SOURCES")
+        log.info(f"  {spec:<30} {count}")
+    log.info("\nNOTE SOURCES")
     for src, count in sorted(source_dist.items(), key=lambda x: -x[1]):
-        print(f"  {src:<20} {count}")
-    print("\nMATCH QUALITY")
+        log.info(f"  {src:<20} {count}")
+    log.info("\nMATCH QUALITY")
     if score_vals:
-        print(
+        log.info(
             f"  Average: {avg_score:.3f}  Min: {min(score_vals):.3f}  Max: {max(score_vals):.3f}"
         )
-    print("\nISSUES")
+    if issues:
+        log.warning("corpus_validate_issues_found count=%s", len(issues))
+    log.info("\nISSUES")
     if issues:
         for i in issues:
-            print(f"  ✗ {i}")
+            log.info(f"  ✗ {i}")
     else:
-        print("  (none)")
-    print("\nWARNINGS")
+        log.info("  (none)")
+    log.info("\nWARNINGS")
     if warnings:
         for w in warnings:
-            print(f"  ⚠ {w}")
+            log.info(f"  ⚠ {w}")
     else:
-        print("  (none)")
+        log.info("  (none)")
 
     report_lines = [
         "# Scribe-IQ Corpus Audit Report\n",
@@ -124,7 +153,13 @@ def main() -> None:
         "None\n" if not warnings else "\n".join(f"- {w}" for w in warnings) + "\n",
     ]
     (CORPUS / "audit_report.md").write_text("".join(report_lines), encoding="utf-8")
-    print(f"\n✓ audit_report.md → {CORPUS}")
+    log.info(f"\n✓ audit_report.md → {CORPUS}")
+    log.info(
+        "corpus_validate_succeeded issues=%s warnings=%s patients=%s",
+        len(issues),
+        len(warnings),
+        len(patients),
+    )
 
 
 if __name__ == "__main__":

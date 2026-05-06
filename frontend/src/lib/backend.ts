@@ -1,4 +1,15 @@
-/** FastAPI helpers for server/client components */
+/**
+ * FastAPI helpers for server/client components.
+ *
+ * All network calls go through ``trackedJson`` which:
+ * - adds ``X-Request-ID`` (browser-generated fallback if missing) for correlation with backend logs
+ * - emits structured JSON lines to the console (``logInfo`` / ``logWarn`` / ``logError``)
+ * - intentionally avoids logging request/response bodies (PHI risk)
+ *
+ * Verbosity: set ``NEXT_PUBLIC_LOG_LEVEL=debug`` to also emit ``logDebug`` checkpoints from this module.
+ */
+
+import { logDebug, logError, logInfo, logWarn } from "./logger";
 
 export function apiBase(): string {
   return (
@@ -7,18 +18,100 @@ export function apiBase(): string {
   );
 }
 
+function newRequestId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `fe-${Date.now()}`;
+}
+
+function responseShapeMeta(value: unknown): Record<string, unknown> {
+  if (value === null || value === undefined) return { result_kind: "nullish" };
+  if (Array.isArray(value)) return { result_kind: "array", result_length: value.length };
+  if (typeof value === "object") {
+    const keys = Object.keys(value as object);
+    return {
+      result_kind: "object",
+      result_key_count: keys.length,
+      result_keys_preview: keys.slice(0, 20),
+    };
+  }
+  return { result_kind: typeof value };
+}
+
+function requestPath(url: string): string {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return url;
+  }
+}
+
+async function trackedJson<T>(event: string, url: string, init: RequestInit = {}): Promise<T> {
+  const headers = new Headers(init.headers ?? {});
+  if (!headers.has("X-Request-ID")) headers.set("X-Request-ID", newRequestId());
+  const method = (init.method ?? "GET").toUpperCase();
+  const path = requestPath(url);
+  const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
+  logDebug("api_request_start", { event, method, path, request_id: headers.get("X-Request-ID") });
+  try {
+    const resp = await fetch(url, { ...init, headers });
+    const elapsed =
+      typeof performance !== "undefined"
+        ? Math.round(performance.now() - t0)
+        : Math.round(Date.now() - t0);
+    const requestId = resp.headers.get("x-request-id") ?? headers.get("X-Request-ID");
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => "");
+      logWarn("api_response_error", {
+        event,
+        method,
+        path,
+        status: resp.status,
+        duration_ms: elapsed,
+        request_id: requestId,
+      });
+      throw new Error(`API ${resp.status}: ${text || resp.statusText}`);
+    }
+    logInfo("api_request_ok", {
+      event,
+      method,
+      path,
+      status: resp.status,
+      duration_ms: elapsed,
+      request_id: requestId,
+    });
+    const body = (await resp.json()) as T;
+    logDebug("api_response_parsed", {
+      event,
+      method,
+      path,
+      status: resp.status,
+      duration_ms: elapsed,
+      request_id: requestId,
+      ...responseShapeMeta(body),
+    });
+    return body;
+  } catch (e) {
+    const elapsed =
+      typeof performance !== "undefined"
+        ? Math.round(performance.now() - t0)
+        : Math.round(Date.now() - t0);
+    logError("api_request_failed", {
+      event,
+      method,
+      path,
+      duration_ms: elapsed,
+      error: e instanceof Error ? e.message : String(e),
+    });
+    throw e;
+  }
+}
+
 function authHeaders(): Record<string, string> {
   const key = process.env.NEXT_PUBLIC_SCRIBE_BACKEND_API_KEY?.trim();
   if (!key) return {};
   return { "X-API-Key": key };
-}
-
-async function wrap<T>(resp: Response): Promise<T> {
-  if (!resp.ok) {
-    const text = await resp.text().catch(() => "");
-    throw new Error(`API ${resp.status}: ${text || resp.statusText}`);
-  }
-  return (await resp.json()) as T;
 }
 
 export type BackendHealth = {
@@ -32,11 +125,10 @@ export type BackendHealth = {
 };
 
 export async function fetchBackendHealth(): Promise<BackendHealth> {
-  const resp = await fetch(`${apiBase()}/health`, {
+  return trackedJson<BackendHealth>("health", `${apiBase()}/health`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<BackendHealth>(resp);
 }
 
 export type PatientListItem = {
@@ -177,22 +269,20 @@ export type GenerateNoteResponsePayload = {
 
 export async function fetchCorpusPatientStats(): Promise<CorpusPatientStats> {
   const q = new URLSearchParams({ domain: "clinical" });
-  const resp = await fetch(`${apiBase()}/patients/stats?${q}`, {
+  return trackedJson<CorpusPatientStats>("patients_stats", `${apiBase()}/patients/stats?${q}`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<CorpusPatientStats>(resp);
 }
 
 export async function fetchMeetingPrep(patientId: string, refresh = false): Promise<MeetingPrepPayload> {
   const q = new URLSearchParams({ domain: "clinical" });
   if (refresh) q.set("refresh", "true");
   const enc = encodeURIComponent(patientId);
-  const resp = await fetch(`${apiBase()}/patients/${enc}/meeting-prep?${q}`, {
+  return trackedJson<MeetingPrepPayload>("meeting_prep", `${apiBase()}/patients/${enc}/meeting-prep?${q}`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<MeetingPrepPayload>(resp);
 }
 
 export async function fetchPatients(
@@ -204,28 +294,25 @@ export async function fetchPatients(
     limit: String(opts.limit ?? 200),
     offset: String(opts.offset ?? 0),
   });
-  const resp = await fetch(`${base}/patients?${q}`, {
+  return trackedJson<PaginatedPatients>("patients_list", `${base}/patients?${q}`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<PaginatedPatients>(resp);
 }
 
 export async function fetchPatient(patientId: string): Promise<PatientDetail> {
   const enc = encodeURIComponent(patientId);
-  const resp = await fetch(`${apiBase()}/patients/${enc}`, {
+  return trackedJson<PatientDetail>("patient_detail", `${apiBase()}/patients/${enc}`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<PatientDetail>(resp);
 }
 
 export async function fetchNote(noteId: string): Promise<NoteDetail> {
-  const resp = await fetch(`${apiBase()}/notes/${noteId}`, {
+  return trackedJson<NoteDetail>("note_detail", `${apiBase()}/notes/${noteId}`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<NoteDetail>(resp);
 }
 
 export async function postChat(payload: {
@@ -234,7 +321,7 @@ export async function postChat(payload: {
   conversation?: Array<{ role: "user" | "assistant" | "system"; content: string }>;
   top_k?: number;
 }): Promise<ChatResponsePayload> {
-  const resp = await fetch(`${apiBase()}/chat`, {
+  return trackedJson<ChatResponsePayload>("chat", `${apiBase()}/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -242,13 +329,12 @@ export async function postChat(payload: {
     },
     body: JSON.stringify(payload),
   });
-  return wrap<ChatResponsePayload>(resp);
 }
 
 export async function postGenerateNote(
   body: GenerateNoteRequestPayload,
 ): Promise<GenerateNoteResponsePayload> {
-  const resp = await fetch(`${apiBase()}/notes/generate`, {
+  return trackedJson<GenerateNoteResponsePayload>("notes_generate", `${apiBase()}/notes/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -256,7 +342,6 @@ export async function postGenerateNote(
     },
     body: JSON.stringify(body),
   });
-  return wrap<GenerateNoteResponsePayload>(resp);
 }
 
 
@@ -301,11 +386,10 @@ export type ResponsibleAiMetricsPayload = {
 };
 
 export async function fetchResponsibleAiMetrics(): Promise<ResponsibleAiMetricsPayload> {
-  const resp = await fetch(`${apiBase()}/admin/responsible-ai/metrics`, {
+  return trackedJson<ResponsibleAiMetricsPayload>("admin_metrics", `${apiBase()}/admin/responsible-ai/metrics`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<ResponsibleAiMetricsPayload>(resp);
 }
 
 export type ResponsibleAiLatencyDisplay = {
@@ -350,19 +434,21 @@ export async function fetchResponsibleAiInteractions(opts: {
     limit: String(opts.limit ?? 50),
     offset: String(opts.offset ?? 0),
   });
-  const resp = await fetch(`${apiBase()}/admin/responsible-ai/interactions?${q}`, {
-    cache: "no-store",
-    headers: { ...authHeaders() },
-  });
-  return wrap<ResponsibleAiInteractionsPayload>(resp);
+  return trackedJson<ResponsibleAiInteractionsPayload>(
+    "admin_interactions",
+    `${apiBase()}/admin/responsible-ai/interactions?${q}`,
+    {
+      cache: "no-store",
+      headers: { ...authHeaders() },
+    },
+  );
 }
 
 export async function fetchResponsibleAiInteraction(id: string): Promise<Record<string, unknown>> {
   const enc = encodeURIComponent(id);
-  const resp = await fetch(`${apiBase()}/admin/responsible-ai/interactions/${enc}`, {
+  return trackedJson<Record<string, unknown>>("admin_interaction_detail", `${apiBase()}/admin/responsible-ai/interactions/${enc}`, {
     cache: "no-store",
     headers: { ...authHeaders() },
   });
-  return wrap<Record<string, unknown>>(resp);
 }
 

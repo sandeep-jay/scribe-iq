@@ -1,5 +1,10 @@
 'use client';
 
+/**
+ * Encounter note generation UI. Errors use structured ``logError`` with a stable
+ * ``feature_area`` so support can filter console exports without scraping user text.
+ */
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -12,6 +17,7 @@ import {
   type BackendHealth,
   type NoteGenerationAudit,
 } from "@/lib/backend";
+import { logError } from "@/lib/logger";
 
 type Props = {
   patientId: string;
@@ -49,6 +55,11 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
         setHealth(h);
       } catch (e) {
         if (!alive) return;
+        logError("generate_note_health_load_failed", {
+          feature_area: "generate_note",
+          patient_id: patientId,
+          error: (e as Error).message,
+        });
         setHealth(null);
         setLoadError((e as Error).message);
       }
@@ -65,7 +76,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
       if (usingIdle) window.cancelIdleCallback(sched as number);
       else window.clearTimeout(sched as number);
     };
-  }, []);
+  }, [patientId]);
 
   useEffect(() => {
     setExternalEncounterId(seedEncounterId ?? "");
@@ -166,6 +177,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
       }
       router.refresh();
     } catch (e) {
+      logError("generate_note_submit_failed", { error: (e as Error).message });
       setError((e as Error).message);
     } finally {
       setBusy(false);
