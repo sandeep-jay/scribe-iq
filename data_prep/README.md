@@ -5,6 +5,8 @@ Generates the **50-patient** demo corpus under `data/clinical_corpus_v2/`. Spec:
 
 Archived exploratory scripts live in **`../lakehouse-old/`**.
 
+**Related documentation:** execution brief [`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`](../docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md) (source of truth for scripts `01`–`09`); adapt-notes design [`docs/reference/ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md`](../docs/reference/ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md); lineage [`docs/history/EVOLUTION.md`](../docs/history/EVOLUTION.md); archived agent prompts [`docs/archive/`](../docs/archive/).
+
 ## Prerequisites
 
 - Python 3.11+

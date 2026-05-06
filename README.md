@@ -3,7 +3,7 @@
 Clinical documentation / RAG demo — see **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
 ## Documentation map
 
-Maintained index of specs and archives: **`docs/README.md`**. Short evolution timeline: **`docs/history/EVOLUTION.md`**. Superseded drafts: **`docs/archive/`**.
+Maintained index: **`docs/README.md`** · architecture hub **`docs/architecture/README.md`**. Short evolution timeline: **`docs/history/EVOLUTION.md`**. Superseded drafts: **`docs/archive/`**.
 
 
 ## Data pipeline (canonical)

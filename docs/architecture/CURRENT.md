@@ -12,6 +12,7 @@ A **clinical documentation / RAG demo**: Next.js frontend + FastAPI backend over
 |--------|-----|
 | Implemented behavior (today) | [IMPLEMENTED_BASELINE.md](./IMPLEMENTED_BASELINE.md) |
 | Documentation index | [../README.md](../README.md) |
+| Architecture hub | [README.md](./README.md) |
 | Offline corpus build | `data_prep/` + [../reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md](../reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md) |
 | Product / sequencing intent | [../roadmap/](../roadmap/) |
 
@@ -22,4 +23,4 @@ When a roadmap disagrees with the baseline, **trust the baseline** until the roa
 - **Runtime:** `docker-compose.yml` (Postgres on host port **5433**), `backend/`, `frontend/`.
 - **Data:** `data_prep/` builds the corpus the loader ingests; application reads via the backend loader paths documented in the baseline.
 
-Last updated: **2026-05-05** (documentation layout migration under `docs/`).
+Last updated: **2026-05-05** (architecture README hub + pillar documentation pass).

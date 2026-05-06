@@ -26,6 +26,7 @@ This file summarizes **layout and documentation** evolution so newcomers are not
 - Former top-level **`reference-docs/`** tree → **`docs/reference/`** (long-form engineering references).
 - Former top-level **`roadmap/`** tree → **`docs/roadmap/`** (plans and sequencing).
 - **`SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** → **`docs/architecture/IMPLEMENTED_BASELINE.md`**; added **`docs/architecture/CURRENT.md`** as a short “current system” companion that points at the baseline.
+- Added **`docs/architecture/README.md`** as an architecture hub (baseline links plus README entrypoints for `backend/`, `frontend/`, `data_prep/`, and archived **`lakehouse-old/`**).
 
 ## Application capabilities
 
