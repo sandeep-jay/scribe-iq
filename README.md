@@ -44,7 +44,12 @@ Run backend: `cd backend && uvicorn app.main:app --reload --host 127.0.0.1 --por
 
 Run frontend: `cd frontend && npm run dev`.
 
+## Logging quick reference
 
+- **Backend level:** `LOG_LEVEL=INFO` by default; use `LOG_LEVEL=DEBUG` for checkpoint-level events.
+- **Frontend level:** `NEXT_PUBLIC_LOG_LEVEL=info` by default; set `debug` for request-start/parse checkpoints.
+- **Correlation ID:** frontend sends `X-Request-ID`; backend echoes `x-request-id` and includes request IDs in logs.
+- **Safety boundary:** avoid logging PHI/secrets (transcripts, note bodies, API keys). Prefer IDs/counts/status/duration.
 
 ## TDD workflow
 

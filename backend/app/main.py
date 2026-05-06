@@ -31,8 +31,10 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(title=settings.app_name, lifespan=lifespan)
 
-    application.add_middleware(RequestLoggingMiddleware)
+    # Starlette runs last-added middleware first on the request path; put CORS outermost,
+    # then request logging (so 401 from API key still emits request_completed), then auth.
     application.add_middleware(OptionalApiKeyMiddleware)
+    application.add_middleware(RequestLoggingMiddleware)
 
     relax = settings.cors_relax_local
     allow_origin_regex = (

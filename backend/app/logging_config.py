@@ -3,6 +3,11 @@
 This module is intentionally imported early from app startup to ensure:
 - consistent log formatting (console in dev, JSON in production)
 - uvicorn and stdlib logs route through the same formatter
+
+Call sites must not log request bodies, transcripts, or other PHI; use metadata and ids only.
+
+Verbosity: set ``LOG_LEVEL=DEBUG`` for detailed per-request checkpoints in route handlers; keep
+``INFO`` in production unless diagnosing an incident.
 """
 
 from __future__ import annotations

@@ -1,6 +1,8 @@
 """
-02_build_note_pool.py — run from repo: python data_prep/scripts/02_build_note_pool.py
+02_build_note_pool.py — run from repo: python data_prep/scripts/02_build_note_pool.py [-v]
    (or cd data_prep && python scripts/02_build_note_pool.py)
+
+   Use -v/--verbose for DEBUG source-selection checkpoints (local snapshot vs HuggingFace).
 
 ACI-Bench: expects a clone under data/raw/aci_bench with wyim/aci-bench style pairs:
   train.csv + train_metadata.csv (dialogue + note columns). Override dir with
@@ -9,6 +11,7 @@ ACI-Bench: expects a clone under data/raw/aci_bench with wyim/aci-bench style pa
 from __future__ import annotations
 
 
+import logging
 import os
 import re
 import sys
@@ -22,11 +25,17 @@ if str(_DP_ROOT) not in sys.path:
 from pathlib import Path
 
 import pandas as pd
+
+import argparse
+
+from utils.cli_logging import add_logging_arguments, configure_cli_logging, logging_args_from_ns
 from datasets import load_dataset
 from tqdm import tqdm
 
 from utils.io_utils import count_jsonl, load_jsonl, write_jsonl
 from utils.mappings import ICD10_TO_SPECIALTY, MTSAMPLES_TO_STANDARD_SPECIALTY
+
+log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = REPO_ROOT / "data/staging/note_pool.jsonl"
@@ -104,14 +113,14 @@ def _iter_aci_local(root: Path, seen: set[str]):
         try:
             meta_df = pd.read_csv(meta_file)
         except Exception as e:
-            print(f"  Could not read {meta_file}: {e}")
+            log.info(f"  Could not read {meta_file}: {e}")
             continue
 
         if data_csv.exists():
             try:
                 body_df = pd.read_csv(data_csv)
             except Exception as e:
-                print(f"  Could not read {data_csv}: {e}")
+                log.info(f"  Could not read {data_csv}: {e}")
                 continue
             merge_key = "encounter_id" if "encounter_id" in body_df.columns else "id"
             if merge_key not in meta_df.columns or merge_key not in body_df.columns:
@@ -144,7 +153,7 @@ def _iter_aci_local(root: Path, seen: set[str]):
         try:
             src_tgt_df = pd.read_csv(src_tgt_candidates[0])
         except Exception as e:
-            print(f"  Could not read src-tgt: {e}")
+            log.info(f"  Could not read src-tgt: {e}")
             continue
         merge_key = "encounter_id" if "encounter_id" in src_tgt_df.columns else "id"
         if merge_key not in meta_df.columns:
@@ -220,14 +229,22 @@ def is_outpatient_note(row) -> bool:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Build merged note_pool.jsonl (MedSynth, MTSamples, ACI-Bench).")
+    add_logging_arguments(parser)
+    ns = parser.parse_args()
+    configure_cli_logging(**logging_args_from_ns(ns))
+
+    log.info("note_pool_build_started output=%s", OUTPUT)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.unlink(missing_ok=True)
-    print("\n[1/3] Loading MedSynth...")
+    log.info("\n[1/3] Loading MedSynth...")
     if RAW_MEDSYNTH.exists():
-        print(f"  from raw snapshot {RAW_MEDSYNTH}")
+        log.debug("medsynth_source_selected branch=local_snapshot path=%s", RAW_MEDSYNTH)
+        log.info(f"  from raw snapshot {RAW_MEDSYNTH}")
         medsynth = load_jsonl(RAW_MEDSYNTH)
     else:
-        print("  from HuggingFace (no raw snapshot)\n  Tip: python scripts/export_note_sources_to_raw.py")
+        log.debug("medsynth_source_selected branch=huggingface dataset=Ahmad0067/MedSynth")
+        log.info("  from HuggingFace (no raw snapshot)\n  Tip: python scripts/export_note_sources_to_raw.py")
         medsynth = load_dataset("Ahmad0067/MedSynth", split="train")
     for idx, row in enumerate(tqdm(medsynth, desc="MedSynth")):
         icd10 = normalize_icd10(row.get("ICD10"))
@@ -255,14 +272,16 @@ def main() -> None:
                 "quality_tier": "primary",
             },
         )
-    print(f"  MedSynth done: {count_jsonl(OUTPUT)} records")
+    log.info(f"  MedSynth done: {count_jsonl(OUTPUT)} records")
 
-    print("\n[2/3] Loading MTSamples...")
+    log.info("\n[2/3] Loading MTSamples...")
     if RAW_MTSAMPLES.exists():
-        print(f"  from raw snapshot {RAW_MTSAMPLES}")
+        log.debug("mtsamples_source_selected branch=local_snapshot path=%s", RAW_MTSAMPLES)
+        log.info(f"  from raw snapshot {RAW_MTSAMPLES}")
         mtsamples = load_jsonl(RAW_MTSAMPLES)
     else:
-        print("  from HuggingFace (no raw snapshot)")
+        log.debug("mtsamples_source_selected branch=huggingface dataset=harishnair04/mtsamples")
+        log.info("  from HuggingFace (no raw snapshot)")
         mtsamples = load_dataset("harishnair04/mtsamples", split="train")
     mts_count = 0
     for idx, row in enumerate(tqdm(mtsamples, desc="MTSamples")):
@@ -292,30 +311,33 @@ def main() -> None:
             },
         )
         mts_count += 1
-    print(f"  MTSamples done: {mts_count} outpatient notes added")
+    log.info(f"  MTSamples done: {mts_count} outpatient notes added")
 
-    print("\n[3/3] Loading ACI-Bench...")
+    log.info("\n[3/3] Loading ACI-Bench...")
     aci_root = _aci_bench_dir()
     seen_ids: set[str] = set()
     aci_count = 0
     if aci_root.exists():
+        log.debug("aci_bench_local_scan_started root=%s", aci_root)
         for rec in _iter_aci_local(aci_root, seen_ids):
             write_jsonl(OUTPUT, rec)
             aci_count += 1
         if aci_count:
-            print(f"  from local CSVs under {aci_root}")
+            log.info(f"  from local CSVs under {aci_root}")
+            log.debug("aci_bench_source_selected branch=local_csv rows=%s", aci_count)
     if aci_count == 0:
         if aci_root.exists():
-            print(f"  No usable ACI CSV pairs under {aci_root}; loading HuggingFace {ACI_HF_ID} …")
+            log.info(f"  No usable ACI CSV pairs under {aci_root}; loading HuggingFace {ACI_HF_ID} …")
         else:
-            print(f"  {aci_root} not found; loading HuggingFace {ACI_HF_ID} …")
+            log.info(f"  {aci_root} not found; loading HuggingFace {ACI_HF_ID} …")
+        log.debug("aci_bench_source_selected branch=huggingface dataset=%s", ACI_HF_ID)
         for rec in _iter_aci_huggingface(seen_ids):
             write_jsonl(OUTPUT, rec)
             aci_count += 1
-    print(f"  ACI-Bench done: {aci_count} encounters added")
+    log.info(f"  ACI-Bench done: {aci_count} encounters added")
 
     total = count_jsonl(OUTPUT)
-    print(f"\n✓ Note pool complete: {total} total notes → {OUTPUT}")
+    log.info(f"\n✓ Note pool complete: {total} total notes → {OUTPUT}")
 
 
 if __name__ == "__main__":

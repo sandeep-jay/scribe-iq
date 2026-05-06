@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
 import type { ChatAuditBlock, ChatCitation } from "@/lib/backend";
+import { logError } from "@/lib/logger";
 import { apiBase, postChat, responsibleAiAdminUiEnabled } from "@/lib/backend";
 
 type Role = "user" | "assistant";
@@ -30,6 +31,7 @@ function ChatSurface() {
   const apiOrigin = useMemo(() => apiBase(), []);
 
   const send = async () => {
+    // Network failures surface via ``postChat`` -> ``trackedJson`` logs; we also log here for UI context.
     const msg = input.trim();
     if (!msg) return;
     setBusy(true);
@@ -53,6 +55,7 @@ function ChatSurface() {
       setRows((xs) => [...xs, { role: "assistant", text: resp.answer }]);
       setInput("");
     } catch (e) {
+      logError("chat_send_failed", { error: (e as Error).message });
       setError((e as Error).message);
       setRows(prior);
     } finally {

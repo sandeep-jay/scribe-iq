@@ -1,4 +1,12 @@
-"""Vector chat (pgvector cosine + Groq)."""
+"""Vector RAG chat over clinical note embeddings (pgvector) + Groq completion.
+
+Flow (high level): validate domain -> ensure embeddings exist for domain -> optional patient scope
+-> embed user query -> retrieve top-k chunks -> build prompt -> Groq -> safety checks -> audit row.
+
+Logging policy: use ``logger.info`` for milestones you should see in normal ops; use ``logger.debug``
+for branch/detail checkpoints when ``LOG_LEVEL=DEBUG``. Never log raw clinical text here; counts,
+ids, and timings only.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +14,6 @@ import json
 
 import structlog
 from typing import Annotated
-from uuid import uuid4
 
 import asyncpg
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -16,6 +23,7 @@ from app.config import get_settings
 from app.db import get_conn
 from app.embeddings import embed_query_text
 from app.llm import groq_chat_complete
+from app.request_id import get_request_id
 from app.responsible_ai.audit_logger import insert_ai_interaction
 from app.responsible_ai.hashes import sha256_hex
 from app.responsible_ai.prompt_registry import CHAT_RAG_V1
@@ -69,9 +77,19 @@ async def chat(
     conn: Annotated[asyncpg.Connection, Depends(get_conn)],
 ) -> ChatResponse:
     settings = get_settings()
-    req_id = (request.headers.get("x-request-id") or "").strip() or str(uuid4())
+    req_id = get_request_id(request)
+
+    logger.info(
+        "chat_started",
+        request_id=req_id,
+        domain=body.domain,
+        top_k=body.top_k,
+        patient_id_set=bool(body.patient_id),
+        conversation_turns=len(body.conversation),
+    )
 
     if body.domain != body.domain.strip() or not body.domain:
+        logger.warning("chat_domain_invalid", request_id=req_id, domain_repr=repr(body.domain)[:120])
         raise HTTPException(status_code=400, detail="Invalid domain.")
 
     indexed = await conn.fetchval(
@@ -84,7 +102,10 @@ async def chat(
         """,
         body.domain,
     )
+    logger.debug("chat_embeddings_index_checked", request_id=req_id, domain=body.domain, indexed=bool(indexed))
+
     if not indexed:
+        logger.warning("chat_no_embeddings_for_domain", request_id=req_id, domain=body.domain)
         raise HTTPException(
             status_code=503,
             detail=(
@@ -96,6 +117,9 @@ async def chat(
     patient_uuid = None
     if body.patient_id:
         patient_uuid = await resolve_patient_id(conn, body.patient_id)
+        logger.debug("chat_patient_resolved", request_id=req_id, patient_id_param_set=True)
+    else:
+        logger.debug("chat_patient_scope_global", request_id=req_id, patient_id_param_set=False)
 
     longitudinal = None
     if patient_uuid is not None:
@@ -111,11 +135,15 @@ async def chat(
         )
         if row_lc and row_lc["longitudinal_context"] is not None:
             longitudinal = _lc_block(row_lc["longitudinal_context"])
+            logger.debug("chat_longitudinal_loaded", request_id=req_id, has_longitudinal=True)
+        else:
+            logger.debug("chat_longitudinal_missing", request_id=req_id, has_longitudinal=False)
 
     try:
         _, vec_lit = await embed_query_text(body.message)
+        logger.debug("chat_query_embedded", request_id=req_id, domain=body.domain)
     except RuntimeError as e:
-        logger.warning("embedding_unavailable %s", e)
+        logger.warning("embedding_unavailable", request_id=req_id, error=str(e))
         raise HTTPException(status_code=503, detail=str(e)) from e
 
     rows = await conn.fetch(
@@ -142,7 +170,16 @@ async def chat(
         body.domain,
     )
 
+    logger.info(
+        "chat_retrieval_complete",
+        request_id=req_id,
+        domain=body.domain,
+        chunk_count=len(rows),
+        patient_scoped=patient_uuid is not None,
+    )
+
     if not rows:
+        logger.warning("chat_retrieval_empty", request_id=req_id, domain=body.domain, patient_scoped=patient_uuid is not None)
         raise HTTPException(
             status_code=404,
             detail="Retrieval returned no chunks (check patient scope and corpus).",
@@ -192,13 +229,30 @@ async def chat(
         msg_list.append({"role": turn.role, "content": turn.content})
     msg_list.append({"role": "user", "content": body.message.strip()})
 
+    logger.debug(
+        "chat_llm_call_started",
+        request_id=req_id,
+        provider=settings.llm_provider,
+        model=settings.groq_chat_model,
+        prompt_chars=len(sys_prompt),
+        user_message_chars=len(body.message.strip()),
+    )
     try:
         groq_res = await groq_chat_complete(msg_list)
     except RuntimeError as e:
-        logger.warning("llm_unavailable %s", e)
+        logger.warning("llm_unavailable", request_id=req_id, error=str(e))
         raise HTTPException(status_code=503, detail=str(e)) from e
 
     answer = groq_res.text
+    logger.info(
+        "chat_llm_succeeded",
+        request_id=req_id,
+        model=groq_res.model,
+        latency_ms=groq_res.latency_ms,
+        prompt_tokens=groq_res.prompt_tokens,
+        completion_tokens=groq_res.completion_tokens,
+        citation_count=len(citations),
+    )
     trace_payload = trace_from_chat_rows(
         [{"note_id": r["note_id"], "cosine_sim": float(r["cosine_sim"])} for r in rows]
     )
@@ -233,6 +287,13 @@ async def chat(
         output_tokens=groq_res.completion_tokens,
         status="success",
         error_message=None,
+    )
+
+    logger.info(
+        "chat_audit_persisted",
+        request_id=req_id,
+        interaction_id=interaction_id,
+        safety_status=safety_status,
     )
 
     return ChatResponse(

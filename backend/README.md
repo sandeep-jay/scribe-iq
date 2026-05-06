@@ -17,9 +17,11 @@ cp .env.example .env   # edit keys when using LLM/embeddings
 
 Logging:
 
-- `LOG_LEVEL` controls verbosity (default: `INFO`).
+- `LOG_LEVEL` controls verbosity (default: `INFO`; set `DEBUG` for detailed checkpoints).
 - `LOG_JSON=true` switches logs to JSON (recommended in production).
-- Each response includes an `X-Request-ID` header for request correlation.
+- Event taxonomy follows `*_started`, `*_validated`, `*_failed`, `*_succeeded` where practical.
+- Each response includes an `X-Request-ID` header for correlation with frontend `x-request-id` logs.
+- PHI policy: do **not** log transcript/note bodies; log IDs/counts/status/timings only.
 
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -91,6 +93,12 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 - Requires `GROQ_API_KEY` (same Groq stack as chat generation paths).
 - Cached row in `patient_meeting_prep` (see Alembic `20260504_002`).
 - Disable with `MEETING_PREP_ENABLED=false`.
+
+### Logging events (backend)
+
+- **INFO**: request accepted/completed, cache hit/miss, Groq success, audit persistence outcomes.
+- **DEBUG** (`LOG_LEVEL=DEBUG`): branch decisions (scope/cache/replace-vs-create), token/latency metadata, source-selection checkpoints.
+- **WARN/ERROR**: degraded fallback paths, expected provider outages, validation/auth failures, unexpected exceptions.
 
 ## Responsible AI Control Center (audit + admin)
 
