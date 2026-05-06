@@ -58,7 +58,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 | `data/` | Staging and corpus outputs (e.g. `data/staging/`); loader reads packaged corpus paths per `backend/scripts/load_corpus.py` and `backend/README.md`. |
 | `scripts/dev_smoke.sh` | Quick Compose + `GET /health` smoke check. |
 | `roadmap/` | Product/UI/master plans (**not** a substitute for this inventory). |
-| `design/` | HTML UI mockups (`design/mockups/`) and screenshot references (`design/references/`). |
+| `docs/design/` | HTML UI mockups (`docs/design/mockups/`) and screenshot references (`docs/design/references/`). |
 
 Root `README.md` summarizes run commands and high-level API behavior.
 
@@ -229,4 +229,4 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 | 2026-05-04 | Initial **implemented baseline** inventory (repo survey). |
 | 2026-05-04 | Added **Functional summary** (end-user flows, platform ops, not-implemented). |
 | 2026-05-05 | Documented **Responsible AI Control Center**: `ai_interactions` migration, `app/responsible_ai/`, admin APIs, env flags, frontend admin routes, audit fields on chat/meeting-prep/note generate. |
-| 2026-05-06 | Documentation hygiene + **`design/`** layout: **`docs/README`** map and **`docs/archive/`**; clarified generated corpus Markdown artifacts; HTML mockups in **`design/mockups/`**, screenshots in **`design/references/`** (removed **`app docs/`**, **`ui-references/`**) |
+| 2026-05-06 | Documentation hygiene + **`docs/design/`**: maps/archives; generated-artifact notes; HTML mocks **`docs/design/mockups/`**, screenshots **`docs/design/references/`**; removed **`app docs/`** / **`ui-references/`**; visual artifacts live under **`docs/`** (minimal repo root) |

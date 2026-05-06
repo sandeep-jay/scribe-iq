@@ -12,7 +12,7 @@ Start here for **human-maintained** specs, roadmaps, and archives. Generated cor
 | Data prep commands | [data_prep/README.md](../data_prep/README.md) |
 | Backend notes | [backend/README.md](../backend/README.md) |
 | Frontend notes | [frontend/README.md](../frontend/README.md) |
-| Design (mockups + screenshots) | [design/README.md](../design/README.md) |
+| Design (mockups + screenshots) | [design/README.md](design/README.md) |
 
 ## Roadmaps (`roadmap/`)
 
