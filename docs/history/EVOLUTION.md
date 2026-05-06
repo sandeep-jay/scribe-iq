@@ -4,12 +4,13 @@ This file summarizes **layout and documentation** evolution so newcomers are not
 
 ## Corpus and lakehouse lineage
 
-1. **Early-phase lakehouse-oriented tooling** was proposed and documented in **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`** and older **`docs/roadmap/PHASE1_MASTER_PLAN.md`** sections that referenced a **`lakehouse/`** script tree.
+1. **Early-phase lakehouse-oriented tooling** was proposed and documented in **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`** (historical banner; not the runnable pipeline today) and older **`docs/roadmap/PHASE1_MASTER_PLAN.md`** sections that referenced a **`lakehouse/`** script tree.
 2. **Current canonical offline builder** for the demo corpus is **`data_prep/`** (see root **`README.md`** and **`docs/reference/corpus_offline_pipeline_v2_brief.md`**). Scripts live under `data_prep/scripts/` with supporting README text.
-3. **Optional local archive:** **`lakehouse-old/`** may exist on a developer machine (often gitignored). It is **not** the supported path for new work.
+3. **Optional local archive:** **`corpus_pipelines/agbonnet_hf_clinical_notes/`** may exist on a developer machine (often gitignored). It is **not** the supported path for new work.
 
 ## Documentation hygiene (2026-05)
 
+- Recorded the detailed checklist for the hygiene pass in **`docs/WORK_PLAN_DOC_HYGIENE.md`** (now marked **completed**; use that file for step-level history, this file for the summary).
 - Introduced **`docs/README.md`** as a single map.
 - Moved superseded long prompts into **`docs/archive/`** with archive banners:
   - Former **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_AGENT.md`** → **`docs/archive/SCRIBE_IQ_DATA_PIPELINE_AGENT.md`** (v1 prompt)
@@ -26,7 +27,7 @@ This file summarizes **layout and documentation** evolution so newcomers are not
 - Former top-level **`reference-docs/`** tree → **`docs/reference/`** (long-form engineering references).
 - Former top-level **`roadmap/`** tree → **`docs/roadmap/`** (plans and sequencing).
 - **`SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** → **`docs/architecture/IMPLEMENTED_BASELINE.md`**; added **`docs/architecture/CURRENT.md`** as a short “current system” companion that points at the baseline.
-- Added **`docs/architecture/README.md`** as an architecture hub (baseline links plus README entrypoints for `backend/`, `frontend/`, `data_prep/`, and archived **`lakehouse-old/`**).
+- Added **`docs/architecture/README.md`** as an architecture hub (baseline links plus README entrypoints for `backend/`, `frontend/`, `data_prep/`, and archived **`corpus_pipelines/agbonnet_hf_clinical_notes/`**).
 
 ## Application capabilities
 

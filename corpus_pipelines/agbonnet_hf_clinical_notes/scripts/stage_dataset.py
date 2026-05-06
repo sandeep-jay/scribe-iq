@@ -4,7 +4,7 @@
 No database, no FastAPI. Output is consumed later by Phase 1 `load_clinical_data.py`.
 
 Usage:
-    cd lakehouse && source .venv/bin/activate && pip install -r requirements.txt
+    cd corpus_pipelines/agbonnet_hf_clinical_notes && source .venv/bin/activate && pip install -r requirements.txt
     python scripts/stage_dataset.py
 
 See roadmap/PHASE1_MASTER_PLAN.md §4.4.
@@ -37,7 +37,7 @@ from corpus_constants import (
 
 
 def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    return Path(__file__).resolve().parents[3]
 
 
 def _slug_dataset_id(dataset_id: str) -> str:

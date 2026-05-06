@@ -215,7 +215,6 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 | `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
 | `docs/roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Responsible AI Control Center product/engineering plan (see **status** at top of that file) |
 | `docs/roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
-| `docs/reference/contributing_git_checkpoints.md` | Branch/checkpoint workflow |
 | `docs/reference/rag_clinical_note_llm_design.md` | Clinical note / LLM phases |
 | `docs/README.md` | Documentation map (roadmaps + references + archives) |
 | `docs/archive/README.md` | Superseded long prompts / duplicate guides |

@@ -2,7 +2,9 @@
 
 > Focused design for Phase 1 MVP only.
 > Local development first. Deployment-ready by design.
-> Reference this file when working with Claude Code.
+> Reference this file when implementing Phase 1 (local MVP).
+
+**Scope:** Phase 1 MVP only. Broader product framing, dual deployments, and cross-phase locked decisions: [`rag_clinical_note_llm_design.md`](rag_clinical_note_llm_design.md). Do not expand Phase 1 scope here without updating that parent design when the change is architectural.
 
 ---
 

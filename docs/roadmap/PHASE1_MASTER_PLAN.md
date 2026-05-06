@@ -1,20 +1,20 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
-> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`lakehouse-old/`** ([`lakehouse-old/README.md`](../../lakehouse-old/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
+> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`corpus_pipelines/agbonnet_hf_clinical_notes/`** ([`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
 
 
 > **Two projects**
 >
 > | Project | Purpose | Where |
 > |--------|---------|--------|
-> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`lakehouse-old/`**; narrative: **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`**; staging historically **`data/staging/`** |
+> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`corpus_pipelines/agbonnet_hf_clinical_notes/`**; narrative: **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`**; staging historically **`data/staging/`** |
 > | **A — Application MVP** | RAG demo app: `backend/`, `frontend/`, Postgres, Azure. | §4–§15 **below** (schema, API, build order) |
 >
 > **Handoff:** Start production **`backend/`** after **Project L** meets the lakehouse V2 success criteria (**`data/clinical_corpus/`** + audit, see proposal §10). **Interim prototyping** may use **`create_seed_plan.py`** (50×8 JSONL) only with explicit demo scope — migrate to corpus-driven loading when `data/clinical_corpus/` exists.
 >
-> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`**.
+> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`**.
 
-**Foundation (Project L — early milestones):** **`lakehouse-old/scripts/`** (legacy prose may say `lakehouse/`) — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
+**Foundation (Project L — early milestones):** **`corpus_pipelines/agbonnet_hf_clinical_notes/scripts/`** (legacy prose may say `lakehouse/`) — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
 
 ---
 
@@ -688,12 +688,8 @@ Use an API version that supports **`chat.completions.parse`** for your SDK; adju
 | 2026-05-03 | Historical: seed artifacts initially tracked as Phase 0 **P0d** / **`phase: "0"`**. **Superseded** by program renumbering (seed planning is **Phase 2**; `phase` / `step` in `phase1_seed_plan.json` are now **`"2"` / `"P2-seed"`**) — see newer history row. |
 | 2026-05-02 | **Program phases 0–3** — Phase 1 `classify_specialties.py` (§4.5); seed planning is **Phase 2** (§4.6); MVP app is **Phase 3**; Phase 0 ends at staging (P0c). Updated §14 gates + §11.1. |
 | 2026-05-03 | **Two-project framing:** **Project L** (`lakehouse/`, `agbonnet_lakehouse_precursor_proposal_v2.md`) vs **Project A** (this doc). Stale **`backend/`** cache directory removed; **`data_prep/`** scripts moved to **`lakehouse/scripts/`** (legacy **`data_prep/README.md`** redirects). |
-| 2026-05-03 | Added **`docs/reference/contributing_git_checkpoints.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). §18 links here. |
-
-
-## 18. Git checkpoints (experiments)
-
-Before large UI or IA refactors, use a named **checkpoint branch** so you can revert cleanly. Commands, revert options, and the **recorded** checkpoint for this repo: **`docs/reference/contributing_git_checkpoints.md`**.
+| 2026-05-03 | Added **`docs/reference/contributing_git_checkpoints.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). *(Doc and master-plan §18 later removed.)* |
+| 2026-05-06 | Removed **`docs/reference/contributing_git_checkpoints.md`**; use short-lived feature branches and small commits for UI/IA experiments. |
 
 ---
 

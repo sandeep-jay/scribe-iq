@@ -8,11 +8,11 @@ Reads data/staging/manifest.json and the Parquet path inside it; writes:
   - data/staging/selected_note_records.jsonl
 
 Usage:
-  cd lakehouse && source .venv/bin/activate && pip install -r requirements.txt
+  cd corpus_pipelines/agbonnet_hf_clinical_notes && source .venv/bin/activate && pip install -r requirements.txt
   python scripts/create_seed_plan.py
   python scripts/create_seed_plan.py --seed 42 --manifest ../data/staging/manifest.json
 
-See roadmap/PHASE1_MASTER_PLAN.md §4.6 and lakehouse/README.md.
+See roadmap/PHASE1_MASTER_PLAN.md §4.6 and corpus_pipelines/agbonnet_hf_clinical_notes/README.md.
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ if str(_scripts_dir) not in sys.path:
 
 
 def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    return Path(__file__).resolve().parents[3]
 
 
 def _normalize_text(s: str) -> str:
@@ -93,7 +93,7 @@ def _random_dates_unique(rng, n: int, start: date, end: date) -> list[date]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Phase 2 — build application seed plan JSON/JSONL from staged Parquet.")
-    ap.add_argument("--repo-root", type=Path, default=None, help="Repo root (default: parent of lakehouse/)")
+    ap.add_argument("--repo-root", type=Path, default=None, help="Repo root (default: inferred from script location)")
     ap.add_argument("--manifest", type=Path, default=None, help="Path to manifest.json (default: <repo>/data/staging/manifest.json)")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--target-notes", type=int, default=400)

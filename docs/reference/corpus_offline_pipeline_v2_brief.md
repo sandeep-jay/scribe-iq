@@ -3,6 +3,44 @@
 
 ---
 
+## On this page
+
+**Layout and pipeline**
+
+- [Corrections applied from review](#corrections-applied-from-review)
+- [Repo layout decision](#repo-layout-decision)
+- [Working directory convention](#working-directory-convention)
+- [Full repository structure](#full-repository-structure)
+
+**Scripts (01–09)**
+
+- [Script 01 — Generate Patients](#script-01-generate-patients)
+- [Script 02 — Build Note Pool](#script-02-build-note-pool)
+- [Script 03 — Reserve ACI-Bench Encounters](#script-03-reserve-aci-bench-encounters)
+- [Script 04 — Match and Score](#script-04-match-and-score)
+- [Script 05 — Select Top 50](#script-05-select-top-50)
+- [Script 06 — Adapt Notes via Groq](#script-06-adapt-notes-via-groq)
+- [Script 07 — Assemble Corpus](#script-07-assemble-corpus)
+- [Script 08 — Generate Dataset Card (NEW)](#script-08-generate-dataset-card-new)
+- [Script 09 — Validate Corpus](#script-09-validate-corpus)
+
+**Reference and runbook**
+
+- [Summary](#summary) · [Source datasets](#source-datasets) · [Corpus statistics](#corpus-statistics) · [Specialty distribution](#specialty-distribution) · [Note source breakdown](#note-source-breakdown) · [Known limitations](#known-limitations) · [Intended use](#intended-use) · [Reproduction](#reproduction)
+- [Utils: note checks](#utilsnotecheckspy-new) · [Utils: mappings](#utilsmappingspy-corrected)
+- [requirements.txt](#requirementstxt) · [README](#readme) · [Prerequisites](#prerequisites) · [Setup](#setup) · [Run pipeline](#run-pipeline) · [Resumability](#resumability) · [Estimated runtime](#estimated-runtime)
+- [Relation to lakehouse-era proposals](#relation-to-lakehouse-era-proposals)
+
+**Appendix (merged corrections)**
+
+- [Appendix: Implementation corrections (merged)](#appendix-implementation-corrections-merged)
+- [Script 05.5 — Extract Longitudinal Context (CORRECTED)](#script-055-extract-longitudinal-context-corrected)
+- [Script 06 — Adapt Notes (CORRECTED)](#script-06-adapt-notes-corrected)
+- [Script 06.5 — Match ACI (SIMPLIFIED - uses existing reservations)](#script-065-match-aci-simplified-uses-existing-reservations)
+- [Utils update](#utils-update) · [Corrected implementation sequence](#corrected-implementation-sequence)
+
+---
+
 ## Corrections Applied from Review
 
 1. General Medicine candidate list — no longer appends full pool, uses capped sample
@@ -43,9 +81,9 @@ scribe-iq/                          ← repo root
   frontend/
 ```
 
-**Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`docs/reference/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`lakehouse-old/`** directory may exist on some machines and is **not** part of the supported layout.
+**Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`docs/reference/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`corpus_pipelines/agbonnet_hf_clinical_notes/`** directory may exist on some machines and is **not** part of the supported layout.
 
-**Related (same repo):** adapt-notes + longitudinal contract — [`data_prep_adapt_notes_longitudinal_design.md`](./data_prep_adapt_notes_longitudinal_design.md); merged implementation corrections — **Appendix** in this file; archived precursor scripts — [`lakehouse-old/README.md`](../../lakehouse-old/README.md); superseded long prompts — [`docs/archive/`](../archive/).
+**Related (same repo):** adapt-notes + longitudinal contract — [`data_prep_adapt_notes_longitudinal_design.md`](./data_prep_adapt_notes_longitudinal_design.md); merged implementation corrections — **Appendix** in this file; archived precursor scripts — [`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md); superseded long prompts — [`docs/archive/`](../archive/).
 
 ---
 
@@ -1581,7 +1619,7 @@ Scripts 01-05 are idempotent (safe to re-run, they overwrite output).
 
 ## Relation to lakehouse-era proposals
 
-**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`** and **`docs/history/EVOLUTION.md`**.
+**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`** and **`docs/history/EVOLUTION.md`**.
 
 Do not recreate a competing **`lakehouse/scripts`** tree for new work.
 

@@ -3,6 +3,8 @@
 > Internal reference for implementation by the coding agent.
 > All decisions locked. Do not deviate without updating this doc first.
 
+**Scope:** Broader RAG / documentation assistant design (clinical and advising deployments, locked decisions across phases). For **Phase 1 MVP only** (local-first, bounded scope), see [`rag_app_phase1_mvp_design.md`](rag_app_phase1_mvp_design.md). When a change applies to both Phase 1 and later work, update **both** documents in the same PR when practical.
+
 ---
 
 ## Project Overview

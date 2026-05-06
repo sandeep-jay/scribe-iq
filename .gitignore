@@ -32,12 +32,12 @@ data/snomed_icd10/vocabulary/*.csv
 data_prep/.venv/
 data_prep/.hf_home/
 
-lakehouse-old/*
-!lakehouse-old/README.md
-!lakehouse-old/requirements.txt
-!lakehouse-old/scripts/
-!lakehouse-old/scripts/*.py
-lakehouse-old/scripts/__pycache__/
+corpus_pipelines/agbonnet_hf_clinical_notes/*
+!corpus_pipelines/agbonnet_hf_clinical_notes/README.md
+!corpus_pipelines/agbonnet_hf_clinical_notes/requirements.txt
+!corpus_pipelines/agbonnet_hf_clinical_notes/scripts/
+!corpus_pipelines/agbonnet_hf_clinical_notes/scripts/*.py
+corpus_pipelines/agbonnet_hf_clinical_notes/scripts/__pycache__/
 lakehouse/.venv/
 lakehouse/.hf_home/
 
@@ -50,3 +50,8 @@ evals/results/
 
 # Cursor IDE local metadata
 .cursor/
+
+
+# Frontend / Playwright artifacts
+frontend/test-results/
+frontend/playwright-report/

@@ -13,6 +13,7 @@ Next.js (App Router) UI for the clinical RAG demo: patients, chart, encounter, c
 From the repository root:
 
 ```bash
+nvm use  # uses .nvmrc (Node 20)
 cd frontend
 npm install
 npm run dev

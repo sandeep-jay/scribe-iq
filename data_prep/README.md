@@ -3,7 +3,7 @@
 Generates the **50-patient** demo corpus under `data/clinical_corpus_v2/`. Spec:
 `../docs/reference/corpus_offline_pipeline_v2_brief.md`.
 
-Archived exploratory scripts live in **`../lakehouse-old/`**.
+Archived exploratory scripts live in **`../corpus_pipelines/agbonnet_hf_clinical_notes/`**.
 
 **Related documentation:** adapt-notes design [`docs/reference/data_prep_adapt_notes_longitudinal_design.md`](../docs/reference/data_prep_adapt_notes_longitudinal_design.md); lineage [`docs/history/EVOLUTION.md`](../docs/history/EVOLUTION.md); archived agent prompts [`docs/archive/`](../docs/archive/). (Execution detail for scripts `01`–`09` is in the corpus brief linked in the paragraph above.)
 
