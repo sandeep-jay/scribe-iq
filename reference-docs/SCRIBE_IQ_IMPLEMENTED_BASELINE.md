@@ -193,6 +193,8 @@ Under **`data_prep/`**: scripted pipeline to build the clinical corpus (patient 
 
 This is **not** invoked by the FastAPI server at request time; it produces inputs for `load_corpus`.
 
+Corpus builds may emit **generated Markdown** under `data/` (for example `data/clinical_corpus_v2/dataset_card.md`, `audit_report.md`). Treat those files as **build artifacts**, not hand-maintained specs (see **`docs/README.md`**).
+
 ---
 
 ## 6. Explicitly not in this baseline (planned elsewhere)
@@ -214,6 +216,8 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 | `roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
 | `reference-docs/GIT_CHECKPOINTS.md` | Branch/checkpoint workflow |
 | `reference-docs/CLinical_Note_LLM.md` | Clinical note / LLM phases |
+| `docs/README.md` | Documentation map (roadmaps + references + archives) |
+| `docs/archive/README.md` | Superseded long prompts / duplicate guides |
 
 ---
 
@@ -224,3 +228,4 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 | 2026-05-04 | Initial **implemented baseline** inventory (repo survey). |
 | 2026-05-04 | Added **Functional summary** (end-user flows, platform ops, not-implemented). |
 | 2026-05-05 | Documented **Responsible AI Control Center**: `ai_interactions` migration, `app/responsible_ai/`, admin APIs, env flags, frontend admin routes, audit fields on chat/meeting-prep/note generate. |
+| 2026-05-06 | Documentation hygiene: **`docs/README.md`** map; **`docs/archive/`** for superseded prompts; clarified generated corpus Markdown artifacts vs specs |

@@ -177,12 +177,20 @@ New router (for example `backend/app/api/admin_responsible_ai.py`), mounted in `
 
 ## 13. Implementation checklist (engineering)
 
-- [ ] Alembic migration for `ai_interactions` (+ optional Phase 3 `ai_interaction_reviews`) with indexes
-- [ ] `backend/app/responsible_ai/` package (audit_logger, redaction, hashes, prompt_registry, safety_checks, source_trace, metrics) plus Settings flags
-- [ ] Extend `llm.py` Groq wrappers to expose usage (and latency-friendly return type); update callers
-- [ ] Wire audit logging and response `audit` / `ai_audit` in chat, meeting-prep, note_generate; enrich meeting prep bundle with note UUIDs
-- [ ] `api/admin_responsible_ai.py`, mounted behind `RESPONSIBLE_AI_ADMIN_ENABLED`
-- [ ] Frontend `/admin/responsible-ai` pages (full UI: KPIs, filters, charts, table, detail, badges), `backend.ts` helpers, env-gated nav; Phase 2 deep links; Phase 3 governance, review queue, export
+**Phase 1 (shipped):** The core audit trail + admin APIs + gated Next.js admin surfaces described earlier are implemented—inventory and pointers live in **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (Responsible AI section).
+
+What landed (high level):
+
+- Alembic migration creating **`ai_interactions`** (plus indexes as shipped).
+- **`backend/app/responsible_ai/`** package wiring audit inserts + governance metadata on **`POST /chat`**, **`GET …/meeting-prep`**, **`POST /notes/generate`** with **`audit` / `ai_audit`** payloads where applicable.
+- **`backend/app/api/admin_responsible_ai.py`** routes gated by **`RESPONSIBLE_AI_ADMIN_ENABLED`**.
+- Frontend **`/admin/responsible-ai`** experience gated by **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`** (shell entry + pages).
+
+**Open / Phase 2–3 backlog (still roadmap):**
+
+- Formal **`ai_interaction_reviews`** (or equivalent persistence) if “review queue” must survive reloads beyond governance JSON experiments.
+- Optional **`PATCH`** / reviewer flows on admin APIs if product wants operational queues.
+- Phase 3 polish called out in §10 (export audit JSON, richer governance page)—confirm against baseline gaps before promising dates.
 
 ---
 

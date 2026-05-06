@@ -126,3 +126,4 @@
 | Date | Change |
 |------|--------|
 | 2026-05-05 | Initial work plan on branch `docs/hygiene-pass`; incorporates vendor-neutral doc policy, rename feasibility, and phased PRs. |
+| 2026-05-06 | Executed D1–D4 on **`docs/hygiene-pass`**: `docs/` index + history; **`docs/archive/`** moves with banners; truth banners (PHASE1, lakehouse proposal, V2 pipeline tail); V1 checklist refresh; Responsible AI §13; baseline/generated artifact notes |

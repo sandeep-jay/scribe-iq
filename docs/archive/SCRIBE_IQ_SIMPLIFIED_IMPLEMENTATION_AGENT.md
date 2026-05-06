@@ -1,3 +1,7 @@
+> **Archived (2026-05-05).** Superseded by **`reference-docs/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`** and **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only.
+
+---
+
 # Scribe-IQ — Simplified Implementation for 19 Golden Patients
 ## Implementation Plan (No Over-Engineering Edition)
 

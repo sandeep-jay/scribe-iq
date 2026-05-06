@@ -106,3 +106,5 @@ cd backend
 source .venv/bin/activate
 tox -e lint,py311
 ```
+
+Documentation map (repository-wide): [`docs/README.md`](../docs/README.md).

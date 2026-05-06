@@ -1,6 +1,6 @@
 # Scribe IQ — UI roadmap
 
-This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`reference-docs/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
+This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`reference-docs/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
 
 ---
 
@@ -286,4 +286,5 @@ This section records the active performance remediation strategy and complements
 | 2026-05-04 | Added **§12 Transcription and note generation service** (ASR + note path, batch/streaming UX, OpenAI / local / GCP matrix, trust/exit criteria). |
 | 2026-05-04 | Intro cross-link to **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (implemented inventory). |
 | 2026-05-05 | Added **§13 Performance improvement plan** with phased latency remediation and SSE streaming scope (chat + prep + note generation). |
+| 2026-05-06 | Linked **`docs/README.md`** from introduction as repository-wide documentation map |
 

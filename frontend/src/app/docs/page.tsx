@@ -8,7 +8,8 @@ export default function DocsPage() {
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
           In-repo specs (Markdown) live under <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">roadmap/</code> and{" "}
           <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">reference-docs/</code> in the Scribe-IQ repository. Open them in your editor or
-          viewer alongside this demo.
+          viewer alongside this demo. A consolidated map lives under{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">docs/README.md</code>.
         </p>
       </div>
 

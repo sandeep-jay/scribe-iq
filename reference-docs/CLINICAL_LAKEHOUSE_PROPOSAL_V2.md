@@ -3,6 +3,9 @@
 
 ---
 
+> **Historical / architectural proposal.** This document describes the **lakehouse-shaped precursor** design for assembling a synthetic clinical corpus. In **this repository today**, the **canonical runnable corpus builder** is **`data_prep/`** plus **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Use those paths when executing pipelines on disk; use this proposal for rationale and evolution.
+
+
 ## 1. Project Goal
 
 Build a curated synthetic clinical data lakehouse that combines two public datasets into a single, coherent corpus:

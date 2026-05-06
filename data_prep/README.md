@@ -60,3 +60,5 @@ Scripts append `data_prep` to `sys.path`, so you may also run
 
 - `data/staging/*.jsonl` — intermediate artifacts
 - `data/clinical_corpus_v2/` — final JSONL + `manifest.json`, `audit_report.md`, `dataset_card.md` (older runs may still have `clinical_corpus_v1/`)
+
+Documentation map (repository-wide): [`docs/README.md`](../docs/README.md).

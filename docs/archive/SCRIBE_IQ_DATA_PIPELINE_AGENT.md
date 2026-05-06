@@ -1,3 +1,7 @@
+> **Archived (2026-05-05).** Superseded by **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only. See **`docs/history/EVOLUTION.md`**.
+
+---
+
 # Scribe-IQ — Data Generation Pipeline
 ## Full Implementation Prompt
 
