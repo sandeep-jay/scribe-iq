@@ -22,7 +22,7 @@
 
 **Clarification (important):** Repository prose should stay **vendor-neutral** (no endorsements of proprietary pair-programming products or their configuration layouts). The following remain acceptable where they are **standard technical artifacts**:
 
-- **CSS:** standard pointer styling and related class names in static HTML mockups under `design/mockups/` (including the built-in CSS property whose name is the English word for “on-screen pointer shape”).
+- **CSS:** standard pointer styling and related class names in static HTML mockups under `docs/design/mockups/` (including the built-in CSS property whose name is the English word for “on-screen pointer shape”).
 - **APIs:** opaque **pagination continuation tokens** in REST designs (sometimes exposed as a `limit` plus an opaque string parameter in query strings).
 - **UX copy in Markdown:** prefer **“insertion caret”** or **“text caret”** for the blinking insertion indicator so prose does not read like product placement in automated scans.
 
@@ -46,7 +46,7 @@
 | Reconcile Responsible AI roadmap “implemented” vs checklist | **High** | Replace unchecked boxes with “shipped / link to baseline” + explicit open backlog. |
 | Merge or supersede `docs/archive/SCRIBE_IQ_APP_IMPLEMENTATION_GUIDE.md` (moved from former `app docs/`) vs `reference-docs/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md` | **Medium–High** | Requires read/compare; outcome is either merge into one spine or archive one with a one-line supersession banner. |
 | **Rename** long `SCRIBE_IQ_*` files to shorter, role-based names | **Medium** | **Git mv** preserves history; must run **repo-wide grep** for path updates (README, roadmaps, in-app `/docs` routes if any, `reference-docs/` cross-links). |
-| Consolidate **`app docs/`** + **`ui-references/`** into **`design/`** (`mockups/`, `references/`) | **Done** | Removes spaced folder name; screenshots co-located with HTML mocks |
+| Consolidate **`app docs/`** + **`ui-references/`** into **`docs/design/`** (`mockups/`, `references/`) | **Done** | Removes spaced folder name; screenshots co-located with HTML mocks |
 
 **Risk to avoid:** renaming ten files in ten commits without a link matrix—consolidate renames into **one or two PRs** with a checklist.
 
@@ -57,7 +57,7 @@
 ### PR D1 — Quick hygiene _(completed on hygiene branch)_
 
 - Removed `app docs/SCRIBE_IQ_DESIGN_PHASE1 copy.md`.
-- Later superseded by **`design/README.md`** + **`design/mockups/`** (see **PR design-folder**).
+- Later superseded by **`docs/design/README.md`** + **`docs/design/mockups/`** (see **PR design-folder**).
 - Removed byte-identical Markdown duplicates from `app docs/` after inbound links pointed at `reference-docs/…`.
 
 ### PR D2 — Doc tree and archive
@@ -90,7 +90,7 @@
 |---------|----------|-----------|
 | `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md` | `reference-docs/corpus-build-pipeline-v2.md` | Shorter, role-based; drop redundant prefix |
 | `reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md` | `reference-docs/as-built-baseline.md` | Obvious purpose for new readers |
-| ~~`app docs/`~~ | **`design/`** (done: `mockups/` + `references/`) | Consolidated HTML mockups + former `ui-references/` screenshots |
+| ~~`app docs/`~~ | **`docs/design/`** (done: `mockups/` + `references/`) | Consolidated HTML mockups + former `ui-references/` screenshots |
 
 **Rule:** every rename gets a row in `docs/history/EVOLUTION.md` (“Former path → new path, date”).
 
