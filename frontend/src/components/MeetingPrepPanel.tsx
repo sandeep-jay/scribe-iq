@@ -1,11 +1,17 @@
 "use client";
 
+/**
+ * Meeting prep panel: loads cached or fresh summaries from FastAPI.
+ * ``logError`` carries non-PHI identifiers only (patient id + feature area).
+ */
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
 
 import type { MeetingPrepPayload } from "@/lib/backend";
 import { fetchMeetingPrep, responsibleAiAdminUiEnabled } from "@/lib/backend";
+import { logError } from "@/lib/logger";
 
 export function MeetingPrepPanel({ patientId }: { patientId: string }) {
   const [data, setData] = useState<MeetingPrepPayload | null>(null);
@@ -20,6 +26,11 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
         const res = await fetchMeetingPrep(patientId, refresh);
         setData(res);
       } catch (e) {
+        logError("meeting_prep_load_failed", {
+          feature_area: "meeting_prep",
+          patient_id: patientId,
+          error: (e as Error).message,
+        });
         setErr((e as Error).message);
       } finally {
         setBusy(false);

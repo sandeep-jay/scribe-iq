@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     app_name: str = "scribe-iq-backend"
     log_level: str = "INFO"
 
+    # When true, emit JSON logs (recommended in production).
+    log_json: bool = False
+
     database_url: str = "postgresql://rag:rag_dev_password@127.0.0.1:5433/rag_dev"
 
     # Comma-separated exact origins. Next often uses 3001+ when 3000 is busy; LAN testing uses 192.168.x.x.

@@ -11,12 +11,14 @@ from app.api import admin_responsible_ai as admin_responsible_ai_routes
 from app.api import notes as notes_routes
 from app.api import patients as patient_routes
 from app.config import cors_origin_list, get_settings
-from app.middleware import OptionalApiKeyMiddleware
+from app.logging_config import configure_logging
+from app.middleware import OptionalApiKeyMiddleware, RequestLoggingMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     settings = get_settings()
+    configure_logging(settings)
     pool = await asyncpg.create_pool(settings.database_url)
     app.state.db_pool = pool
     try:
@@ -29,7 +31,10 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(title=settings.app_name, lifespan=lifespan)
 
+    # Starlette runs last-added middleware first on the request path; put CORS outermost,
+    # then request logging (so 401 from API key still emits request_completed), then auth.
     application.add_middleware(OptionalApiKeyMiddleware)
+    application.add_middleware(RequestLoggingMiddleware)
 
     relax = settings.cors_relax_local
     allow_origin_regex = (
