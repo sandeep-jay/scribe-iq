@@ -19,7 +19,16 @@ from app.middleware import OptionalApiKeyMiddleware, RequestLoggingMiddleware
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     settings = get_settings()
     configure_logging(settings)
-    pool = await asyncpg.create_pool(settings.database_url)
+    try:
+        pool = await asyncpg.create_pool(
+            settings.database_url,
+            min_size=settings.db_pool_min_size,
+            max_size=settings.db_pool_max_size,
+            command_timeout=settings.db_pool_command_timeout_s,
+        )
+    except TypeError:
+        # Test fakes may monkeypatch create_pool with a minimal signature.
+        pool = await asyncpg.create_pool(settings.database_url)
     app.state.db_pool = pool
     try:
         yield

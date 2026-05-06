@@ -18,6 +18,11 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql://rag:rag_dev_password@127.0.0.1:5433/rag_dev"
 
+    # Asyncpg pool tuning (helps avoid queueing under concurrent slow LLM calls).
+    db_pool_min_size: int = 2
+    db_pool_max_size: int = 20
+    db_pool_command_timeout_s: float = 30.0
+
     # Comma-separated exact origins. Next often uses 3001+ when 3000 is busy; LAN testing uses 192.168.x.x.
     cors_origins: str = ",".join(
         [f"http://{host}:{port}" for host in ("localhost", "127.0.0.1") for port in range(3000, 3013)]
