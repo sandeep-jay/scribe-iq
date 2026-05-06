@@ -36,12 +36,12 @@ last_updated: 2026-05-03
 
 Implement with **Tailwind + shadcn/ui** (per design docs); **parity target** is these HTML mockups.
 
-| Mockup (`app docs/`) | Planned route | Notes |
+| Mockup (`design/mockups/`) | Planned route | Notes |
 |----------------------|----------------|------|
-| [`scribe_iq_login_page.html`](../app%20docs/scribe_iq_login_page.html) | `/login` | Optional for v1; Phase1 doc had no auth |
-| [`scribe_iq_patient_list_professional.html`](../app%20docs/scribe_iq_patient_list_professional.html) | `/` or `/patients` | Stats + table; wire to `GET /patients` |
-| [`scribe_iq_patient_detail_final_v2.html`](../app%20docs/scribe_iq_patient_detail_final_v2.html) | `/patients/[id]` | Longitudinal / summary from DB; note list |
-| [`scribe_iq_encounter_viewer_professional.html`](../app%20docs/scribe_iq_encounter_viewer_professional.html) | `/patients/[id]/encounter/[encounterId]` | Dialogue + SOAP panes; transcript only where data exists |
+| [`scribe_iq_login_page.html`](../design/mockups/scribe_iq_login_page.html) | `/login` | Optional for v1; Phase1 doc had no auth |
+| [`scribe_iq_patient_list_professional.html`](../design/mockups/scribe_iq_patient_list_professional.html) | `/` or `/patients` | Stats + table; wire to `GET /patients` |
+| [`scribe_iq_patient_detail_final_v2.html`](../design/mockups/scribe_iq_patient_detail_final_v2.html) | `/patients/[id]` | Longitudinal / summary from DB; note list |
+| [`scribe_iq_encounter_viewer_professional.html`](../design/mockups/scribe_iq_encounter_viewer_professional.html) | `/patients/[id]/encounter/[encounterId]` | Dialogue + SOAP panes; transcript only where data exists |
 
 **Chat (`/chat`):** required for **chat-first** story; **no HTML mockup in repo**. Use Phase1/simple chat UX; expose entry point from list/detail.
 
@@ -50,11 +50,11 @@ Implement with **Tailwind + shadcn/ui** (per design docs); **parity target** is 
 ## Subtasks — UI (explicit)
 
 - **T7a:** Scaffold `frontend/`; align tokens with mockups.
-- **T7b:** Patient list vs [`scribe_iq_patient_list_professional.html`](../app%20docs/scribe_iq_patient_list_professional.html).
-- **T7c:** Patient detail vs [`scribe_iq_patient_detail_final_v2.html`](../app%20docs/scribe_iq_patient_detail_final_v2.html).
+- **T7b:** Patient list vs [`scribe_iq_patient_list_professional.html`](../design/mockups/scribe_iq_patient_list_professional.html).
+- **T7c:** Patient detail vs [`scribe_iq_patient_detail_final_v2.html`](../design/mockups/scribe_iq_patient_detail_final_v2.html).
 - **T7d:** Chat vs `POST /chat` (+ citations sidebar).
-- **T8a:** Encounter viewer vs [`scribe_iq_encounter_viewer_professional.html`](../app%20docs/scribe_iq_encounter_viewer_professional.html).
-- **T8b:** Optional `/login` vs [`scribe_iq_login_page.html`](../app%20docs/scribe_iq_login_page.html).
+- **T8a:** Encounter viewer vs [`scribe_iq_encounter_viewer_professional.html`](../design/mockups/scribe_iq_encounter_viewer_professional.html).
+- **T8b:** Optional `/login` vs [`scribe_iq_login_page.html`](../design/mockups/scribe_iq_login_page.html).
 
 ---
 
@@ -69,4 +69,4 @@ Implement with **Tailwind + shadcn/ui** (per design docs); **parity target** is 
 ## Document history
 
 - **2026-05-03:** Filled file (was empty). Added **mandatory mockup-linked** T7/T8 subtasks.
-- **2026-05-06:** Refreshed task statuses vs **`SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**; design-doc links now point at **`reference-docs/`**; see **`docs/history/EVOLUTION.md`**.
+- **2026-05-06:** Refreshed task statuses vs **`SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**; design Markdown links → **`reference-docs/`**; HTML mockups → **`design/mockups/`**; screenshots **`ui-references/`** → **`design/references/`**; see **`docs/history/EVOLUTION.md`**.

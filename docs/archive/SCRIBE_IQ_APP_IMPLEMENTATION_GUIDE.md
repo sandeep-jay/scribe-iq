@@ -1,4 +1,4 @@
-> **Archived (2026-05-05).** Canonical engineering narrative: **`reference-docs/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`**. As-built inventory: **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**. Static HTML references remain under **`app docs/`**.
+> **Archived (2026-05-05).** Canonical engineering narrative: **`reference-docs/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`**. As-built inventory: **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`**. Static HTML mockups live under **`design/mockups/`**.
 
 ---
 
