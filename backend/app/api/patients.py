@@ -27,6 +27,7 @@ from app.meeting_prep_service import (
     deterministic_meeting_prep_summary,
     meeting_prep_context_bundle,
     meeting_prep_messages,
+    notes_fingerprint,
 )
 
 from app.responsible_ai.audit_logger import insert_ai_interaction
@@ -255,12 +256,12 @@ async def patient_corpus_stats(
 async def get_meeting_prep(
     request: Request,
     patient_id: str,
-    conn: Annotated[asyncpg.Connection, Depends(get_conn)],
     domain: str = Query(default="clinical"),
     refresh: bool = Query(default=False, description="Force regeneration even if cache is fresh."),
 ) -> MeetingPrepResponse:
     settings = get_settings()
     req_id = get_request_id(request)
+    pool: asyncpg.Pool = request.app.state.db_pool
     logger.info(
         "meeting_prep_started",
         request_id=req_id,
@@ -275,14 +276,63 @@ async def get_meeting_prep(
             detail="Meeting prep disabled. Set MEETING_PREP_ENABLED=true in backend/.env.",
         )
 
-    pid = await resolve_patient_id(conn, patient_id)
-    logger.debug("meeting_prep_patient_resolved", request_id=req_id, patient_uuid=str(pid))
+    pid: UUID
+    fp: str
+    facts: dict
+    visit_ids: list[str]
+    trace_payload: dict
 
-    bundle = await meeting_prep_context_bundle(conn, patient_id=pid, domain=domain)
-    if bundle is None:
-        logger.warning("meeting_prep_patient_not_found", request_id=req_id)
-        raise HTTPException(status_code=404, detail="Patient not found")
-    fp, facts = bundle
+    async with pool.acquire() as conn:
+        pid = await resolve_patient_id(conn, patient_id)
+        logger.debug("meeting_prep_patient_resolved", request_id=req_id, patient_uuid=str(pid))
+
+        if not refresh:
+            logger.debug("meeting_prep_cache_lookup", request_id=req_id, domain=domain)
+            cached = await conn.fetchrow(
+                """
+                SELECT summary_text, source_fingerprint, generated_at, model, prompt_version
+                FROM patient_meeting_prep
+                WHERE patient_id = $1::uuid AND domain = $2
+                """,
+                pid,
+                domain,
+            )
+            if cached:
+                current_fp = await notes_fingerprint(conn, pid)
+                if cached["source_fingerprint"] == current_fp:
+                    mdl = str(cached["model"] or "")
+                    degraded = mdl == "deterministic-fallback"
+                    logger.info(
+                        "meeting_prep_cache_hit",
+                        request_id=req_id,
+                        degraded=degraded,
+                        model=mdl,
+                    )
+                    return MeetingPrepResponse(
+                        patient_id=pid,
+                        summary=cached["summary_text"],
+                        generated_at=cached["generated_at"],
+                        cached=True,
+                        prompt_version=cached["prompt_version"],
+                        model=cached["model"],
+                        degraded=degraded,
+                        ai_audit=None,
+                    )
+                logger.info(
+                    "meeting_prep_cache_stale",
+                    request_id=req_id,
+                    stored_fp_preview=str(cached["source_fingerprint"])[:16],
+                    current_fp_preview=str(current_fp)[:16],
+                )
+            else:
+                logger.debug("meeting_prep_cache_miss", request_id=req_id, domain=domain)
+
+        bundle = await meeting_prep_context_bundle(conn, patient_id=pid, domain=domain)
+        if bundle is None:
+            logger.warning("meeting_prep_patient_not_found", request_id=req_id)
+            raise HTTPException(status_code=404, detail="Patient not found")
+        fp, facts = bundle
+
     logger.debug(
         "meeting_prep_bundle_ok",
         request_id=req_id,
@@ -297,115 +347,6 @@ async def get_meeting_prep(
         if isinstance(v, dict) and v.get("note_id")
     ]
     trace_payload = trace_from_meeting_prep_visits(list(visits_raw), fingerprint=fp)
-
-    async def _audit_block(
-        *,
-        summary: str,
-        model: str,
-        pv: str,
-        cached: bool,
-        degraded: bool,
-        groq_res,
-        latency_override_ms: int | None,
-    ) -> MeetingPrepAiAudit:
-        flags = evaluate_meeting_prep(summary=summary, visit_note_ids=visit_ids)
-        safety_status = aggregate_safety_status(flags)
-        sta = "degraded" if degraded else "success"
-        inp_hash = sha256_hex(json.dumps(facts, default=str)[:60_000])
-        out_hash = sha256_hex(summary)
-        sys_hash = sha256_hex(f"{MEETING_PREP_PROMPT_VERSION}|meeting_prep_system")
-        lat = latency_override_ms if latency_override_ms is not None else (
-            groq_res.latency_ms if groq_res is not None else 1
-        )
-        itok = groq_res.prompt_tokens if groq_res is not None else None
-        otok = groq_res.completion_tokens if groq_res is not None else None
-        mname = groq_res.model if groq_res is not None else model
-        iid = await insert_ai_interaction(
-            conn,
-            request_id=req_id,
-            interaction_type="meeting_prep",
-            patient_id=str(pid),
-            note_id=None,
-            model_provider=settings.llm_provider,
-            model_name=mname,
-            prompt_version=pv,
-            system_prompt_hash=sys_hash,
-            input_hash=inp_hash,
-            output_hash=out_hash,
-            input_redacted_preview=redact_preview(json.dumps(facts, default=str)[:8000]),
-            output_redacted_preview=redact_preview(summary),
-            retrieved_sources_json=trace_payload,
-            citations_json=None,
-            safety_flags_json=flags,
-            governance_json={
-                "cached": cached,
-                "source_fingerprint": fp,
-                "degraded": degraded,
-            },
-            latency_ms=lat,
-            input_tokens=itok,
-            output_tokens=otok,
-            status=sta,
-            error_message=None,
-        )
-        return MeetingPrepAiAudit(
-            interaction_id=iid,
-            cached=cached,
-            source_fingerprint=fp,
-            prompt_version=pv,
-            source_count=len(visit_ids),
-            safety_status=safety_status,
-        )
-
-    if not refresh:
-        logger.debug("meeting_prep_cache_lookup", request_id=req_id, domain=domain)
-        cached = await conn.fetchrow(
-            """
-            SELECT summary_text, source_fingerprint, generated_at, model, prompt_version
-            FROM patient_meeting_prep
-            WHERE patient_id = $1::uuid AND domain = $2
-            """,
-            pid,
-            domain,
-        )
-        if cached and cached["source_fingerprint"] == fp:
-            mdl = str(cached["model"] or "")
-            degraded = mdl == "deterministic-fallback"
-            logger.info(
-                "meeting_prep_cache_hit",
-                request_id=req_id,
-                degraded=degraded,
-                model=mdl,
-            )
-
-            ai_audit = await _audit_block(
-                summary=cached["summary_text"],
-                model=cached["model"],
-                pv=cached["prompt_version"],
-                cached=True,
-                degraded=degraded,
-                groq_res=None,
-                latency_override_ms=1,
-            )
-            return MeetingPrepResponse(
-                patient_id=pid,
-                summary=cached["summary_text"],
-                generated_at=cached["generated_at"],
-                cached=True,
-                prompt_version=cached["prompt_version"],
-                model=cached["model"],
-                degraded=degraded,
-                ai_audit=ai_audit,
-            )
-        elif cached:
-            logger.info(
-                "meeting_prep_cache_stale",
-                request_id=req_id,
-                stored_fp_preview=str(cached["source_fingerprint"])[:16],
-                current_fp_preview=str(fp)[:16],
-            )
-        else:
-            logger.debug("meeting_prep_cache_miss", request_id=req_id, domain=domain)
 
     groq_key = (settings.groq_api_key or "").strip()
     degraded = False
@@ -440,39 +381,79 @@ async def get_meeting_prep(
         pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
         degraded = True
 
-    await conn.execute(
-        """
-        INSERT INTO patient_meeting_prep (
-          patient_id, domain, summary_text, model, prompt_version, source_fingerprint, generated_at
-        ) VALUES ($1::uuid, $2, $3, $4, $5, $6, now())
-        ON CONFLICT (patient_id) DO UPDATE SET
-          domain = EXCLUDED.domain,
-          summary_text = EXCLUDED.summary_text,
-          model = EXCLUDED.model,
-          prompt_version = EXCLUDED.prompt_version,
-          source_fingerprint = EXCLUDED.source_fingerprint,
-          generated_at = now()
-        """,
-        pid,
-        domain,
-        summary,
-        model,
-        pv,
-        fp,
-    )
-    row2 = await conn.fetchrow(
-        "SELECT generated_at FROM patient_meeting_prep WHERE patient_id = $1::uuid",
-        pid,
-    )
-    assert row2 is not None
-    ai_audit = await _audit_block(
-        summary=summary,
-        model=model,
-        pv=pv,
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO patient_meeting_prep (
+              patient_id, domain, summary_text, model, prompt_version, source_fingerprint, generated_at
+            ) VALUES ($1::uuid, $2, $3, $4, $5, $6, now())
+            ON CONFLICT (patient_id) DO UPDATE SET
+              domain = EXCLUDED.domain,
+              summary_text = EXCLUDED.summary_text,
+              model = EXCLUDED.model,
+              prompt_version = EXCLUDED.prompt_version,
+              source_fingerprint = EXCLUDED.source_fingerprint,
+              generated_at = now()
+            """,
+            pid,
+            domain,
+            summary,
+            model,
+            pv,
+            fp,
+        )
+        row2 = await conn.fetchrow(
+            "SELECT generated_at FROM patient_meeting_prep WHERE patient_id = $1::uuid",
+            pid,
+        )
+        assert row2 is not None
+
+        flags = evaluate_meeting_prep(summary=summary, visit_note_ids=visit_ids)
+        safety_status = aggregate_safety_status(flags)
+        sta = "degraded" if degraded else "success"
+        inp_hash = sha256_hex(json.dumps(facts, default=str)[:60_000])
+        out_hash = sha256_hex(summary)
+        sys_hash = sha256_hex(f"{MEETING_PREP_PROMPT_VERSION}|meeting_prep_system")
+        lat = groq_res.latency_ms if groq_res is not None else 1
+        itok = groq_res.prompt_tokens if groq_res is not None else None
+        otok = groq_res.completion_tokens if groq_res is not None else None
+        mname = groq_res.model if groq_res is not None else model
+        iid = await insert_ai_interaction(
+            conn,
+            request_id=req_id,
+            interaction_type="meeting_prep",
+            patient_id=str(pid),
+            note_id=None,
+            model_provider=settings.llm_provider,
+            model_name=mname,
+            prompt_version=pv,
+            system_prompt_hash=sys_hash,
+            input_hash=inp_hash,
+            output_hash=out_hash,
+            input_redacted_preview=redact_preview(json.dumps(facts, default=str)[:8000]),
+            output_redacted_preview=redact_preview(summary),
+            retrieved_sources_json=trace_payload,
+            citations_json=None,
+            safety_flags_json=flags,
+            governance_json={
+                "cached": False,
+                "source_fingerprint": fp,
+                "degraded": degraded,
+            },
+            latency_ms=lat,
+            input_tokens=itok,
+            output_tokens=otok,
+            status=sta,
+            error_message=None,
+        )
+
+    ai_audit = MeetingPrepAiAudit(
+        interaction_id=iid,
         cached=False,
-        degraded=degraded,
-        groq_res=groq_res,
-        latency_override_ms=None,
+        source_fingerprint=fp,
+        prompt_version=pv,
+        source_count=len(visit_ids),
+        safety_status=safety_status,
     )
     logger.info(
         "meeting_prep_regenerated",
