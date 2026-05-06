@@ -1,8 +1,8 @@
 # Scribe IQ — Responsible AI Control Center (roadmap)
 
-This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`docs/README.md`** (documentation index), **`roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (what exists today), and **`roadmap/PHASE1_MASTER_PLAN.md`** / **`roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
+This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`docs/README.md`** (documentation index), **`docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (what exists today), and **`docs/roadmap/PHASE1_MASTER_PLAN.md`** / **`docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
 
-**Status:** **implemented** in the repository (see **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** for routes, env flags, and schema). Remaining roadmap items (for example a formal review queue table) may still be future work.
+**Status:** **implemented** in the repository (see **`docs/architecture/IMPLEMENTED_BASELINE.md`** for routes, env flags, and schema). Remaining roadmap items (for example a formal review queue table) may still be future work.
 
 **Last updated:** 2026-05-05
 
@@ -177,7 +177,7 @@ New router (for example `backend/app/api/admin_responsible_ai.py`), mounted in `
 
 ## 13. Implementation checklist (engineering)
 
-**Phase 1 (shipped):** The core audit trail + admin APIs + gated Next.js admin surfaces described earlier are implemented—inventory and pointers live in **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (Responsible AI section).
+**Phase 1 (shipped):** The core audit trail + admin APIs + gated Next.js admin surfaces described earlier are implemented—inventory and pointers live in **`docs/architecture/IMPLEMENTED_BASELINE.md`** (Responsible AI section).
 
 What landed (high level):
 
@@ -199,7 +199,7 @@ What landed (high level):
 | Document | Role |
 |----------|------|
 | `docs/README.md` | Documentation index (roadmaps, references, archives) |
-| `reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md` | What is implemented today |
-| `roadmap/SCRIBE_IQ_UI_ROADMAP.md` | Overall UI roadmap |
-| `roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 master plan |
-| `roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md` | V1 implementation plan |
+| `docs/architecture/IMPLEMENTED_BASELINE.md` | What is implemented today |
+| `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` | Overall UI roadmap |
+| `docs/roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 master plan |
+| `docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md` | V1 implementation plan |

@@ -1,6 +1,6 @@
 # Scribe IQ — UI roadmap
 
-This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`reference-docs/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
+This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today), and **`docs/reference/GIT_CHECKPOINTS.md`** (git workflow). **No implementation commitments** are implied by ordering; adjust as priorities shift.
 
 ---
 
@@ -193,7 +193,7 @@ This section mirrors the **agent plan** *Transcription and note generation servi
 | **Transcription (ASR)** | Audio (or finalized chunks) → **plain transcript** (optional segments, language). | **Generate note** panel: file upload, optional mic **record → stop → transcribe**, optional chunked/streaming-oriented session UX. |
 | **Note generation** | **Clinician-edited** transcript + existing encounter/specialty context → structured note via current backend/LLM. | Same panel after edit; errors must read as **note** failures, not ASR failures. |
 
-**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `reference-docs/CLinical_Note_LLM.md`).
+**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `docs/reference/CLinical_Note_LLM.md`).
 
 ### 12.2 Batch vs streaming-oriented ingestion (both in scope for planning)
 
@@ -252,7 +252,7 @@ This section records the active performance remediation strategy and complements
 
 | Phase | Focus | Core outcomes |
 |------|--------|----------------|
-| **P0 Baseline** | Measurement harness | Cold/warm route/API timing baselines; profiling checklist in `reference-docs/`. |
+| **P0 Baseline** | Measurement harness | Cold/warm route/API timing baselines; profiling checklist in `docs/reference/`. |
 | **P1 Frontend fast wins** | Caching + waterfalls | Route-level cache strategy for stable reads; remove serialized fetch chains where possible. |
 | **P2 Backend index optimization** | Query plan efficiency | Add/validate vector and composite indexes for chat, patient timeline, and prep/admin filters. |
 | **P3 Backend flow optimization** | Latency accumulation | Overlap independent I/O in generation flows; reduce repeated aggregate scans in admin endpoints. |
@@ -284,7 +284,7 @@ This section records the active performance remediation strategy and complements
 | 2026-05-04 | Phases B–D implemented on branch `feature/ui-roadmap-bcd`: patients findability, chart rail + month timeline, encounter workspace shell. |
 | 2026-05-04 | Added **V2 UI Implementation Plan** with data-feasibility gates from current backend contracts and reference-screen comparison. |
 | 2026-05-04 | Added **§12 Transcription and note generation service** (ASR + note path, batch/streaming UX, OpenAI / local / GCP matrix, trust/exit criteria). |
-| 2026-05-04 | Intro cross-link to **`reference-docs/SCRIBE_IQ_IMPLEMENTED_BASELINE.md`** (implemented inventory). |
+| 2026-05-04 | Intro cross-link to **`docs/architecture/IMPLEMENTED_BASELINE.md`** (implemented inventory). |
 | 2026-05-05 | Added **§13 Performance improvement plan** with phased latency remediation and SSE streaming scope (chat + prep + note generation). |
 | 2026-05-06 | Linked **`docs/README.md`** from introduction as repository-wide documentation map |
 

@@ -24,7 +24,7 @@
 
 ```
 scribe-iq/                          ← repo root
-  reference-docs/                   ← architecture proposals + long-form references
+  docs/reference/                   ← architecture proposals + long-form references
     CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
     ...
 
@@ -43,7 +43,7 @@ scribe-iq/                          ← repo root
   frontend/
 ```
 
-**Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`reference-docs/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`lakehouse-old/`** directory may exist on some machines and is **not** part of the supported layout.
+**Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`docs/reference/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`lakehouse-old/`** directory may exist on some machines and is **not** part of the supported layout.
 
 ---
 
@@ -112,7 +112,7 @@ scribe-iq/
       manifest.json
       audit_report.md
       dataset_card.md
-  reference-docs/
+  docs/reference/
     CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
 ```
 
@@ -1579,7 +1579,7 @@ Scripts 01-05 are idempotent (safe to re-run, they overwrite output).
 
 ## Relation to lakehouse-era proposals
 
-**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`reference-docs/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`** and **`docs/history/EVOLUTION.md`**.
+**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`** and **`docs/history/EVOLUTION.md`**.
 
 Do not recreate a competing **`lakehouse/scripts`** tree for new work.
 

@@ -3,7 +3,7 @@
 
 ---
 
-> **Historical / architectural proposal.** This document describes the **lakehouse-shaped precursor** design for assembling a synthetic clinical corpus. In **this repository today**, the **canonical runnable corpus builder** is **`data_prep/`** plus **`reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Use those paths when executing pipelines on disk; use this proposal for rationale and evolution.
+> **Historical / architectural proposal.** This document describes the **lakehouse-shaped precursor** design for assembling a synthetic clinical corpus. In **this repository today**, the **canonical runnable corpus builder** is **`data_prep/`** plus **`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Use those paths when executing pipelines on disk; use this proposal for rationale and evolution.
 
 
 ## 1. Project Goal
@@ -669,9 +669,9 @@ scribe-iq/
       join_results.jsonl              # future
       join_audit.jsonl                # future (staging-level)
     clinical_corpus/                  # future handoff to Project A
-  reference-docs/
+  docs/reference/
     CLINICAL_LAKEHOUSE_PROPOSAL_V2.md  ← this document
-  roadmap/
+  docs/roadmap/
     PHASE1_MASTER_PLAN.md              # Project A (app MVP) master plan
   backend/        # Project A — create after lakehouse handoff
   frontend/

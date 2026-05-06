@@ -1,18 +1,18 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
-> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`). Historical prose below still mentions **`lakehouse/`** as early-phase tooling naming—treat those sections as **design lineage**, not as mandatory filesystem paths today. Optional local remnants may exist under **`lakehouse-old/`** (often gitignored). Documentation map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
+> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`). Historical prose below still mentions **`lakehouse/`** as early-phase tooling naming—treat those sections as **design lineage**, not as mandatory filesystem paths today. Optional local remnants may exist under **`lakehouse-old/`** (often gitignored). Documentation map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
 
 
 > **Two projects**
 >
 > | Project | Purpose | Where |
 > |--------|---------|--------|
-> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet → future Synthea join → `data/clinical_corpus/`). No app server, no Postgres. | `lakehouse/`, `reference-docs/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`, `data/staging/` → `data/clinical_corpus/` |
+> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet → future Synthea join → `data/clinical_corpus/`). No app server, no Postgres. | `lakehouse/`, `docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`, `data/staging/` → `data/clinical_corpus/` |
 > | **A — Application MVP** | RAG demo app: `backend/`, `frontend/`, Postgres, Azure. | §4–§15 **below** (schema, API, build order) |
 >
 > **Handoff:** Start production **`backend/`** after **Project L** meets the lakehouse V2 success criteria (**`data/clinical_corpus/`** + audit, see proposal §10). **Interim prototyping** may use **`create_seed_plan.py`** (50×8 JSONL) only with explicit demo scope — migrate to corpus-driven loading when `data/clinical_corpus/` exists.
 >
-> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`reference-docs/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**.
+> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**.
 
 **Foundation (Project L — early milestones):** `lakehouse/` — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
 
@@ -46,7 +46,7 @@
 | API prefix | Bare paths vs `/api/v1` | **`/api/v1` on all REST resources**; `/health` may stay unversioned for probes. |
 | DB: FTS | Master schema included `search_vector` + trigger in MVP | **Omit** `search_vector`, `pg_trgm`, and FTS trigger until a **later hybrid-retrieval phase** (see reference docs). Keeps MVP aligned with “vector-only search.” |
 | Azure deployments | Master: separate `gpt-4o` + mini; older docs: mini only | **Phase 3 MVP: one chat completion deployment** — use **`gpt-4o-mini`** for generation, meeting prep, chat answer synthesis, and judge calls. **Embeddings:** `text-embedding-ada-002` (1536-d). Add `gpt-4o` later for planner/reflection only. |
-| Filename drift | References to `DESIGN_PHASE1.md` | **This file:** `roadmap/PHASE1_MASTER_PLAN.md`. |
+| Filename drift | References to `DESIGN_PHASE1.md` | **This file:** `docs/roadmap/PHASE1_MASTER_PLAN.md`. |
 | Corpus vs app | Mixing HF access with DB seeding | **Phase 0** stages Parquet + manifest; **Phases 1–2** add classifications + seed plan; **Phase 3** loader reads `data/staging/`. |
 
 ### 2.3 Gaps filled (this document)
@@ -259,7 +259,7 @@ Turn staged Parquet into a **deterministic, app-shaped** bundle: **400** notes, 
 
 ```
 scribe-iq/
-├── roadmap/
+├── docs/roadmap/
 │   └── PHASE1_MASTER_PLAN.md
 ├── lakehouse/                         ← Project L — tooling (precursor corpus)
 │   ├── README.md
@@ -271,7 +271,7 @@ scribe-iq/
 │       ├── classify_specialties.py  ← §4.5
 │       ├── export_staged_parquet_jsonl.py
 │       └── create_seed_plan.py      ← §4.6 interim seed
-├── reference-docs/
+├── docs/reference/
 │   └── CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
 ├── data/
 │   ├── raw/                         ← future: immutable source drops (see lakehouse proposal)
@@ -688,12 +688,12 @@ Use an API version that supports **`chat.completions.parse`** for your SDK; adju
 | 2026-05-03 | Historical: seed artifacts initially tracked as Phase 0 **P0d** / **`phase: "0"`**. **Superseded** by program renumbering (seed planning is **Phase 2**; `phase` / `step` in `phase1_seed_plan.json` are now **`"2"` / `"P2-seed"`**) — see newer history row. |
 | 2026-05-02 | **Program phases 0–3** — Phase 1 `classify_specialties.py` (§4.5); seed planning is **Phase 2** (§4.6); MVP app is **Phase 3**; Phase 0 ends at staging (P0c). Updated §14 gates + §11.1. |
 | 2026-05-03 | **Two-project framing:** **Project L** (`lakehouse/`, `CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`) vs **Project A** (this doc). Stale **`backend/`** cache directory removed; **`data_prep/`** scripts moved to **`lakehouse/scripts/`** (legacy **`data_prep/README.md`** redirects). |
-| 2026-05-03 | Added **`reference-docs/GIT_CHECKPOINTS.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). §18 links here. |
+| 2026-05-03 | Added **`docs/reference/GIT_CHECKPOINTS.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). §18 links here. |
 
 
 ## 18. Git checkpoints (experiments)
 
-Before large UI or IA refactors, use a named **checkpoint branch** so you can revert cleanly. Commands, revert options, and the **recorded** checkpoint for this repo: **`reference-docs/GIT_CHECKPOINTS.md`**.
+Before large UI or IA refactors, use a named **checkpoint branch** so you can revert cleanly. Commands, revert options, and the **recorded** checkpoint for this repo: **`docs/reference/GIT_CHECKPOINTS.md`**.
 
 ---
 

@@ -1,7 +1,7 @@
 # Scribe-IQ `data_prep/` pipeline
 
 Generates the **50-patient** demo corpus under `data/clinical_corpus_v2/`. Spec:
-`../reference-docs/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`.
+`../docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`.
 
 Archived exploratory scripts live in **`../lakehouse-old/`**.
 
