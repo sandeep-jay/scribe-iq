@@ -13,14 +13,11 @@ from __future__ import annotations
 import json
 
 import structlog
-from typing import Annotated
-
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 
 from app.api.patients import resolve_patient_id
 from app.config import get_settings
-from app.db import get_conn
 from app.embeddings import embed_query_text
 from app.llm import groq_chat_complete
 from app.request_id import get_request_id
@@ -74,10 +71,10 @@ def _lc_block(raw) -> str | None:
 async def chat(
     request: Request,
     body: ChatRequest,
-    conn: Annotated[asyncpg.Connection, Depends(get_conn)],
 ) -> ChatResponse:
     settings = get_settings()
     req_id = get_request_id(request)
+    pool: asyncpg.Pool = request.app.state.db_pool
 
     logger.info(
         "chat_started",
@@ -92,52 +89,53 @@ async def chat(
         logger.warning("chat_domain_invalid", request_id=req_id, domain_repr=repr(body.domain)[:120])
         raise HTTPException(status_code=400, detail="Invalid domain.")
 
-    indexed = await conn.fetchval(
-        """
-        SELECT EXISTS (
-          SELECT 1 FROM notes
-          WHERE domain = $1 AND embedding IS NOT NULL
-          LIMIT 1
-        )
-        """,
-        body.domain,
-    )
-    logger.debug("chat_embeddings_index_checked", request_id=req_id, domain=body.domain, indexed=bool(indexed))
-
-    if not indexed:
-        logger.warning("chat_no_embeddings_for_domain", request_id=req_id, domain=body.domain)
-        raise HTTPException(
-            status_code=503,
-            detail=(
-                "No embeddings in the database for this domain. Load OpenAI embeddings with "
-                "scribe-load-corpus --embed after setting OPENAI_API_KEY."
-            ),
-        )
-
     patient_uuid = None
-    if body.patient_id:
-        patient_uuid = await resolve_patient_id(conn, body.patient_id)
-        logger.debug("chat_patient_resolved", request_id=req_id, patient_id_param_set=True)
-    else:
-        logger.debug("chat_patient_scope_global", request_id=req_id, patient_id_param_set=False)
-
     longitudinal = None
-    if patient_uuid is not None:
-        row_lc = await conn.fetchrow(
+    async with pool.acquire() as conn:
+        indexed = await conn.fetchval(
             """
-            SELECT longitudinal_context
-            FROM notes
-            WHERE patient_id = $1::uuid AND longitudinal_context IS NOT NULL
-            ORDER BY session_date DESC NULLS LAST, created_at DESC
-            LIMIT 1
+            SELECT EXISTS (
+              SELECT 1 FROM notes
+              WHERE domain = $1 AND embedding IS NOT NULL
+              LIMIT 1
+            )
             """,
-            patient_uuid,
+            body.domain,
         )
-        if row_lc and row_lc["longitudinal_context"] is not None:
-            longitudinal = _lc_block(row_lc["longitudinal_context"])
-            logger.debug("chat_longitudinal_loaded", request_id=req_id, has_longitudinal=True)
+        logger.debug("chat_embeddings_index_checked", request_id=req_id, domain=body.domain, indexed=bool(indexed))
+
+        if not indexed:
+            logger.warning("chat_no_embeddings_for_domain", request_id=req_id, domain=body.domain)
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "No embeddings in the database for this domain. Load OpenAI embeddings with "
+                    "scribe-load-corpus --embed after setting OPENAI_API_KEY."
+                ),
+            )
+
+        if body.patient_id:
+            patient_uuid = await resolve_patient_id(conn, body.patient_id)
+            logger.debug("chat_patient_resolved", request_id=req_id, patient_id_param_set=True)
         else:
-            logger.debug("chat_longitudinal_missing", request_id=req_id, has_longitudinal=False)
+            logger.debug("chat_patient_scope_global", request_id=req_id, patient_id_param_set=False)
+
+        if patient_uuid is not None:
+            row_lc = await conn.fetchrow(
+                """
+                SELECT longitudinal_context
+                FROM notes
+                WHERE patient_id = $1::uuid AND longitudinal_context IS NOT NULL
+                ORDER BY session_date DESC NULLS LAST, created_at DESC
+                LIMIT 1
+                """,
+                patient_uuid,
+            )
+            if row_lc and row_lc["longitudinal_context"] is not None:
+                longitudinal = _lc_block(row_lc["longitudinal_context"])
+                logger.debug("chat_longitudinal_loaded", request_id=req_id, has_longitudinal=True)
+            else:
+                logger.debug("chat_longitudinal_missing", request_id=req_id, has_longitudinal=False)
 
     try:
         _, vec_lit = await embed_query_text(body.message)
@@ -146,29 +144,30 @@ async def chat(
         logger.warning("embedding_unavailable", request_id=req_id, error=str(e))
         raise HTTPException(status_code=503, detail=str(e)) from e
 
-    rows = await conn.fetch(
-        """
-        SELECT n.id AS note_id,
-               n.external_encounter_id,
-               COALESCE((n.structured_note->>'summary'), '') AS summary,
-               COALESCE(n.conversation_text, '') AS conversation_text,
-               (n.embedding <=> $1::vector)::float AS distance,
-               ((1::float - (n.embedding <=> $1::vector)))::float AS cosine_sim,
-               COALESCE(length(n.conversation_text), 0) AS cx_len,
-               COALESCE(length(n.structured_note::text), 0) AS sn_len,
-               COALESCE(EXTRACT(epoch FROM COALESCE(n.session_date::timestamptz, n.created_at))::bigint, 0) AS sess
-        FROM notes n
-        WHERE n.domain = $4
-          AND n.embedding IS NOT NULL
-          AND ($2::uuid IS NULL OR n.patient_id = $2::uuid)
-        ORDER BY n.embedding <=> $1::vector ASC, cx_len DESC, sn_len DESC, sess DESC NULLS LAST
-        LIMIT $3
-        """,
-        vec_lit,
-        patient_uuid,
-        body.top_k,
-        body.domain,
-    )
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT n.id AS note_id,
+                   n.external_encounter_id,
+                   COALESCE((n.structured_note->>'summary'), '') AS summary,
+                   COALESCE(n.conversation_text, '') AS conversation_text,
+                   (n.embedding <=> $1::vector)::float AS distance,
+                   ((1::float - (n.embedding <=> $1::vector)))::float AS cosine_sim,
+                   COALESCE(length(n.conversation_text), 0) AS cx_len,
+                   COALESCE(length(n.structured_note::text), 0) AS sn_len,
+                   COALESCE(EXTRACT(epoch FROM COALESCE(n.session_date::timestamptz, n.created_at))::bigint, 0) AS sess
+            FROM notes n
+            WHERE n.domain = $4
+              AND n.embedding IS NOT NULL
+              AND ($2::uuid IS NULL OR n.patient_id = $2::uuid)
+            ORDER BY n.embedding <=> $1::vector ASC, cx_len DESC, sn_len DESC, sess DESC NULLS LAST
+            LIMIT $3
+            """,
+            vec_lit,
+            patient_uuid,
+            body.top_k,
+            body.domain,
+        )
 
     logger.info(
         "chat_retrieval_complete",
@@ -264,30 +263,31 @@ async def chat(
     out_hash = sha256_hex(answer)
     pid_str = str(patient_uuid) if patient_uuid else None
 
-    interaction_id = await insert_ai_interaction(
-        conn,
-        request_id=req_id,
-        interaction_type="chat",
-        patient_id=pid_str,
-        note_id=None,
-        model_provider=settings.llm_provider,
-        model_name=groq_res.model,
-        prompt_version=CHAT_RAG_V1,
-        system_prompt_hash=sys_hash,
-        input_hash=inp_hash,
-        output_hash=out_hash,
-        input_redacted_preview=redact_preview(body.message),
-        output_redacted_preview=redact_preview(answer),
-        retrieved_sources_json=trace_payload,
-        citations_json=citations_payload,
-        safety_flags_json=safety_flags,
-        governance_json={"prompt_version": CHAT_RAG_V1},
-        latency_ms=groq_res.latency_ms,
-        input_tokens=groq_res.prompt_tokens,
-        output_tokens=groq_res.completion_tokens,
-        status="success",
-        error_message=None,
-    )
+    async with pool.acquire() as conn:
+        interaction_id = await insert_ai_interaction(
+            conn,
+            request_id=req_id,
+            interaction_type="chat",
+            patient_id=pid_str,
+            note_id=None,
+            model_provider=settings.llm_provider,
+            model_name=groq_res.model,
+            prompt_version=CHAT_RAG_V1,
+            system_prompt_hash=sys_hash,
+            input_hash=inp_hash,
+            output_hash=out_hash,
+            input_redacted_preview=redact_preview(body.message),
+            output_redacted_preview=redact_preview(answer),
+            retrieved_sources_json=trace_payload,
+            citations_json=citations_payload,
+            safety_flags_json=safety_flags,
+            governance_json={"prompt_version": CHAT_RAG_V1},
+            latency_ms=groq_res.latency_ms,
+            input_tokens=groq_res.prompt_tokens,
+            output_tokens=groq_res.completion_tokens,
+            status="success",
+            error_message=None,
+        )
 
     logger.info(
         "chat_audit_persisted",
@@ -308,3 +308,4 @@ async def chat(
             latency_ms=groq_res.latency_ms,
         ),
     )
+
