@@ -1,0 +1,8 @@
+datasets>=2.20.0
+tqdm>=4.66.0
+pyarrow>=14.0.0
+pandas>=2.1.0
+
+# Phase 1 — local specialty classification (torch wheels per platform)
+torch>=2.2.0
+transformers>=4.38.0

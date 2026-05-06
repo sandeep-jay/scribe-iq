@@ -2,6 +2,8 @@
 
 FastAPI service for the clinical RAG demo. See [`../docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`](../docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md).
 
+Architecture hub: [`docs/architecture/README.md`](../docs/architecture/README.md) · As-built detail: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../docs/architecture/IMPLEMENTED_BASELINE.md).
+
 ## Setup
 
 From repo root:
@@ -107,4 +109,4 @@ source .venv/bin/activate
 tox -e lint,py311
 ```
 
-Documentation map (repository-wide): [`docs/README.md`](../docs/README.md).
+Documentation map (repository-wide): [`docs/README.md`](../docs/README.md) · [`docs/architecture/README.md`](../docs/architecture/README.md).

@@ -33,6 +33,11 @@ data_prep/.venv/
 data_prep/.hf_home/
 
 lakehouse-old/*
+!lakehouse-old/README.md
+!lakehouse-old/requirements.txt
+!lakehouse-old/scripts/
+!lakehouse-old/scripts/*.py
+lakehouse-old/scripts/__pycache__/
 lakehouse/.venv/
 lakehouse/.hf_home/
 

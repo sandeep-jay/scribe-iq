@@ -3,6 +3,8 @@
 
 ---
 
+> **Appendix:** This file captures **implementation corrections** and narrative useful for debugging lineage. **Canonical execution detail** for the `data_prep/` pipeline lives in [`SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`](./SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md).
+
 ## Changes From Previous Version
 
 ### **Bugs Fixed:**

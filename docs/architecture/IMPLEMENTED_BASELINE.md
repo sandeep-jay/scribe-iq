@@ -24,7 +24,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 
 6. **RAG chat** — **`POST /chat`** runs vector search over stored note embeddings and returns an answer with **citations**. If there are **no embeddings** for the domain, the API returns **503** and the UI should surface that (chat stays optional until embeddings are loaded).
 
-7. **In-app docs pointer** — `/docs` points readers to Markdown under `docs/roadmap/` and `docs/reference/`.
+7. **In-app docs pointer** — `/docs` points readers to in-repo Markdown; canonical map **`docs/README.md`**, architecture hub **`docs/architecture/README.md`**, plus **`docs/roadmap/`** and **`docs/reference/`**.
 
 8. **App shell** — Responsive layout: sidebar (Patients, Chat, Docs) on larger breakpoints, mobile menu, **global patient search** in the header, **dark/light** theme.
 
@@ -161,7 +161,7 @@ Notable environment-driven flags (see `backend/.env.example`):
 | `/patients/[id]` | **Patient chart**: tabs (Read / Sources / Codes & map), meeting prep, timeline + encounter list with **pagination (10)** and **month-bucketed** timeline when visit count is high; generate-note panel. |
 | `/patients/[id]/encounters/[encounterId]` | **Encounter viewer** for a single note/encounter. |
 | `/chat` | RAG chat UI; optional `?patient_id=` preset; handles backend **503** when embeddings missing. |
-| `/docs` | Static page pointing to in-repo `docs/roadmap/` and `docs/reference/`. |
+| `/docs` | Static Next.js page pointing to in-repo docs (`docs/README.md`, `docs/architecture/README.md`, `docs/roadmap/`, `docs/reference/`). |
 | `/admin/responsible-ai` | **Optional.** Responsible AI Control Center (metrics + interaction list) when **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`** is enabled. |
 | `/admin/responsible-ai/[interactionId]` | **Optional.** Single interaction detail (matches backend admin GET by id). |
 

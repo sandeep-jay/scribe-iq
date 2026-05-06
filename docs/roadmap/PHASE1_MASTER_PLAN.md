@@ -1,20 +1,20 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
-> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`). Historical prose below still mentions **`lakehouse/`** as early-phase tooling naming—treat those sections as **design lineage**, not as mandatory filesystem paths today. Optional local remnants may exist under **`lakehouse-old/`** (often gitignored). Documentation map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
+> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`lakehouse-old/`** ([`lakehouse-old/README.md`](../../lakehouse-old/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
 
 
 > **Two projects**
 >
 > | Project | Purpose | Where |
 > |--------|---------|--------|
-> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet → future Synthea join → `data/clinical_corpus/`). No app server, no Postgres. | `lakehouse/`, `docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`, `data/staging/` → `data/clinical_corpus/` |
+> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`lakehouse-old/`**; narrative: **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**; staging historically **`data/staging/`** |
 > | **A — Application MVP** | RAG demo app: `backend/`, `frontend/`, Postgres, Azure. | §4–§15 **below** (schema, API, build order) |
 >
 > **Handoff:** Start production **`backend/`** after **Project L** meets the lakehouse V2 success criteria (**`data/clinical_corpus/`** + audit, see proposal §10). **Interim prototyping** may use **`create_seed_plan.py`** (50×8 JSONL) only with explicit demo scope — migrate to corpus-driven loading when `data/clinical_corpus/` exists.
 >
 > This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**.
 
-**Foundation (Project L — early milestones):** `lakehouse/` — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
+**Foundation (Project L — early milestones):** **`lakehouse-old/scripts/`** (legacy prose may say `lakehouse/`) — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
 
 ---
 

@@ -45,6 +45,8 @@ scribe-iq/                          ← repo root
 
 **Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`docs/reference/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`lakehouse-old/`** directory may exist on some machines and is **not** part of the supported layout.
 
+**Related (same repo):** adapt-notes + longitudinal contract — [`ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md`](./ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md); implementation corrections narrative (appendix to this brief) — [`SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`](./SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md); archived precursor scripts — [`lakehouse-old/README.md`](../../lakehouse-old/README.md); superseded long prompts — [`docs/archive/`](../archive/).
+
 ---
 
 ## Working Directory Convention

@@ -9,7 +9,8 @@ export default function DocsPage() {
           In-repo specs (Markdown) live under <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">docs/roadmap/</code> and{" "}
           <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">docs/reference/</code> in the Scribe-IQ repository. Open them in your editor or
           viewer alongside this demo. A consolidated map lives under{" "}
-          <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">docs/README.md</code>.
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">docs/README.md</code>; the architecture hub (baseline + pillar entrypoints) is{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">docs/architecture/README.md</code>.
         </p>
       </div>
 
