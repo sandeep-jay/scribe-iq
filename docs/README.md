@@ -77,3 +77,8 @@ These files are **outputs** of pipelines, not specs:
 - `data/clinical_corpus_v2/dataset_card.md`
 
 Treat them as build metadata; link from here rather than duplicating them inside roadmaps.
+
+
+## Reference
+
+- [reference/performance_improvement_plan_2026_05_06.md](reference/performance_improvement_plan_2026_05_06.md) — backend meeting-prep latency review, fixes, and benchmark notes

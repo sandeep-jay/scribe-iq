@@ -13,7 +13,24 @@ from app.db import get_conn
 from app.main import create_app
 
 
+class _DummyAcquire:
+    def __init__(self, conn):
+        self._conn = conn
+
+    async def __aenter__(self):
+        return self._conn
+
+    async def __aexit__(self, exc_type, exc, tb):
+        return False
+
+
 class _DummyPool:
+    def __init__(self, conn=None):
+        self._conn = conn or FakeConn()
+
+    def acquire(self):
+        return _DummyAcquire(self._conn)
+
     async def close(self) -> None:
         return None
 
@@ -95,7 +112,7 @@ def _reset_settings(monkeypatch: pytest.MonkeyPatch) -> Generator[None, None, No
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch) -> Generator[TestClient, None, None]:
     async def _fake_create_pool(_database_url: str):
-        return _DummyPool()
+        return _DummyPool(FakeConn())
 
     monkeypatch.setattr("app.main.asyncpg.create_pool", _fake_create_pool)
 
@@ -113,7 +130,7 @@ def client(monkeypatch: pytest.MonkeyPatch) -> Generator[TestClient, None, None]
 def client_with_conn(monkeypatch: pytest.MonkeyPatch):
     def _make(fake_conn: FakeConn) -> TestClient:
         async def _fake_create_pool(_database_url: str):
-            return _DummyPool()
+            return _DummyPool(fake_conn)
 
         monkeypatch.setattr("app.main.asyncpg.create_pool", _fake_create_pool)
         app = create_app()
