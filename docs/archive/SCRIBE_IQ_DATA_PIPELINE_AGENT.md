@@ -1,4 +1,4 @@
-> **Archived (2026-05-05).** Superseded by **`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`**. Kept for history only. See **`docs/history/EVOLUTION.md`**.
+> **Archived (2026-05-05).** Superseded by **`docs/reference/corpus_offline_pipeline_v2_brief.md`**. Kept for history only. See **`docs/history/EVOLUTION.md`**.
 
 ---
 
@@ -64,7 +64,7 @@ scribe-iq/
       audit_report.md
       dataset_card.md
   docs/roadmap/
-    CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
+    agbonnet_lakehouse_precursor_proposal_v2.md
 ```
 
 ---

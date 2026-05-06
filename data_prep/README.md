@@ -1,11 +1,11 @@
 # Scribe-IQ `data_prep/` pipeline
 
 Generates the **50-patient** demo corpus under `data/clinical_corpus_v2/`. Spec:
-`../docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`.
+`../docs/reference/corpus_offline_pipeline_v2_brief.md`.
 
 Archived exploratory scripts live in **`../lakehouse-old/`**.
 
-**Related documentation:** execution brief [`docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`](../docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md) (source of truth for scripts `01`–`09`); adapt-notes design [`docs/reference/ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md`](../docs/reference/ADAPT_NOTES_AND_LONGITUDINAL_CONTEXT.md); lineage [`docs/history/EVOLUTION.md`](../docs/history/EVOLUTION.md); archived agent prompts [`docs/archive/`](../docs/archive/).
+**Related documentation:** execution brief [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../docs/reference/corpus_offline_pipeline_v2_brief.md) (source of truth for scripts `01`–`09`); adapt-notes design [`docs/reference/data_prep_adapt_notes_longitudinal_design.md`](../docs/reference/data_prep_adapt_notes_longitudinal_design.md); lineage [`docs/history/EVOLUTION.md`](../docs/history/EVOLUTION.md); archived agent prompts [`docs/archive/`](../docs/archive/).
 
 ## Prerequisites
 

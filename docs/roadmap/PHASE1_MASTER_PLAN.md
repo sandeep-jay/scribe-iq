@@ -1,18 +1,18 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
-> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`lakehouse-old/`** ([`lakehouse-old/README.md`](../../lakehouse-old/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
+> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`lakehouse-old/`** ([`lakehouse-old/README.md`](../../lakehouse-old/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
 
 
 > **Two projects**
 >
 > | Project | Purpose | Where |
 > |--------|---------|--------|
-> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`lakehouse-old/`**; narrative: **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**; staging historically **`data/staging/`** |
+> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`lakehouse-old/`**; narrative: **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`**; staging historically **`data/staging/`** |
 > | **A — Application MVP** | RAG demo app: `backend/`, `frontend/`, Postgres, Azure. | §4–§15 **below** (schema, API, build order) |
 >
 > **Handoff:** Start production **`backend/`** after **Project L** meets the lakehouse V2 success criteria (**`data/clinical_corpus/`** + audit, see proposal §10). **Interim prototyping** may use **`create_seed_plan.py`** (50×8 JSONL) only with explicit demo scope — migrate to corpus-driven loading when `data/clinical_corpus/` exists.
 >
-> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**.
+> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`**.
 
 **Foundation (Project L — early milestones):** **`lakehouse-old/scripts/`** (legacy prose may say `lakehouse/`) — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
 
@@ -20,7 +20,7 @@
 
 ## 1. How to use this document
 
-- **Implementers:** Deliver **Project L** to the **corpus handoff** in the lakehouse proposal; then execute **Project A** per §6–§15. The steps in §4.3–§4.6 (`lakehouse/`) are the **first** Project L milestones; remaining lakehouse phases are in **`CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`**. Then follow §6 (layout), §7 (schema), §9 (API), §14 (build order), §15 (verification).
+- **Implementers:** Deliver **Project L** to the **corpus handoff** in the lakehouse proposal; then execute **Project A** per §6–§15. The steps in §4.3–§4.6 (`lakehouse/`) are the **first** Project L milestones; remaining lakehouse phases are in **`agbonnet_lakehouse_precursor_proposal_v2.md`**. Then follow §6 (layout), §7 (schema), §9 (API), §14 (build order), §15 (verification).
 - **Reviewers:** §2–3 state what was evaluated and what is locked; §16 lists residual risks.
 - **Changes:** Any change to locked decisions (§3) must update this file first, then code.
 
@@ -272,7 +272,7 @@ scribe-iq/
 │       ├── export_staged_parquet_jsonl.py
 │       └── create_seed_plan.py      ← §4.6 interim seed
 ├── docs/reference/
-│   └── CLINICAL_LAKEHOUSE_PROPOSAL_V2.md
+│   └── agbonnet_lakehouse_precursor_proposal_v2.md
 ├── data/
 │   ├── raw/                         ← future: immutable source drops (see lakehouse proposal)
 │   ├── staging/                     ← Project L working output today
@@ -630,7 +630,7 @@ Use an API version that supports **`chat.completions.parse`** for your SDK; adju
 |------|-------------|--------|
 | P2 | `lakehouse/scripts/create_seed_plan.py` (§4.6) | `phase1_seed_plan.json` + **`patient_assignments.jsonl` (50 lines)** + **`selected_note_records.jsonl` (400 lines)** |
 
-**Gate:** Do not create production **`backend/`** until **Project L** reaches **`data/clinical_corpus/`** + audit per `CLINICAL_LAKEHOUSE_PROPOSAL_V2.md` §10 **or** you accept **prototype-only** scope using §4.6 seed artifacts.
+**Gate:** Do not create production **`backend/`** until **Project L** reaches **`data/clinical_corpus/`** + audit per `agbonnet_lakehouse_precursor_proposal_v2.md` §10 **or** you accept **prototype-only** scope using §4.6 seed artifacts.
 
 ### Phase 3 — Application implementation
 
@@ -687,13 +687,13 @@ Use an API version that supports **`chat.completions.parse`** for your SDK; adju
 | 2026-05-02 | **Phase 0 module `lakehouse/`** (rename from `backend/` for prep); **§4.4 staging**; layout split Phase 0 vs Phase 1; **§14** two-phase build order; loader reads `data/staging/`. |
 | 2026-05-03 | Historical: seed artifacts initially tracked as Phase 0 **P0d** / **`phase: "0"`**. **Superseded** by program renumbering (seed planning is **Phase 2**; `phase` / `step` in `phase1_seed_plan.json` are now **`"2"` / `"P2-seed"`**) — see newer history row. |
 | 2026-05-02 | **Program phases 0–3** — Phase 1 `classify_specialties.py` (§4.5); seed planning is **Phase 2** (§4.6); MVP app is **Phase 3**; Phase 0 ends at staging (P0c). Updated §14 gates + §11.1. |
-| 2026-05-03 | **Two-project framing:** **Project L** (`lakehouse/`, `CLINICAL_LAKEHOUSE_PROPOSAL_V2.md`) vs **Project A** (this doc). Stale **`backend/`** cache directory removed; **`data_prep/`** scripts moved to **`lakehouse/scripts/`** (legacy **`data_prep/README.md`** redirects). |
-| 2026-05-03 | Added **`docs/reference/GIT_CHECKPOINTS.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). §18 links here. |
+| 2026-05-03 | **Two-project framing:** **Project L** (`lakehouse/`, `agbonnet_lakehouse_precursor_proposal_v2.md`) vs **Project A** (this doc). Stale **`backend/`** cache directory removed; **`data_prep/`** scripts moved to **`lakehouse/scripts/`** (legacy **`data_prep/README.md`** redirects). |
+| 2026-05-03 | Added **`docs/reference/contributing_git_checkpoints.md`** (checkpoint branch workflow + recorded `checkpoint/pre-read-sources-codes-ui` @ `aae2a40`). §18 links here. |
 
 
 ## 18. Git checkpoints (experiments)
 
-Before large UI or IA refactors, use a named **checkpoint branch** so you can revert cleanly. Commands, revert options, and the **recorded** checkpoint for this repo: **`docs/reference/GIT_CHECKPOINTS.md`**.
+Before large UI or IA refactors, use a named **checkpoint branch** so you can revert cleanly. Commands, revert options, and the **recorded** checkpoint for this repo: **`docs/reference/contributing_git_checkpoints.md`**.
 
 ---
 

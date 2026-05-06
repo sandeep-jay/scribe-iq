@@ -1,6 +1,6 @@
 # Archived precursor tooling (`lakehouse-old/`)
 
-This directory is **not supported for new corpus work**. The canonical offline corpus pipeline for this repository is **`data_prep/`** (see repository root [README.md](../README.md) and [docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md](../docs/reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md)).
+This directory is **not supported for new corpus work**. The canonical offline corpus pipeline for this repository is **`data_prep/`** (see repository root [README.md](../README.md) and [docs/reference/corpus_offline_pipeline_v2_brief.md](../docs/reference/corpus_offline_pipeline_v2_brief.md)).
 
 What lives here is **historical Project L–style tooling** focused on **HF-hosted augmented-clinical-notes (AGBonnet-style) staging**, local Parquet materialization, and **optional downstream labeling with a Hugging Face medical-specialty classifier** — **not** the Synthea + scripts `01`–`09` flow under `data_prep/`.
 
@@ -9,7 +9,7 @@ What lives here is **historical Project L–style tooling** focused on **HF-host
 ## Why keep it
 
 - **Reference implementation** for early corpus staging (`validate` → `stage` → classify → export / interim seed planning).
-- **Documentation lineage:** rationale and broader proposal narrative remain in [docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md](../docs/reference/CLINICAL_LAKEHOUSE_PROPOSAL_V2.md).
+- **Documentation lineage:** rationale and broader proposal narrative remain in [docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md](../docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md).
 - **Repository timeline:** [docs/history/EVOLUTION.md](../docs/history/EVOLUTION.md).
 
 For **architecture and current behavior** of the running app and loader, see [docs/architecture/README.md](../docs/architecture/README.md).

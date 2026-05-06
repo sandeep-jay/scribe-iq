@@ -47,3 +47,6 @@ evals/results/
 
 # Python editable-install metadata
 *.egg-info/
+
+# Cursor IDE local metadata
+.cursor/

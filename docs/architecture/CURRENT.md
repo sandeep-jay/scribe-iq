@@ -13,7 +13,7 @@ A **clinical documentation / RAG demo**: Next.js frontend + FastAPI backend over
 | Implemented behavior (today) | [IMPLEMENTED_BASELINE.md](./IMPLEMENTED_BASELINE.md) |
 | Documentation index | [../README.md](../README.md) |
 | Architecture hub | [README.md](./README.md) |
-| Offline corpus build | `data_prep/` + [../reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md](../reference/SCRIBE_IQ_DATA_PIPELINE_V2_AGENT.md) |
+| Offline corpus build | `data_prep/` + [../reference/corpus_offline_pipeline_v2_brief.md](../reference/corpus_offline_pipeline_v2_brief.md) |
 | Product / sequencing intent | [../roadmap/](../roadmap/) |
 
 When a roadmap disagrees with the baseline, **trust the baseline** until the roadmap is updated.

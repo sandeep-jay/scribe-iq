@@ -13,7 +13,7 @@ last_updated: 2026-05-03
 
 **Design references:**
 
-- Backend / RAG: [`docs/reference/Clinical_Note_LLM.md`](../reference/Clinical_Note_LLM.md), [`docs/reference/SCRIBE_IQ_DESIGN_PHASE1.md`](../reference/SCRIBE_IQ_DESIGN_PHASE1.md)
+- Backend / RAG: [`docs/reference/rag_clinical_note_llm_design.md`](../reference/rag_clinical_note_llm_design.md), [`docs/reference/rag_app_phase1_mvp_design.md`](../reference/rag_app_phase1_mvp_design.md)
 - **UI (mandatory layout reference):** static mockups below — Next.js screens should match **structure, hierarchy, and main copy blocks** unless explicitly revised.
 
 ## Task checklist (execution order)
