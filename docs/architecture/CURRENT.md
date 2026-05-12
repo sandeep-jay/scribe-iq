@@ -1,10 +1,12 @@
 # Scribe IQ — current system (short take)
 
-This file is a **compact narrative** of what Scribe IQ is today. Authoritative **as-built** detail—routes, env flags, schema rows, and file pointers—is **[IMPLEMENTED_BASELINE.md](./IMPLEMENTED_BASELINE.md)**.
+This file is a **compact narrative** of what Scribe IQ is today. Authoritative **as-built** detail — routes, env flags, schema rows, and file pointers — is **[IMPLEMENTED_BASELINE.md](./IMPLEMENTED_BASELINE.md)**.
+
+For **problem framing, scope, and what is deferred**, see [../overview/PRODUCT_CONTEXT.md](../overview/PRODUCT_CONTEXT.md). For **diagrams and capability flags**, see [../overview/SYSTEM_OVERVIEW.md](../overview/SYSTEM_OVERVIEW.md).
 
 ## What it is
 
-A **clinical documentation / RAG demo**: Next.js frontend + FastAPI backend over **Postgres + pgvector**. Users browse a synthetic patient corpus, open charts and encounters, generate structured notes from transcripts when enabled, run **chat over embeddings**, and—when flags allow—see **Responsible AI** audit surfaces.
+A **clinical documentation / RAG demo**: Next.js frontend + FastAPI backend over **Postgres + pgvector**. Users browse a synthetic patient corpus, open charts and encounters, generate structured notes from transcripts when enabled, run **chat over embeddings**, and — when flags allow — see **Responsible AI** audit surfaces.
 
 ## Where truth lives
 
@@ -13,6 +15,7 @@ A **clinical documentation / RAG demo**: Next.js frontend + FastAPI backend over
 | Implemented behavior (today) | [IMPLEMENTED_BASELINE.md](./IMPLEMENTED_BASELINE.md) |
 | Documentation index | [../README.md](../README.md) |
 | Architecture hub | [README.md](./README.md) |
+| Product framing and deferred intent | [../overview/PRODUCT_CONTEXT.md](../overview/PRODUCT_CONTEXT.md) |
 | Offline corpus build | `data_prep/` + [../reference/corpus_offline_pipeline_v2_brief.md](../reference/corpus_offline_pipeline_v2_brief.md) |
 | Product / sequencing intent | [../roadmap/](../roadmap/) |
 
