@@ -153,3 +153,9 @@ cd frontend && nvm use && npm install && npm run dev
 ```
 
 Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
+
+---
+
+## License
+
+Apache License 2.0 — see [`LICENSE`](LICENSE).
