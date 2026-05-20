@@ -164,3 +164,35 @@ async def pg_conn(integration_database_url: str) -> AsyncGenerator[asyncpg.Conne
         yield conn
     finally:
         await conn.close()
+
+@pytest.fixture(autouse=True)
+def _isolate_provider_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Strip local .env provider keys so unit tests do not pick up developer credentials."""
+
+    for key in (
+        "LLM_PROVIDER",
+        "AZURE_OPENAI_ENDPOINT",
+        "AZURE_OPENAI_API_KEY",
+        "AZURE_OPENAI_API_VERSION",
+        "AZURE_OPENAI_CHAT_DEPLOYMENT",
+        "AZURE_OPENAI_JSON_DEPLOYMENT",
+        "AZURE_OPENAI_DEPLOYMENT",
+        "AZURE_OPENAI_MINI_DEPLOYMENT",
+        "AZURE_EMBEDDING_DEPLOYMENT",
+        "AZURE_EMBEDDINGS_DIMENSIONS",
+        "GROQ_API_KEY",
+        "OPENAI_API_KEY",
+        "AWS_REGION",
+        "AWS_BEDROCK_CHAT_MODEL_ID",
+        "AWS_BEDROCK_JSON_MODEL_ID",
+        "AWS_BEDROCK_EMBEDDING_MODEL_ID",
+        "AWS_BEDROCK_EMBEDDING_DIMENSIONS",
+        "AWS_BEDROCK_ROLE_ARN",
+        "BEDROCK_CHAT_MODEL_ID",
+        "BEDROCK_JSON_MODEL_ID",
+        "BEDROCK_EMBEDDING_MODEL_ID",
+        "BEDROCK_EMBEDDING_DIMENSIONS",
+        "BEDROCK_PROFILE_NAME",
+        "EMBEDDING_PROVIDER",
+    ):
+        monkeypatch.delenv(key, raising=False)

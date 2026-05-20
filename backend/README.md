@@ -126,7 +126,7 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 Embedding providers are also configurable for RAG retrieval and generated note vectors. Set
 `EMBEDDING_PROVIDER=openai`, `azure_openai`, `bedrock`, or `none`. Azure reuses
 `AZURE_OPENAI_ENDPOINT` / `AZURE_OPENAI_API_KEY` plus `AZURE_EMBEDDING_DEPLOYMENT`;
-Bedrock uses `BEDROCK_EMBEDDING_MODEL_ID` (use `amazon.titan-embed-text-v1` for the
+Bedrock uses `AWS_BEDROCK_EMBEDDING_MODEL_ID` (use `amazon.titan-embed-text-v1` for the
 existing `EMBED_DIM=1536` schema). Switching providers requires re-running
 `scribe-load-corpus --embed` so stored vectors and query vectors share the same space.
 

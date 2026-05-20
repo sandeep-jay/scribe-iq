@@ -384,7 +384,7 @@ def embed_notes(*, model: str | None, dimensions: int | None) -> int:
         elif provider_name == "azure_openai":
             settings.azure_embedding_deployment = model
         elif provider_name == "bedrock":
-            settings.bedrock_embedding_model_id = model
+            settings.aws_bedrock_embedding_model_id = model
 
     try:
         provider = get_embedding_provider(settings)
