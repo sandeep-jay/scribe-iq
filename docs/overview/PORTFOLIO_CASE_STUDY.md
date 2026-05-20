@@ -1,4 +1,4 @@
-# Scribe IQ — portfolio case study
+# Scribe IQ — product case study
 
 ## One-line summary
 
@@ -16,7 +16,7 @@ The headline problem the project solves is the one that defines clinical LLM wor
 
 ## Bridge from higher-ed work to healthcare
 
-| Higher-ed (UCLA / institutional systems) | Healthcare (Scribe IQ) |
+| Higher-ed ( University / Institutional systems) | Healthcare (Scribe IQ) |
 |------------------------------------------|------------------------|
 | Longitudinal student records across enrollment, advising, financial aid | Longitudinal patient records across encounters, notes, conditions |
 | Governance constraints (FERPA, audit, role boundaries) treated as first-class schema | Governance constraints (PHI posture, `ai_interactions` audit, provider egress) treated as first-class schema |
@@ -43,7 +43,7 @@ The transfer is not metaphor. The same instincts — colocate the governance wit
 ## Architecture demonstrated
 
 - **Persistence:** Postgres 16 with pgvector, colocating relational rows and vector embeddings. One transactional model, one failure mode.
-- **Service:** FastAPI with an asyncpg pool, structured logging, `X-Request-ID` propagation, append-only `ai_interactions` writes on the AI request path.
+- **Service:** FastAPI with an asyncpg pool, structured logging, `X-Request-ID` propagation, and append-only `ai_interactions` writes for audited AI paths.
 - **Frontend:** Next.js App Router, capability flags read from `GET /health`, degraded states surfaced explicitly rather than hidden.
 - **Corpus pipeline:** A nine-step offline `data_prep/` pipeline (Synthea + ACI-Bench + MTSamples + MedSynth → match → score → cohort → adapt → validate) producing a JSONL artifact + dataset card + audit report. Loaded into Postgres via `scribe-load-corpus`.
 - **Provider abstraction:** LLM and embeddings are configurable across Groq, OpenAI, Azure OpenAI, and Amazon Bedrock through a typed `Settings` layer.
@@ -52,9 +52,9 @@ The transfer is not metaphor. The same instincts — colocate the governance wit
 
 ## Responsible AI demonstrated
 
-- **`ai_interactions` is a first-class migration**, not an observability sidecar. Every AI-touching route writes an append-only row on the request path with redacted previews, content hashes, status (`succeeded` / `failed` / `rejected`), and a JSONB governance blob.
-- **Citation contract in the prompt** rather than a post-hoc verifier — the cheap, reliable choice for grounded RAG at this scale, with the audit row providing the post-hoc visibility a verifier would have given.
-- **Failure-path audit:** failed and rejected interactions are recorded, not just successes. The table tells a full story.
+- **`ai_interactions` is a first-class migration**, not an observability sidecar. Audited AI paths write append-only rows with redacted previews, content hashes, status values used by the admin surface (`success`, `degraded`, `failed`, `blocked`), and a JSONB governance blob.
+- **Citation contract in the prompt** rather than a post-hoc verifier — the cheap, reliable choice for grounded RAG at this scale, with the audit row providing post-hoc visibility for completed and handled degraded interactions.
+- **Degraded-state visibility:** admin aggregation distinguishes successful, degraded, failed, and blocked rows where the route records an interaction. Provider exceptions that occur before an audit insert are surfaced to the caller rather than silently converted into successful-looking audit entries.
 - **Synthetic data only,** with the boundary stated plainly in `PRIVACY_AND_PROVIDER_BOUNDARIES.md` — no real PHI, no claim of HIPAA readiness.
 
 ---
@@ -84,7 +84,7 @@ See [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../guides/LLM_AND_EMBEDDING_P
 ## Engineering discipline signals
 
 - **One canonical path** through QUICKSTART; alternative configurations are documented but never compete for primacy.
-- **Pre-commit hooks and tool-attribution guards** versioned under `.githooks/` and wired through `scripts/install_dev_hooks.sh`. Secret scanning via gitleaks is part of the standard local setup.
+- **Pre-commit hooks, secret-pattern checks, and tool-attribution guards** versioned under `.githooks/` / `.cursor/` and wired through `scripts/install_dev_hooks.sh` plus Cursor hook configuration.
 - **Documentation hygiene** is itself a recorded artifact (`docs/history/EVOLUTION.md`), and superseded long prompts live under `docs/archive/` with archive banners — the repository's documentation has a paper trail.
 - **`X-Request-ID`** propagated from frontend through FastAPI handlers to structured logs so user-visible actions are traceable end-to-end without logging PHI in bodies.
 - **Decimal-numbered pipeline steps** (`05.5`, `06.5`) preserved as legible evidence that the pipeline evolved under review rather than being designed perfectly the first time.

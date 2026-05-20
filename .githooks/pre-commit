@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# Block commits that introduce hard-coded secrets, .env files, or other
+# sensitive artifacts. Detection logic lives in scripts/secret_patterns.py
+# so the same rules are reusable from the Cursor hooks.
+set -eu
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+SCANNER="$REPO_ROOT/scripts/secret_patterns.py"
+
+if [ "${SCRIBE_IQ_ALLOW_SECRET_COMMIT:-0}" = "1" ]; then
+  echo "pre-commit: SCRIBE_IQ_ALLOW_SECRET_COMMIT=1 -> skipping secret scan." >&2
+  exit 0
+fi
+
+if [ ! -f "$SCANNER" ]; then
+  echo "pre-commit: scripts/secret_patterns.py not found; skipping secret scan." >&2
+  exit 0
+fi
+
+PYTHONPATH="$REPO_ROOT/scripts" python3 - <<'PY'
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+from secret_patterns import find_secrets
+
+repo_root = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip())
+
+# Files staged for commit (added, copied, modified, renamed, type-changed).
+out = subprocess.check_output(
+    ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
+    text=True,
+)
+staged = [line.strip() for line in out.splitlines() if line.strip()]
+if not staged:
+    sys.exit(0)
+
+BINARY_EXTS = {
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".pdf",
+    ".zip", ".gz", ".tar", ".parquet", ".lock", ".woff", ".woff2",
+    ".so", ".dylib", ".dll", ".bin",
+}
+
+denied_env = []
+for f in staged:
+    base = os.path.basename(f)
+    if base == ".env" or base.startswith(".env."):
+        if base not in (".env.example", ".env.test"):
+            denied_env.append(f)
+
+if denied_env:
+    sys.stderr.write(
+        "pre-commit: refusing to commit .env files (only .env.example and "
+        ".env.test are allowed):\n"
+    )
+    for f in denied_env:
+        sys.stderr.write(f"  {f}\n")
+    sys.stderr.write(
+        "Add them to .gitignore or rename them. Set "
+        "SCRIBE_IQ_ALLOW_SECRET_COMMIT=1 to bypass intentionally.\n"
+    )
+    sys.exit(1)
+
+problems = []
+for f in staged:
+    ext = Path(f).suffix.lower()
+    if ext in BINARY_EXTS:
+        continue
+    try:
+        blob = subprocess.run(
+            ["git", "show", f":{f}"],
+            check=True,
+            capture_output=True,
+        ).stdout
+    except subprocess.CalledProcessError:
+        continue
+    text = blob.decode("utf-8", errors="ignore")
+    findings = find_secrets(text)
+    if findings:
+        problems.append((f, findings))
+
+if problems:
+    sys.stderr.write("pre-commit: potential secrets detected in staged content:\n")
+    for f, findings in problems:
+        sys.stderr.write(f"  --- {f} ---\n")
+        for fnd in findings:
+            sys.stderr.write(
+                f"  {fnd.name} ({fnd.description}) line {fnd.line_no}: "
+                f"{fnd.line_excerpt}\n"
+            )
+    sys.stderr.write(
+        "\nRemove the secret, rotate it if it ever existed in a real account, "
+        "and re-stage.\nIf this is a false positive, document it in "
+        "scripts/secret_patterns.py (DEV_ALLOWLIST) or set "
+        "SCRIBE_IQ_ALLOW_SECRET_COMMIT=1 for a single commit.\n"
+    )
+    sys.exit(1)
+
+sys.exit(0)
+PY
