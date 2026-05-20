@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Block commits that introduce hard-coded secrets, .env files, or other
-# sensitive artifacts. Detection logic lives in scripts/secret_patterns.py
-# so the same rules are reusable from the Cursor hooks.
+# sensitive artifacts. Detection logic lives in scripts/secret_patterns.py.
 set -eu
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"

@@ -1,6 +1,6 @@
 """Shared secret-detection patterns and scanner.
 
-Used by .githooks/pre-commit and the Cursor hooks under .cursor/hooks/.
+Used by .githooks/pre-commit.
 
 Design goals
 ------------

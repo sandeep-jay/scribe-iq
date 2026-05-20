@@ -1,5 +1,8 @@
 # Scribe IQ
 
+[![CI](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 **Healthcare AI platform prototype** for grounded clinical documentation workflows on synthetic data.
 
 Scribe IQ is built around a product premise: clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work.
@@ -36,9 +39,29 @@ I built Scribe IQ to make the bridge from education data platforms to healthcare
 
 ---
 
-## Architecture in one line
+## Architecture
 
-`data_prep/` → `clinical_corpus_v2/` generated artifact → `scribe-load-corpus` → Postgres/pgvector → FastAPI → Next.js → `ai_interactions` audit table.
+`data_prep/` → `clinical_corpus_v2/` artifact → `scribe-load-corpus` → Postgres/pgvector → FastAPI → Next.js → `ai_interactions` audit table.
+
+```mermaid
+flowchart TB
+  subgraph Offline["Offline corpus pipeline"]
+    Raw["Raw synthetic + public sources"] --> Staging["data_prep staging"]
+    Staging --> Artifact["clinical_corpus_v2 artifact"]
+    Artifact --> Loader["scribe-load-corpus"]
+  end
+
+  subgraph Runtime["Runtime app"]
+    Next["Next.js UI"] --> API["FastAPI"]
+    API --> LLM["LLM provider<br/>Groq · Azure OpenAI · Bedrock"]
+    API --> Embed["Embedding provider<br/>OpenAI · Azure OpenAI · Bedrock"]
+    API --> Audit["ai_interactions<br/>audit table"]
+    Audit --> Admin["Responsible AI Control Center"]
+  end
+
+  Loader --> PG[("Postgres + pgvector")]
+  API --> PG
+```
 
 ---
 
@@ -118,26 +141,6 @@ Every external dependency is optional. The system degrades gracefully and report
 
 For the full flag matrix, see [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md#capability-flags).
 
----
-
-## System at a glance
-
-```mermaid
-flowchart LR
-  Raw["Raw synthetic/public sources"] --> Staging["data_prep staging"]
-  Staging --> Artifact["clinical_corpus_v2 artifact"]
-  Artifact --> Loader["scribe-load-corpus"]
-  Loader --> PG["Postgres + pgvector"]
-  Next["Next.js UI"] --> API["FastAPI"]
-  API --> PG
-  API --> LLM["LLM provider<br/>Groq | Azure OpenAI | Bedrock"]
-  API --> Embed["Embedding provider<br/>OpenAI | Azure OpenAI | Bedrock"]
-  API --> Audit["ai_interactions<br/>audit table"]
-  Audit --> Admin["Responsible AI Control Center"]
-```
-
----
-
 ## Quick start
 
 Local run requires a generated or restored corpus artifact at `data/clinical_corpus_v2/`. This artifact is produced by the offline `data_prep/` pipeline and is not committed as application source. If the directory is empty after clone, see [`docs/guides/CORPUS_ARTIFACTS.md`](docs/guides/CORPUS_ARTIFACTS.md). Full prerequisites, optional capability paths, and troubleshooting: [`docs/guides/QUICKSTART.md`](docs/guides/QUICKSTART.md).
@@ -153,3 +156,9 @@ cd frontend && nvm use && npm install && npm run dev
 ```
 
 Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
+
+---
+
+## License
+
+Apache License 2.0 — see [`LICENSE`](LICENSE).

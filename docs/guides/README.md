@@ -64,7 +64,7 @@ Wire them up once per clone:
 
 That sets `git config core.hooksPath .githooks` and makes the hook files executable. Do not bypass with `--no-verify`.
 
-Authoring guidance: do not include local editor or AI-tool branding in commit messages, PR titles/bodies, review comments, or issue comments. The project rule under [`../../.cursor/rules/no-tool-attribution.mdc`](../../.cursor/rules/no-tool-attribution.mdc) captures the same guidance for AI-assisted authoring.
+Authoring guidance: do not include local editor or AI-tool branding in commit messages, PR titles/bodies, review comments, or issue comments.
 
 
 ## Full documentation map

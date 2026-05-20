@@ -84,7 +84,7 @@ See [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../guides/LLM_AND_EMBEDDING_P
 ## Engineering discipline signals
 
 - **One canonical path** through QUICKSTART; alternative configurations are documented but never compete for primacy.
-- **Pre-commit hooks, secret-pattern checks, and tool-attribution guards** versioned under `.githooks/` / `.cursor/` and wired through `scripts/install_dev_hooks.sh` plus Cursor hook configuration.
+- **Pre-commit hooks and secret-pattern checks** versioned under `.githooks/` and wired through `scripts/install_dev_hooks.sh`.
 - **Documentation hygiene** is itself a recorded artifact (`docs/history/EVOLUTION.md`), and superseded long prompts live under `docs/archive/` with archive banners — the repository's documentation has a paper trail.
 - **`X-Request-ID`** propagated from frontend through FastAPI handlers to structured logs so user-visible actions are traceable end-to-end without logging PHI in bodies.
 - **Decimal-numbered pipeline steps** (`05.5`, `06.5`) preserved as legible evidence that the pipeline evolved under review rather than being designed perfectly the first time.
