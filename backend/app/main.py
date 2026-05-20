@@ -68,7 +68,11 @@ def create_app() -> FastAPI:
         return {
             "status": "ok",
             "service": settings.app_name,
-            "llm_provider": settings.llm_provider,
+            "llm_provider": settings.normalized_llm_provider(),
+            "llm_configured": settings.llm_configured(),
+            "llm_json_mode": settings.llm_json_mode_capability(),
+            "embedding_provider": settings.embedding_provider,
+            "embedding_configured": settings.embedding_configured(),
             "note_generation_enabled": settings.note_generation_enabled,
             "meeting_prep_enabled": settings.meeting_prep_enabled,
             "responsible_ai_admin_enabled": settings.responsible_ai_admin_enabled,

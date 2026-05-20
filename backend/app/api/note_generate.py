@@ -23,7 +23,8 @@ from app.api.patients import resolve_patient_id
 from app.config import get_settings
 from app.db import get_conn
 from app.embeddings import compose_note_embed_input, embed_and_vector_literal
-from app.llm import GroqCompletionResult, groq_chat_json_completion
+from app.llm import LlmCompletionResult, chat_json_completion
+from app.llm.errors import LlmConfigurationError, LlmJsonModeError, LlmProviderError
 from app.responsible_ai.audit_logger import insert_ai_interaction
 from app.responsible_ai.hashes import sha256_hex
 from app.responsible_ai.prompt_registry import NOTE_GENERATION_V1
@@ -58,7 +59,7 @@ async def _audit_note_row(
     request_id: str,
     patient_uuid: uuid.UUID,
     note_id: uuid.UUID,
-    groq_res: GroqCompletionResult,
+    completion: LlmCompletionResult,
     structured_blob: dict[str, object],
     transcript: str,
     settings,
@@ -73,8 +74,8 @@ async def _audit_note_row(
         interaction_type="note_generation",
         patient_id=str(patient_uuid),
         note_id=str(note_id),
-        model_provider=settings.llm_provider,
-        model_name=groq_res.model,
+        model_provider=completion.provider,
+        model_name=completion.model,
         prompt_version=NOTE_GENERATION_V1,
         system_prompt_hash=sha256_hex(NOTE_GEN_SYSTEM_PROMPT),
         input_hash=sha256_hex(transcript),
@@ -85,9 +86,9 @@ async def _audit_note_row(
         citations_json=None,
         safety_flags_json=flags,
         governance_json={"requires_human_review": True, "prompt_version": NOTE_GENERATION_V1},
-        latency_ms=groq_res.latency_ms,
-        input_tokens=groq_res.prompt_tokens,
-        output_tokens=groq_res.completion_tokens,
+        latency_ms=completion.latency_ms,
+        input_tokens=completion.prompt_tokens,
+        output_tokens=completion.completion_tokens,
         status="success",
         error_message=None,
     )
@@ -139,11 +140,17 @@ async def generate_note(
         temperature=0.15,
     )
     try:
-        groq_res = await groq_chat_json_completion(msgs, temperature=0.15)
-        raw_json = groq_res.text
+        completion = await chat_json_completion(msgs, temperature=0.15)
+        raw_json = completion.text
         payload = json.loads(raw_json)
         structured = StructuredGeneratedNote.model_validate(payload)
-    except (json.JSONDecodeError, RuntimeError, ValueError) as e:
+    except LlmConfigurationError as e:
+        logger.warning("note_generation_unavailable", request_id=req_id, error=str(e))
+        raise HTTPException(status_code=503, detail=str(e)) from e
+    except (LlmProviderError, LlmJsonModeError) as e:
+        logger.warning("note_generation_provider_failed", request_id=req_id, error=str(e))
+        raise HTTPException(status_code=502, detail=f"LLM structured output rejected: {e}") from e
+    except (json.JSONDecodeError, ValueError) as e:
         logger.warning("note_generation_validation_failed", request_id=req_id, error=str(e))
         raise HTTPException(status_code=502, detail=f"LLM structured output rejected: {e}") from e
 
@@ -151,10 +158,10 @@ async def generate_note(
     logger.info(
         "note_generate_structured_ok",
         request_id=req_id,
-        model=groq_res.model,
-        latency_ms=groq_res.latency_ms,
-        prompt_tokens=groq_res.prompt_tokens,
-        completion_tokens=groq_res.completion_tokens,
+        model=completion.model,
+        latency_ms=completion.latency_ms,
+        prompt_tokens=completion.prompt_tokens,
+        completion_tokens=completion.completion_tokens,
     )
     embedding_written = False
     encounter_id = (
@@ -219,7 +226,7 @@ async def generate_note(
             request_id=req_id,
             patient_uuid=patient_uuid,
             note_id=note_id,
-            groq_res=groq_res,
+            completion=completion,
             structured_blob=structured_blob,
             transcript=transcript,
             settings=settings,
@@ -301,7 +308,7 @@ async def generate_note(
         request_id=req_id,
         patient_uuid=patient_uuid,
         note_id=note_id,
-        groq_res=groq_res,
+        completion=completion,
         structured_blob=structured_blob,
         transcript=transcript,
         settings=settings,

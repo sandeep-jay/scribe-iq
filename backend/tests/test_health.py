@@ -16,3 +16,8 @@ def test_health_returns_expected_flags(client):
     assert payload["service"] == "scribe-iq-backend"
     assert "responsible_ai_admin_enabled" in payload
     assert "api_auth_configured" in payload
+    assert payload["llm_provider"] == "groq"
+    assert "llm_configured" in payload
+    assert payload["llm_json_mode"] in ("native", "prompt_enforced", "unavailable")
+    assert "embedding_provider" in payload
+    assert "embedding_configured" in payload
