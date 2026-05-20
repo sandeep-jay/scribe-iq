@@ -8,7 +8,7 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 
 | Doc | What it is for |
 |-----|----------------|
-| [overview/PORTFOLIO_CASE_STUDY.md](overview/PORTFOLIO_CASE_STUDY.md) | Portfolio framing for job-search reviewers and hiring personas |
+| [overview/PORTFOLIO_CASE_STUDY.md](overview/PORTFOLIO_CASE_STUDY.md) | Product case study: problem, workflows, architecture, governance boundaries, and production limits |
 | [overview/RESUME_SNIPPETS.md](overview/RESUME_SNIPPETS.md) | Reusable resume/project descriptions |
 | [overview/PRODUCT_CONTEXT.md](overview/PRODUCT_CONTEXT.md) | Problem framing, scope, what is deferred and why |
 | [overview/SYSTEM_OVERVIEW.md](overview/SYSTEM_OVERVIEW.md) | Diagrams, capability flags, extension seams (rationale in DESIGN_NOTES) |

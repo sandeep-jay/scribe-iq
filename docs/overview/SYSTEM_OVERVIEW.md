@@ -1,6 +1,6 @@
 # System overview
 
-Scribe IQ is a Next.js frontend over a FastAPI service, backed by Postgres with pgvector. LLM and embedding providers are **configurable per deployment**: the demo defaults to Groq for completions and OpenAI for embeddings, but the same code paths run against Azure OpenAI or Amazon Bedrock for institutional postures. Every AI-touching route appends an **audit row** to `ai_interactions` in the same Postgres database; **admin** routes and UI only control whether that data is exposed for inspection.
+Scribe IQ is a Next.js frontend over a FastAPI service, backed by Postgres with pgvector. LLM and embedding providers are **configurable per deployment**: the demo defaults to Groq for completions and OpenAI for embeddings, but the same code paths run against Azure OpenAI or Amazon Bedrock for institutional postures. AI interaction audit is modeled as first-class Postgres data in `ai_interactions`; **admin** routes and UI only control whether those rows are exposed for inspection.
 
 This document is the **architecture story**: diagrams, capability flags, extension seams. For rationale and alternatives considered, see [`DESIGN_NOTES.md`](./DESIGN_NOTES.md). For exact routes, schema, and flags, see [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). For the provider configuration matrix, see [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../guides/LLM_AND_EMBEDDING_PROVIDERS.md).
 
@@ -64,7 +64,7 @@ Health (`GET /health`) reports which capabilities are configured; the UI surface
 | `LLM_PROVIDER` | Selects LLM provider (`groq`, `azure_openai`, `bedrock`) for chat, pre-meeting summaries, and note generation | `groq` |
 | `GROQ_API_KEY` | Groq completions when `LLM_PROVIDER=groq` | unset |
 | `AZURE_OPENAI_API_KEY` + `AZURE_OPENAI_ENDPOINT` + `AZURE_OPENAI_CHAT_DEPLOYMENT` | Azure OpenAI completions when `LLM_PROVIDER=azure_openai` | unset |
-| `BEDROCK_REGION` + `BEDROCK_CHAT_MODEL_ID` (+ AWS credentials) | Bedrock completions when `LLM_PROVIDER=bedrock` | unset |
+| `AWS_REGION` + `AWS_BEDROCK_CHAT_MODEL_ID` (+ AWS credentials or role/profile) | Bedrock completions when `LLM_PROVIDER=bedrock` | unset |
 | `EMBEDDING_PROVIDER` + provider credentials + `scribe-load-corpus --embed` | RAG chat over note embeddings; chat returns 503 until embeddings exist | `openai` (unset credentials) |
 | `NOTE_GENERATION_ENABLED` | `POST /notes/generate` accepts writes | `false` |
 | `MEETING_PREP_ENABLED` | `GET /patients/{id}/meeting-prep` produces LLM summaries | `true` |
@@ -93,7 +93,7 @@ These themes are intentional; **alternatives considered, depth, and production d
 
 - **Colocation:** vectors live in Postgres with relational rows; corpus is produced offline and loaded, not generated per request.
 - **Grounding:** chat is retrieval-first with a citation-shaped prompt contract (`[note:uuid]`), not a post-hoc verifier loop.
-- **Governance:** `ai_interactions` is a first-class table; recording is part of the AI request path (admin UI is optional exposure).
+- **Governance:** `ai_interactions` is a first-class table for completed and handled degraded AI paths; admin UI is optional exposure.
 
 ---
 
