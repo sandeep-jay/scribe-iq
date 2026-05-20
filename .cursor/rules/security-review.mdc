@@ -1,0 +1,57 @@
+---
+description: Security review and secret-hygiene rules for Scribe IQ
+alwaysApply: true
+---
+
+# Security Review
+
+This repo holds AI/clinical demo code. Never let real secrets, PHI, or
+patient data enter the working tree, git history, or chat.
+
+## Secrets and credentials
+
+- Never paste, echo, or commit live provider keys (OpenAI, Groq, Anthropic,
+  HF, AWS, Azure, GCP, GitHub PATs, Slack tokens, JWTs, PEM private keys).
+  Use placeholders like `your_<provider>_key_here` in `.env.example` and
+  load real values from a local `.env` that is gitignored.
+- Treat `backend/.env`, `data_prep/.env`, and `frontend/.env*` as
+  read-restricted. Do not `cat`, log, or copy their contents into chat,
+  PR bodies, or generated files.
+- The local docker-compose Postgres password `rag:rag_dev_password` is the
+  only credential that may appear in tracked code. It is dev-only and
+  documented in `docker-compose.yml`.
+- If a real key is ever staged or committed, stop, tell the user, and
+  rotate the key before doing anything else.
+
+## Hooks the agent must respect
+
+- `.githooks/pre-commit` blocks staged files that look like secrets or are
+  named `.env*` (except `.env.example` / `.env.test`). Never bypass with
+  `--no-verify`; set `SCRIBE_IQ_ALLOW_SECRET_COMMIT=1` only when the user
+  explicitly requests it for a documented false positive.
+- `.cursor/hooks.json` wires three Cursor hooks (shell, prompt, file)
+  backed by `scripts/secret_patterns.py`. If a hook returns
+  `permission: ask`, surface the user_message verbatim and wait for
+  confirmation; do not silently retry.
+- The shared scanner in `scripts/secret_patterns.py` is the single source
+  of truth for detection patterns. When adding new providers (Bedrock
+  variant, Azure variant, etc.), extend that module and add a smoke test.
+
+## Reviewing changes touching sensitive paths
+
+- Edits to `.env.example`, `docker-compose.yml`, `.github/workflows/`,
+  `backend/app/config.py`, or anything importing AWS/Azure SDK clients
+  warrant a quick read-back: confirm no live secrets, secret references
+  use `${{ secrets.* }}` or `os.environ` (not literals), and any new
+  required env var is documented in `docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`.
+- Edits to `corpus_pipelines/` or `data_prep/` must keep PHI out: only
+  synthetic / publicly-licensed clinical text may be staged.
+- Hooks files (`.githooks/*`, `.cursor/hooks/*`, `.cursor/hooks.json`)
+  must remain executable where appropriate and pass `python3 -c "import json; json.load(open('.cursor/hooks.json'))"`.
+
+## Standard review prompts
+
+- "Run a secret-pattern sweep on this diff and the last 50 commits."
+- "Show me every place this token or env var is referenced."
+- "Validate that all new env vars are placeholders in .env.example and
+  referenced via os.environ / settings, not literals."

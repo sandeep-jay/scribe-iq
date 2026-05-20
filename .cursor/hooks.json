@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/secret_scan_shell.py",
+        "timeout": 10
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/secret_scan_prompt.py",
+        "matcher": "UserPromptSubmit",
+        "timeout": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/secret_scan_file.py",
+        "matcher": "Write|Edit|StrReplace|MultiEdit|ApplyPatch|EditNotebook",
+        "timeout": 10
+      }
+    ]
+  }
+}

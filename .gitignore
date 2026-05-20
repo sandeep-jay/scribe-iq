@@ -56,9 +56,12 @@ evals/results/
 *.egg-info/
 
 # Cursor IDE local metadata
-.cursor/
+.cursor/*
 !.cursor/rules/
 !.cursor/rules/**
+!.cursor/hooks.json
+!.cursor/hooks/
+!.cursor/hooks/**
 
 
 # Frontend / Playwright artifacts
