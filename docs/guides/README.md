@@ -30,6 +30,7 @@ nvm use
 | Architecture diagrams, flags matrix, extension seams | [`docs/overview/SYSTEM_OVERVIEW.md`](../overview/SYSTEM_OVERVIEW.md) |
 | Rationale, alternatives, or “what was non-obvious” | [`docs/overview/DESIGN_NOTES.md`](../overview/DESIGN_NOTES.md) |
 | `data_prep/scripts/` contracts or pipeline behavior | [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md) |
+| Privacy / provider boundaries | [`docs/overview/`](../overview/) |
 | Sequencing, scope, or product commitments | Relevant file under [`docs/roadmap/`](../roadmap/) |
 
 ## Local security checks
