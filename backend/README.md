@@ -135,7 +135,14 @@ Run local quality checks:
 ```bash
 cd backend
 source .venv/bin/activate
-tox -e lint,py311
+tox -e lint,py311          # ruff lint + unit/integration tests (CI parity)
+tox -e lint                # ruff lint only (fast)
+tox -e format-check        # advisory: ruff format --check
+tox -e format              # apply ruff formatting and autofixes
 ```
+
+CI runs `tox -e lint` as a dedicated, fast-failing job (`backend-lint`) before
+`tox -e py311` (`backend`), so style regressions surface within a minute.
+
 
 Documentation map (repository-wide): [`docs/README.md`](../docs/README.md) · [`docs/architecture/README.md`](../docs/architecture/README.md).
