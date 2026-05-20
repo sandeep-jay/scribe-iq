@@ -1,16 +1,16 @@
 # Developer guides
 
-Entry point for **running and changing** this repository. Long-form specs live under [`docs/reference/`](../reference/); architecture inventory and spine live under [`docs/architecture/`](../architecture/).
+Entry point for **running and changing** this repository. Long-form specs live under [`docs/reference/`](../reference/); architecture inventory lives under [`docs/architecture/`](../architecture/). Product framing and diagrams: [`docs/overview/`](../overview/).
 
 ## Run each pillar
 
 | Area | Guide |
 |------|--------|
+| **Quick start (end-to-end)** | [`QUICKSTART.md`](./QUICKSTART.md) |
 | Backend (FastAPI) | [`../../backend/README.md`](../../backend/README.md) |
 | Frontend (Next.js) | [`../../frontend/README.md`](../../frontend/README.md) |
 | Offline corpus builder | [`../../data_prep/README.md`](../../data_prep/README.md) |
-| AGBonnet HF clinical notes (precursor scripts) | [`../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md) |
-
+| AGBonnet HF clinical notes (historical precursors; do not extend) | [`../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md) |
 
 ## Node version
 
@@ -26,10 +26,12 @@ nvm use
 |--------|----------------------------------|
 | API routes, env flags, DB schema, or as-built behavior | [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md) |
 | High-level “what runs now” story | [`docs/architecture/CURRENT.md`](../architecture/CURRENT.md) |
+| Product framing, scope, or deferred intent | [`docs/overview/PRODUCT_CONTEXT.md`](../overview/PRODUCT_CONTEXT.md) |
+| Architecture diagrams, flags matrix, extension seams | [`docs/overview/SYSTEM_OVERVIEW.md`](../overview/SYSTEM_OVERVIEW.md) |
+| Rationale, alternatives, or “what was non-obvious” | [`docs/overview/DESIGN_NOTES.md`](../overview/DESIGN_NOTES.md) |
 | `data_prep/scripts/` contracts or pipeline behavior | [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md) |
 | Privacy / provider boundaries | [`docs/overview/`](../overview/) |
 | Sequencing, scope, or product commitments | Relevant file under [`docs/roadmap/`](../roadmap/) |
-
 
 ## Local security checks
 
@@ -45,7 +47,6 @@ Run secret checks on demand:
 ```bash
 pre-commit run gitleaks --all-files
 ```
-
 
 ### Commit message hook (strip Cursor trailer)
 
