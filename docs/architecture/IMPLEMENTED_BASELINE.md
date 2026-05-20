@@ -181,7 +181,7 @@ Notable environment-driven flags (see `backend/.env.example`):
 
 Typed helpers: `apiBase`, `fetchBackendHealth`, `fetchCorpusPatientStats`, `fetchPatients`, `fetchPatient`, `fetchMeetingPrep`, `fetchNote`, `postChat`, `postGenerateNote`, optional **`X-API-Key`** / env base URL for demos; when admin UI is on, **Responsible AI** fetchers for metrics, interaction list, and interaction detail.
 
-**Env (frontend):** `NEXT_PUBLIC_SCRIBE_API_BASE`, optional **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`**, optional **`NEXT_PUBLIC_SCRIBE_BACKEND_API_KEY`** if the backend uses `BACKEND_API_KEY`. Documented in **`.env_example`** (repo root) and **`frontend/.env.example`**.
+**Env (frontend):** `NEXT_PUBLIC_SCRIBE_API_BASE`, optional **`NEXT_PUBLIC_SCRIBE_ADMIN_UI`**, optional **`NEXT_PUBLIC_SCRIBE_BACKEND_API_KEY`** if the backend uses `BACKEND_API_KEY`. Documented in **`frontend/.env.example`**.
 
 ---
 
