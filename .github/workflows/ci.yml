@@ -13,10 +13,56 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Run gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate Cursor hooks config JSON
+        run: python -c "import json; json.load(open('.cursor/hooks.json'))"
+      - name: Byte-compile security hook scripts
+        run: python -m py_compile scripts/secret_patterns.py .cursor/hooks/_scanner_loader.py .cursor/hooks/secret_scan_file.py .cursor/hooks/secret_scan_prompt.py .cursor/hooks/secret_scan_shell.py
+      - name: Run in-repo secret scanner across tracked files
+        run: |
+          python - <<'PYSCAN'
+          import subprocess, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from secret_patterns import find_secrets
+          tracked = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+          skip_ext = {".png",".jpg",".jpeg",".gif",".webp",".svg",".ico",".pdf",".zip",".gz",".tar",".lock",".parquet",".woff",".woff2",".so",".dylib",".dll",".bin"}
+          hits = []
+          for rel in tracked:
+              p = Path(rel)
+              if p.suffix.lower() in skip_ext:
+                  continue
+              try:
+                  text = p.read_text(encoding="utf-8", errors="ignore")
+              except Exception:
+                  continue
+              for f in find_secrets(text):
+                  hits.append((rel, f.line_no, f.name, f.line_excerpt))
+          print(f"Scanned {len(tracked)} tracked paths; findings={len(hits)}")
+          for h in hits:
+              print(f"::error file={h[0]},line={h[1]}::{h[2]} :: {h[3]}")
+          sys.exit(1 if hits else 0)
+          PYSCAN
+      - name: Sanity-check git pre-commit hook against PR diff
+        if: github.event_name == 'pull_request'
+        run: |
+          git config core.hooksPath .githooks
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only --diff-filter=ACMRT "$base" "$head" > /tmp/_pr_changed.txt || true
+          if [ -s /tmp/_pr_changed.txt ]; then
+            git reset --soft "$base"
+            xargs -a /tmp/_pr_changed.txt git add --
+            .githooks/pre-commit
+          else
+            echo "no PR diff to scan"
+          fi
 
   backend-lint:
     runs-on: ubuntu-latest
