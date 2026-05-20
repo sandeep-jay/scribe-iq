@@ -46,6 +46,8 @@ def test_groq_missing_key_raises_configuration_error():
 def test_azure_deployment_aliases():
     settings = Settings(
         llm_provider="azure",
+        azure_openai_chat_deployment="",
+        azure_openai_json_deployment="",
         azure_openai_deployment="legacy-chat",
         azure_openai_mini_deployment="legacy-mini",
     )
