@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { MeetingPrepPanel } from "@/components/MeetingPrepPanel";
 
 /**
- * Defers meeting-prep (DB + optional Groq) until near viewport or explicit user action,
+ * Defers meeting-prep (DB + optional configured LLM provider) until near viewport or explicit user action,
  * so the chart shell renders without blocking on AI.
  */
 export function DeferredMeetingPrepPanel({ patientId }: { patientId: string }) {
@@ -56,7 +56,7 @@ export function DeferredMeetingPrepPanel({ patientId }: { patientId: string }) {
             Pre-meeting summary
           </p>
           <p className="mt-2 text-xs leading-relaxed text-indigo-900/70 dark:text-indigo-200/70">
-            Loads when this section comes into view — keeps the chart responsive while Groq prepares the narrative.
+            Loads when this section comes into view — keeps the chart responsive while the configured LLM provider prepares the narrative.
           </p>
           <p className="mt-3 text-[11px] text-indigo-800/60 dark:text-indigo-200/60">
             <button

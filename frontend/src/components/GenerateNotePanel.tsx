@@ -110,7 +110,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
           <span className="font-mono">{apiBase()}</span>.
         </p>
         <p className="leading-relaxed opacity-90">
-          <span className="font-semibold">Note:</span> &quot;Failed to fetch&quot; means the browser did not get an HTTP response from FastAPI (offline API, wrong URL, mixed content, or CORS). Groq is only used after the request reaches the backend.
+          <span className="font-semibold">Note:</span> &quot;Failed to fetch&quot; means the browser did not get an HTTP response from FastAPI (offline API, wrong URL, mixed content, or CORS). The configured LLM provider is only used after the request reaches the backend.
         </p>
       </section>
     );
@@ -132,7 +132,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
           The backend reports <strong className="font-mono">note_generation_enabled = false</strong>. Set{' '}
           <span className="font-mono">NOTE_GENERATION_ENABLED=true</span> in{' '}
           <span className="font-mono">backend/.env</span> with a valid{' '}
-          <span className="font-mono">GROQ_API_KEY</span>, restart uvicorn, and refresh — then transcripts can
+          <span className="font-mono">LLM_PROVIDER</span> and provider credentials, restart uvicorn, and refresh — then transcripts can
           be drafted into persisted notes for{' '}
           <span className="font-mono">{patientId.slice(0, 8)}…</span>.
         </p>
@@ -189,7 +189,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
       <header className="space-y-1">
         <h2 className="text-[11px] font-semibold uppercase tracking-wide">LLM encounter drafting</h2>
         <p className="text-[11px] text-indigo-800 dark:text-indigo-100">
-          <span className="font-mono">POST /notes/generate</span> → Groq structured JSON persisted on Postgres.
+          <span className="font-mono">POST /notes/generate</span> → configured LLM structured JSON persisted on Postgres.
         </p>
       </header>
 
