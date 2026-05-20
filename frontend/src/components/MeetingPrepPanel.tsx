@@ -81,7 +81,7 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
           <p>{err}</p>
           <p className="text-xs leading-relaxed opacity-90">
             &quot;Failed to fetch&quot; usually means the browser never reached FastAPI (start uvicorn, check{" "}
-            <span className="font-mono">NEXT_PUBLIC_SCRIBE_API_BASE</span>, and CORS / same host as the app). Groq runs only after the backend answers.
+            <span className="font-mono">NEXT_PUBLIC_SCRIBE_API_BASE</span>, and CORS / same host as the app). The configured LLM provider runs only after the backend answers.
           </p>
         </div>
       ) : null}
@@ -89,7 +89,7 @@ export function MeetingPrepPanel({ patientId }: { patientId: string }) {
 
       {data?.degraded ? (
         <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-          Offline prep: Groq is not configured or the model call failed. Set <span className="font-mono">GROQ_API_KEY</span> in{" "}
+          Offline prep: no LLM provider is configured, or the provider call failed. Configure <span className="font-mono">LLM_PROVIDER</span> and provider credentials in{" "}
           <span className="font-mono">backend/.env</span> and restart the API for AI-polished summaries.
         </p>
       ) : null}

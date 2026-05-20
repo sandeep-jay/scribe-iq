@@ -1,4 +1,7 @@
 # Scribe-IQ Clinical Lakehouse — v2
+
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md). Map: [`docs/README.md`](../README.md).
+
 ### A Synthetic Clinical Data Pipeline Joining Synthea Patient Records with AGBonnet Clinical Language
 
 ---

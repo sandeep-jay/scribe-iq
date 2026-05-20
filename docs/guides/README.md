@@ -7,6 +7,7 @@ Entry point for **running and changing** this repository. Long-form specs live u
 | Area | Guide |
 |------|--------|
 | **Quick start (end-to-end)** | [`QUICKSTART.md`](./QUICKSTART.md) |
+| **LLM and embedding providers** | [`LLM_AND_EMBEDDING_PROVIDERS.md`](./LLM_AND_EMBEDDING_PROVIDERS.md) |
 | Backend (FastAPI) | [`../../backend/README.md`](../../backend/README.md) |
 | Frontend (Next.js) | [`../../frontend/README.md`](../../frontend/README.md) |
 | Offline corpus builder | [`../../data_prep/README.md`](../../data_prep/README.md) |
@@ -25,10 +26,10 @@ nvm use
 | Change | Update (same PR when practical) |
 |--------|----------------------------------|
 | API routes, env flags, DB schema, or as-built behavior | [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md) |
-| High-level “what runs now” story | [`docs/architecture/CURRENT.md`](../architecture/CURRENT.md) |
+| High-level "what runs now" story | [`docs/architecture/CURRENT.md`](../architecture/CURRENT.md) |
 | Product framing, scope, or deferred intent | [`docs/overview/PRODUCT_CONTEXT.md`](../overview/PRODUCT_CONTEXT.md) |
 | Architecture diagrams, flags matrix, extension seams | [`docs/overview/SYSTEM_OVERVIEW.md`](../overview/SYSTEM_OVERVIEW.md) |
-| Rationale, alternatives, or “what was non-obvious” | [`docs/overview/DESIGN_NOTES.md`](../overview/DESIGN_NOTES.md) |
+| Rationale, alternatives, or "what was non-obvious" | [`docs/overview/DESIGN_NOTES.md`](../overview/DESIGN_NOTES.md) |
 | `data_prep/scripts/` contracts or pipeline behavior | [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md) |
 | Privacy / provider boundaries | [`docs/overview/`](../overview/) |
 | Sequencing, scope, or product commitments | Relevant file under [`docs/roadmap/`](../roadmap/) |

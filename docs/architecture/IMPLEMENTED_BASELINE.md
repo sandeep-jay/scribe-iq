@@ -14,7 +14,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 
 1. **Browse patients** — Paginated roster with sorting, filter chips, advanced filter area, and corpus stats. Search filters the list and is reflected in the URL as **`?q=`** on `/patients`.
 
-2. **Open a patient chart** — Demographics/metadata, longitudinal snippets and medication hints, a **pre-meeting summary** (Groq-backed when configured) with refresh, cached vs degraded behavior, and model metadata.
+2. **Open a patient chart** — Demographics/metadata, longitudinal snippets and medication hints, a **pre-meeting summary** (LLM-backed when a provider is configured) with refresh, cached vs degraded behavior, and model metadata.
 
 3. **Explore clinical history** — **Read**, **Sources**, and **Codes & map** tabs; a **care timeline** with horizontal scroll; **encounter list** with UI pagination (10 per page); for many visits, the timeline can use **month buckets** so the strip stays usable.
 
@@ -34,7 +34,7 @@ Short functional read of the baseline; sections below spell out routes, files, a
 
 - **Docker Postgres + pgvector** for local development (host **5433**).
 - **Alembic migrations** for `patients`, `notes` (including vector embeddings), and **`patient_meeting_prep`** cache.
-- **Load corpus into the database** — `load_corpus` / `scribe-load-corpus` upserts from the built corpus; optional **truncate** and optional **OpenAI** embedding fill.
+- **Load corpus into the database** — `load_corpus` / `scribe-load-corpus` upserts from the built corpus; optional **truncate** and optional embedding fill via configured `EMBEDDING_PROVIDER`.
 - **Offline corpus build** — `data_prep/` scripts produce the dataset the loader ingests (not invoked per HTTP request).
 - **Optional API key** on the API (`BACKEND_API_KEY` with `X-API-Key` or Bearer) and **CORS** tuned for local/LAN demos (`CORS_RELAX_LOCAL`).
 - **`GET /health`** reports configured capabilities (e.g. note generation, meeting prep, LLM provider, API auth, **Responsible AI admin** when `RESPONSIBLE_AI_ADMIN_ENABLED` is true).
@@ -86,8 +86,8 @@ Apply: `cd backend && alembic upgrade head` (with `DATABASE_URL` pointing at the
 ### 2.3 Corpus load (backend)
 
 - **Script:** `backend/scripts/load_corpus.py` (console entry: `scribe-load-corpus`)
-- **Modes:** upsert JSONL corpus; optional `--truncate`; optional `--embed` (OpenAI embeddings → `notes.embedding`)
-- **Env:** `DATABASE_URL`, and for embeddings `OPENAI_API_KEY` (see `backend/README.md`)
+- **Modes:** upsert JSONL corpus; optional `--truncate`; optional `--embed` (configured embedding provider → `notes.embedding`)
+- **Env:** `DATABASE_URL`, and for embeddings: configured provider credentials (see `docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`) (see `backend/README.md`)
 
 ---
 
@@ -120,11 +120,11 @@ Notable environment-driven flags (see `backend/.env.example`):
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/health` | Liveness + flags: `llm_provider`, `llm_configured`, `llm_json_mode`, `embedding_provider`, `embedding_configured`, feature flags, `api_auth_configured`, etc. |
+| `GET` | `/health` | Liveness + flags: `llm_provider`, `llm_configured`, `llm_json_mode`, `embedding_provider`, `embedding_configured`, `embedding_model`, `embedding_dim`, feature flags, `api_auth_configured`, etc. |
 | `GET` | `/patients` | Paginated patient roster (`domain`, `limit`, `offset`); aggregates note counts / last session / specialty hints. |
 | `GET` | `/patients/stats` | Corpus totals for a `domain`. |
 | `GET` | `/patients/{patient_id}` | Chart payload: metadata, `latest_longitudinal`, medication hints, **note previews** list. |
-| `GET` | `/patients/{patient_id}/meeting-prep` | Groq-backed pre-meeting summary; `?refresh=true` forces refresh; **cached** in `patient_meeting_prep` with fingerprint invalidation. Response may include **`ai_audit`** (interaction id + governance summary) when audit recording succeeds. |
+| `GET` | `/patients/{patient_id}/meeting-prep` | LLM-backed pre-meeting summary (configured provider); `?refresh=true` forces refresh; **cached** in `patient_meeting_prep` with fingerprint invalidation. Response may include **`ai_audit`** (interaction id + governance summary) when audit recording succeeds. |
 | `GET` | `/notes/{note_id}` | Full note: transcript, `structured_note`, `entity_payload`, `longitudinal_context`, `embedding_present`. |
 | `POST` | `/notes/generate` | **Opt-in** structured note generation + DB insert/update; optional embedding write; gated on `NOTE_GENERATION_ENABLED` and LLM keys. Response may include an **`audit`** block with **`interaction_id`**. |
 | `POST` | `/chat` | **Vector RAG** over `notes.embedding`; returns answer + citations and optional **`audit`** metadata. Returns **503** if no embeddings exist for the domain (by design for optional embed step). |
@@ -141,8 +141,9 @@ Notable environment-driven flags (see `backend/.env.example`):
 | Module | Role |
 |--------|------|
 | `app/db.py` | Request-scoped DB access from pool |
-| `app/llm/` | Provider factory: Groq, Azure OpenAI, Bedrock; `chat_complete` / `chat_json_completion` wrappers |
-| `app/embeddings.py` | Query embedding + note embedding helpers for chat / note_generate |
+| `app/llm/` | Provider-agnostic LLM layer: Groq, Azure OpenAI, Bedrock; generic chat/json wrappers |
+| `app/embeddings/` | Provider-backed embeddings: OpenAI, Azure OpenAI, Bedrock; dimension validation |
+| `app/aws/` | Bedrock client/session helpers, optional role assumption |
 | `app/meeting_prep_service.py` | Meeting prep generation + cache logic |
 | `app/schemas/*` | Pydantic models for patients, chat, note generation |
 | `app/responsible_ai/*` | Audit logging (including JSONB-safe bindings for `asyncpg`), redaction, hashes, prompt registry, safety heuristics, source trace normalization |
@@ -213,9 +214,10 @@ Items discussed in roadmaps / agent plans but **not** present as first-class fea
 | Document | Use |
 |----------|-----|
 | `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` | UI phases, V2 plan, §12 transcription + note service **planning** |
-| `docs/roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Responsible AI Control Center product/engineering plan (see **status** at top of that file) |
-| `docs/roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 data + app master plan |
-| `docs/reference/rag_clinical_note_llm_design.md` | Clinical note / LLM phases |
+| `docs/archive/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md` | Historical Responsible AI plan (implemented; see baseline) |
+| `docs/archive/PHASE1_MASTER_PLAN.md` | Historical Phase-1 master plan |
+| `docs/archive/rag_clinical_note_llm_design.md` | Historical clinical note / LLM design |
+| `docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md` | Active LLM and embedding provider setup |
 | `docs/README.md` | Documentation map (roadmaps + references + archives) |
 | `docs/archive/README.md` | Superseded long prompts / duplicate guides |
 

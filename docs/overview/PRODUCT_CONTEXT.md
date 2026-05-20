@@ -12,7 +12,7 @@ The system is a complete demonstration of those principles on a realistic synthe
 
 ## What is built, end to end
 
-One line: **offline corpus → Postgres/pgvector → FastAPI → Next.js**, with optional Groq narrative generation, optional OpenAI embeddings for RAG chat, and optional Responsible AI admin surfaces.
+One line: **offline corpus → Postgres/pgvector → FastAPI → Next.js**, with optional provider-backed narrative generation, optional provider-backed embeddings for RAG chat, and optional Responsible AI admin surfaces.
 
 Layers, without repeating the as-built route list: **data** (`data_prep/` + JSONL), **persistence** (Alembic migrations including `ai_interactions`), **service** (patient/chart/encounter/meeting-prep/chat/note routes), **UI** (App Router), **governance** (append-only interaction rows; admin is optional exposure).
 
