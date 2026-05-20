@@ -50,7 +50,7 @@ The cost is a small write per AI call. The benefit is that the row reflects what
 
 ### Optional features fail visibly
 
-**The decision.** Without `OPENAI_API_KEY` and an embeddings load, chat returns 503 with a specific message. Without `GROQ_API_KEY`, meeting prep returns a placeholder. The frontend reads `GET /health` and surfaces these states explicitly.
+**The decision.** Without configured embeddings and an embeddings load, chat returns 503 with a specific message. Without a configured LLM provider, meeting prep returns a placeholder. The frontend reads `GET /health` and surfaces these states explicitly.
 
 **What I considered.** A degraded silent path that hides unconfigured features entirely.
 
@@ -76,7 +76,7 @@ These are the calls that would change if the system were leaving the demonstrati
 
 **Embeddings strategy.** OpenAI `text-embedding-3-small` is fine for this scale. For real clinical corpora I would benchmark domain-specific embeddings (BGE-M3, MedCPT) and likely move to a hybrid retrieval design — BM25 plus dense — with reranking. The provider abstraction already exists; the work is in the retrieval pipeline.
 
-**LLM provider and prompt versioning.** Groq is excellent for inference speed; for production I would want a primary plus a verified fallback (Anthropic or OpenAI), and prompt versions pinned per route with their hashes recorded in `ai_interactions` — which the schema already supports — rather than treated as code constants.
+**LLM provider and prompt versioning.** Fast demo providers are useful for iteration; for production I would want a primary plus a verified fallback approved by the institution, and prompt versions pinned per route with their hashes recorded in `ai_interactions` — which the schema already supports — rather than treated as code constants.
 
 **Observability beyond the audit row.** The audit table is a complete record of AI behavior. It is not a complete record of system health. I would add OpenTelemetry traces for the FastAPI handlers, a metrics surface for latency and error rates by route, and structured log aggregation. The `X-Request-ID` propagation is already in place; this is mostly wiring.
 
