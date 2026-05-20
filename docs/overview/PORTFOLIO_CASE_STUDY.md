@@ -16,7 +16,7 @@ The headline problem the project solves is the one that defines clinical LLM wor
 
 ## Bridge from higher-ed work to healthcare
 
-| Higher-ed (UCLA / institutional systems) | Healthcare (Scribe IQ) |
+| Higher-ed ( University / Institutional systems) | Healthcare (Scribe IQ) |
 |------------------------------------------|------------------------|
 | Longitudinal student records across enrollment, advising, financial aid | Longitudinal patient records across encounters, notes, conditions |
 | Governance constraints (FERPA, audit, role boundaries) treated as first-class schema | Governance constraints (PHI posture, `ai_interactions` audit, provider egress) treated as first-class schema |

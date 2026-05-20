@@ -8,6 +8,14 @@ Built on synthetic data. Not for clinical decision-making.
 
 Start with the product case study: [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md).
 
+**Demonstrates platform architecture, AI engineering, and Responsible AI work expected from:**
+
+- Lead Data & AI Platform Architect
+- Lead AI Engineer
+- AI/ML Platform Architect
+- Healthcare / academic medical center data architect
+- Responsible AI / GenAI platform engineer
+
 The system has been built incrementally; documentation is maintained alongside the code. The index below is the canonical entry point.
 
 ---
