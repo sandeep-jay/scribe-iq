@@ -2,7 +2,7 @@
 
 ## One-line summary
 
-Scribe IQ is an end-to-end, grounded clinical documentation system — synthetic corpus → Postgres/pgvector → FastAPI → Next.js — built to demonstrate the architectural restraint, governance, and provider-boundary thinking that real healthcare AI requires.
+Scribe IQ is a healthcare AI platform prototype showing how an offline synthetic clinical corpus becomes a governed AI product surface: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical UI, and Responsible AI auditability.
 
 ---
 
@@ -115,7 +115,7 @@ These are explicit choices, not omissions. Each names the seam where the product
 
 ---
 
-## What makes this more than a RAG demo
+## What makes this more than a chatbot demo
 
 - **Governance is a schema decision, not a logging decision.** `ai_interactions` ships in Alembic migrations alongside `patients` and `notes`. The audit row writes on the request path — same operational window as the user-visible response — so the audit reflects what happened, not what an async sidecar later inferred.
 - **The corpus is a deliberate artifact, not a synthetic prop.** Nine pipeline steps with decimal-numbered insertions, a quality scorer, a cohort selector, an LLM-adapter pass, and a validation report with a dataset card. The data is part of the engineering surface.

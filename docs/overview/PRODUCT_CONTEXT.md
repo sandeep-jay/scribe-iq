@@ -6,13 +6,13 @@ Clinical documentation AI has one fundamental reliability problem: language mode
 
 Scribe IQ is built around a specific answer to this problem: **ground every response in the actual stored record, require citations, and log what the model saw and what it produced.** The architecture reflects that constraint at every layer — retrieval before generation, citations enforced by the prompt contract itself, audit rows on every AI call.
 
-The system is a complete demonstration of those principles on a realistic synthetic patient corpus. It is not a market-ready product, and the documentation does not pretend otherwise. It is an end-to-end proof that these principles can be built into a clinical-shaped system from the schema up.
+The system is a complete demonstration of those principles on a realistic synthetic patient corpus. It is not a market-ready product, and the documentation does not pretend otherwise. It shows how an offline corpus/data product can become a clinical-shaped AI surface with governance built in from the schema up.
 
 ---
 
 ## What is built, end to end
 
-One line: **offline corpus → Postgres/pgvector → FastAPI → Next.js**, with optional provider-backed narrative generation, optional provider-backed embeddings for RAG chat, and optional Responsible AI admin surfaces.
+One line: **`data_prep/` → generated corpus artifact → Postgres/pgvector → FastAPI → Next.js**, with optional provider-backed narrative generation, optional provider-backed embeddings for RAG chat, and optional Responsible AI admin surfaces.
 
 Layers, without repeating the as-built route list: **data** (`data_prep/` + JSONL), **persistence** (Alembic migrations including `ai_interactions`), **service** (patient/chart/encounter/meeting-prep/chat/note routes), **UI** (App Router), **governance** (append-only interaction rows; admin is optional exposure).
 
