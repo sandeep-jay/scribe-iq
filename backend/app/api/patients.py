@@ -16,7 +16,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from app.request_id import get_request_id
 from app.db import get_conn
 from app.config import get_settings
-from app.llm import groq_chat_complete
+from app.llm import chat_complete
+from app.llm.errors import LlmConfigurationError, LlmProviderError
 
 import structlog
 
@@ -348,36 +349,45 @@ async def get_meeting_prep(
     ]
     trace_payload = trace_from_meeting_prep_visits(list(visits_raw), fingerprint=fp)
 
-    groq_key = (settings.groq_api_key or "").strip()
+    llm_ready = settings.llm_configured()
     degraded = False
-    groq_res = None
-    if groq_key:
-        logger.debug("meeting_prep_groq_key_present", request_id=req_id)
+    completion = None
+    llm_provider_name = "deterministic"
+    if llm_ready:
+        logger.debug("meeting_prep_llm_configured", request_id=req_id, provider=settings.normalized_llm_provider())
         try:
             msgs = meeting_prep_messages(facts)
-            logger.debug("meeting_prep_groq_call_started", request_id=req_id, model=settings.groq_chat_model)
-            groq_res = await groq_chat_complete(msgs, temperature=0.2, max_tokens=900)
-            summary = groq_res.text
-            model = settings.groq_chat_model
+            logger.debug(
+                "meeting_prep_llm_call_started",
+                request_id=req_id,
+                provider=settings.normalized_llm_provider(),
+            )
+            completion = await chat_complete(msgs, temperature=0.2, max_tokens=900)
+            summary = completion.text
+            model = completion.model or settings.groq_chat_model
+            llm_provider_name = completion.provider
             pv = MEETING_PREP_PROMPT_VERSION
             logger.info(
-                "meeting_prep_groq_succeeded",
+                "meeting_prep_llm_succeeded",
                 request_id=req_id,
                 model=model,
-                latency_ms=groq_res.latency_ms,
-                prompt_tokens=groq_res.prompt_tokens,
-                completion_tokens=groq_res.completion_tokens,
+                provider=llm_provider_name,
+                latency_ms=completion.latency_ms,
+                prompt_tokens=completion.prompt_tokens,
+                completion_tokens=completion.completion_tokens,
             )
-        except Exception as e:
-            logger.warning("meeting_prep_groq_unavailable", request_id=req_id, error=str(e))
+        except (LlmConfigurationError, LlmProviderError, Exception) as e:
+            logger.warning("meeting_prep_llm_unavailable", request_id=req_id, error=str(e))
             summary = deterministic_meeting_prep_summary(facts)
             model = "deterministic-fallback"
+            llm_provider_name = "deterministic"
             pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
             degraded = True
     else:
-        logger.info("meeting_prep_no_groq_key", request_id=req_id)
+        logger.info("meeting_prep_llm_not_configured", request_id=req_id)
         summary = deterministic_meeting_prep_summary(facts)
         model = "deterministic-fallback"
+        llm_provider_name = "deterministic"
         pv = f"{MEETING_PREP_PROMPT_VERSION}-offline"
         degraded = True
 
@@ -414,17 +424,17 @@ async def get_meeting_prep(
         inp_hash = sha256_hex(json.dumps(facts, default=str)[:60_000])
         out_hash = sha256_hex(summary)
         sys_hash = sha256_hex(f"{MEETING_PREP_PROMPT_VERSION}|meeting_prep_system")
-        lat = groq_res.latency_ms if groq_res is not None else 1
-        itok = groq_res.prompt_tokens if groq_res is not None else None
-        otok = groq_res.completion_tokens if groq_res is not None else None
-        mname = groq_res.model if groq_res is not None else model
+        lat = completion.latency_ms if completion is not None else 1
+        itok = completion.prompt_tokens if completion is not None else None
+        otok = completion.completion_tokens if completion is not None else None
+        mname = completion.model if completion is not None else model
         iid = await insert_ai_interaction(
             conn,
             request_id=req_id,
             interaction_type="meeting_prep",
             patient_id=str(pid),
             note_id=None,
-            model_provider=settings.llm_provider,
+            model_provider=llm_provider_name,
             model_name=mname,
             prompt_version=pv,
             system_prompt_hash=sys_hash,
