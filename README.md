@@ -36,9 +36,29 @@ I built Scribe IQ to make the bridge from education data platforms to healthcare
 
 ---
 
-## Architecture in one line
+## Architecture
 
-`data_prep/` → `clinical_corpus_v2/` generated artifact → `scribe-load-corpus` → Postgres/pgvector → FastAPI → Next.js → `ai_interactions` audit table.
+`data_prep/` → `clinical_corpus_v2/` artifact → `scribe-load-corpus` → Postgres/pgvector → FastAPI → Next.js → `ai_interactions` audit table.
+
+```mermaid
+flowchart TB
+  subgraph Offline["Offline corpus pipeline"]
+    Raw["Raw synthetic + public sources"] --> Staging["data_prep staging"]
+    Staging --> Artifact["clinical_corpus_v2 artifact"]
+    Artifact --> Loader["scribe-load-corpus"]
+  end
+
+  subgraph Runtime["Runtime app"]
+    Next["Next.js UI"] --> API["FastAPI"]
+    API --> LLM["LLM provider<br/>Groq · Azure OpenAI · Bedrock"]
+    API --> Embed["Embedding provider<br/>OpenAI · Azure OpenAI · Bedrock"]
+    API --> Audit["ai_interactions<br/>audit table"]
+    Audit --> Admin["Responsible AI Control Center"]
+  end
+
+  Loader --> PG[("Postgres + pgvector")]
+  API --> PG
+```
 
 ---
 
@@ -117,26 +137,6 @@ Every external dependency is optional. The system degrades gracefully and report
 | Patient list, charts, encounter viewer | Pre-meeting summaries, structured note generation | RAG chat with citations | Responsible AI Control Center |
 
 For the full flag matrix, see [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md#capability-flags).
-
----
-
-## System at a glance
-
-```mermaid
-flowchart LR
-  Raw["Raw synthetic/public sources"] --> Staging["data_prep staging"]
-  Staging --> Artifact["clinical_corpus_v2 artifact"]
-  Artifact --> Loader["scribe-load-corpus"]
-  Loader --> PG["Postgres + pgvector"]
-  Next["Next.js UI"] --> API["FastAPI"]
-  API --> PG
-  API --> LLM["LLM provider<br/>Groq | Azure OpenAI | Bedrock"]
-  API --> Embed["Embedding provider<br/>OpenAI | Azure OpenAI | Bedrock"]
-  API --> Audit["ai_interactions<br/>audit table"]
-  Audit --> Admin["Responsible AI Control Center"]
-```
-
----
 
 ## Quick start
 
