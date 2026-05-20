@@ -7,7 +7,7 @@ Usage:
     cd corpus_pipelines/agbonnet_hf_clinical_notes && source .venv/bin/activate && pip install -r requirements.txt
     python scripts/stage_dataset.py
 
-See roadmap/PHASE1_MASTER_PLAN.md §4.4.
+See docs/archive/PHASE1_MASTER_PLAN.md §4.4.
 """
 from __future__ import annotations
 
