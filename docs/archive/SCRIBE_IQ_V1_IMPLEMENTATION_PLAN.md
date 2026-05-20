@@ -6,6 +6,9 @@ last_updated: 2026-05-03
 
 # Scribe-IQ V1 Implementation Plan — Chat-first RAG
 
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+
+
 > **Note (2026-05):** This plan was written as an execution checklist. Task statuses were refreshed against `docs/architecture/IMPLEMENTED_BASELINE.md`. For **current** behavior and flags, treat the baseline as authoritative; this file remains useful for mockup links and original v1 intent.
 
 
@@ -13,7 +16,7 @@ last_updated: 2026-05-03
 
 **Design references:**
 
-- Backend / RAG: [`docs/reference/rag_clinical_note_llm_design.md`](../reference/rag_clinical_note_llm_design.md), [`docs/reference/rag_app_phase1_mvp_design.md`](../reference/rag_app_phase1_mvp_design.md)
+- Backend / RAG: [`rag_clinical_note_llm_design.md`](rag_clinical_note_llm_design.md), [`rag_app_phase1_mvp_design.md`](rag_app_phase1_mvp_design.md)
 - **UI (mandatory layout reference):** static mockups below — Next.js screens should match **structure, hierarchy, and main copy blocks** unless explicitly revised.
 
 ## Task checklist (execution order)

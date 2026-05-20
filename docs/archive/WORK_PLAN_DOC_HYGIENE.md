@@ -1,6 +1,9 @@
 # Work plan: documentation hygiene, truth repair, and evolution trail
 
-> **Status (completed pass, 2026-05):** The goals below were carried out on `main` (see git history on `docs/hygiene-pass` and follow-up merges). Treat this file as a **historical checklist**, not an active branch plan. For the condensed narrative, see [`docs/history/EVOLUTION.md`](history/EVOLUTION.md).
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+
+
+> **Status (completed pass, 2026-05):** The goals below were carried out on `main` (see git history on `docs/hygiene-pass` and follow-up merges). Treat this file as a **historical checklist**, not an active branch plan. For the condensed narrative, see [`docs/history/EVOLUTION.md`](../history/EVOLUTION.md).
 
 **Branch (historical):** `docs/hygiene-pass`  
 **Scope:** Documentation and naming only (no application behavior changes in this pass unless a doc fix requires a trivial string in code comments—avoid if possible).  
@@ -73,8 +76,8 @@
 
 ### PR D3 — Truth repair and roadmap consistency
 
-- `docs/roadmap/PHASE1_MASTER_PLAN.md`: banner + correct **active** corpus path (`data_prep/`), clarify **optional local** `corpus_pipelines/agbonnet_hf_clinical_notes/` vs obsolete `lakehouse/` naming in prose.
-- `docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`: banner: historical / architectural; active build is `data_prep/`.
+- `PHASE1_MASTER_PLAN.md`: banner + correct **active** corpus path (`data_prep/`), clarify **optional local** `corpus_pipelines/agbonnet_hf_clinical_notes/` vs obsolete `lakehouse/` naming in prose.
+- `agbonnet_lakehouse_precursor_proposal_v2.md`: banner: historical / architectural; active build is `data_prep/`.
 - `docs/reference/corpus_offline_pipeline_v2_brief.md`: remove or correct any “`lakehouse/` is the live tree” implication; align with README.
 - `docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`: refresh task table **or** mark file as historical with pointer to baseline.
 - `docs/roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md`: reconcile “implemented” with engineering checklist (completed vs open backlog).
