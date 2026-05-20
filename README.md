@@ -1,3 +1,5 @@
+**LLM providers:** Demo default is **Groq**. Enterprise: **Azure OpenAI** / **Bedrock**.
+
 # Scribe IQ
 
 Clinical documentation / RAG demo — start with **`docs/README.md`** (full map) · contributor setup in **`docs/guides/README.md`** · deep framing in **`docs/roadmap/PHASE1_MASTER_PLAN.md`**.
