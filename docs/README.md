@@ -11,6 +11,7 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 | [overview/PRODUCT_CONTEXT.md](overview/PRODUCT_CONTEXT.md) | Problem framing, scope, what is deferred and why |
 | [overview/SYSTEM_OVERVIEW.md](overview/SYSTEM_OVERVIEW.md) | Diagrams, capability flags, extension seams (rationale in DESIGN_NOTES) |
 | [overview/DESIGN_NOTES.md](overview/DESIGN_NOTES.md) | Builder's perspective: alternatives considered, what was non-obvious, what would change for production |
+| [overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md](overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md) | Demo / PHI policy and provider egress boundaries |
 
 ## Run and operate
 
@@ -53,6 +54,7 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 | [roadmap/PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) | Phase 1 architecture framing |
 | [roadmap/SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) | UI roadmap |
 | [roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) | Responsible AI Control Center |
+| [roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md](roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md) | Multi-provider LLM runtime (Groq / Azure OpenAI / Bedrock) |
 | [roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) | v1 implementation checklist |
 
 When a roadmap disagrees with [`architecture/IMPLEMENTED_BASELINE.md`](architecture/IMPLEMENTED_BASELINE.md), trust the baseline until the roadmap is updated.
