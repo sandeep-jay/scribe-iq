@@ -1,5 +1,8 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md). Map: [`docs/README.md`](../README.md).
+
+
 > **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`corpus_pipelines/agbonnet_hf_clinical_notes/`** ([`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
 
 
@@ -7,12 +10,12 @@
 >
 > | Project | Purpose | Where |
 > |--------|---------|--------|
-> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`corpus_pipelines/agbonnet_hf_clinical_notes/`**; narrative: **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`**; staging historically **`data/staging/`** |
+> | **L — Clinical lakehouse (precursor)** | Curated synthetic corpus (AGBonnet-era HF staging + classification precursors). No app server, no Postgres in this track. | Archived scripts: **`corpus_pipelines/agbonnet_hf_clinical_notes/`**; narrative: **`agbonnet_lakehouse_precursor_proposal_v2.md`**; staging historically **`data/staging/`** |
 > | **A — Application MVP** | RAG demo app: `backend/`, `frontend/`, Postgres, Azure. | §4–§15 **below** (schema, API, build order) |
 >
 > **Handoff:** Start production **`backend/`** after **Project L** meets the lakehouse V2 success criteria (**`data/clinical_corpus/`** + audit, see proposal §10). **Interim prototyping** may use **`create_seed_plan.py`** (50×8 JSONL) only with explicit demo scope — migrate to corpus-driven loading when `data/clinical_corpus/` exists.
 >
-> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`**.
+> This document is the **single source of truth** for **Project A** (application). Lakehouse **pipeline work beyond** validate / stage / classify / export is specified in **`agbonnet_lakehouse_precursor_proposal_v2.md`**.
 
 **Foundation (Project L — early milestones):** **`corpus_pipelines/agbonnet_hf_clinical_notes/scripts/`** (legacy prose may say `lakehouse/`) — **validate** HF (§4.3), **stage** Parquet + `manifest.json` (§4.4), **classify** specialties (§4.5), optional **interim** **`create_seed_plan.py`** (§4.6). **No database / Azure OpenAI in these scripts.** Complete **Project L handoff** before main **Project A** implementation (unless prototyping).
 
@@ -46,7 +49,7 @@
 | API prefix | Bare paths vs `/api/v1` | **`/api/v1` on all REST resources**; `/health` may stay unversioned for probes. |
 | DB: FTS | Master schema included `search_vector` + trigger in MVP | **Omit** `search_vector`, `pg_trgm`, and FTS trigger until a **later hybrid-retrieval phase** (see reference docs). Keeps MVP aligned with “vector-only search.” |
 | Azure deployments | Master: separate `gpt-4o` + mini; older docs: mini only | **Phase 3 MVP: one chat completion deployment** — use **`gpt-4o-mini`** for generation, meeting prep, chat answer synthesis, and judge calls. **Embeddings:** `text-embedding-ada-002` (1536-d). Add `gpt-4o` later for planner/reflection only. |
-| Filename drift | References to `DESIGN_PHASE1.md` | **This file:** `docs/roadmap/PHASE1_MASTER_PLAN.md`. |
+| Filename drift | References to `DESIGN_PHASE1.md` | **This file:** `PHASE1_MASTER_PLAN.md`. |
 | Corpus vs app | Mixing HF access with DB seeding | **Phase 0** stages Parquet + manifest; **Phases 1–2** add classifications + seed plan; **Phase 3** loader reads `data/staging/`. |
 
 ### 2.3 Gaps filled (this document)

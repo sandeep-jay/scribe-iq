@@ -1,5 +1,8 @@
 # RAG Documentation Assistant — Design Document
 
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+
+
 > Internal reference for implementation by the coding agent.
 > All decisions locked. Do not deviate without updating this doc first.
 

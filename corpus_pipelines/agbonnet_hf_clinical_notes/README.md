@@ -9,7 +9,7 @@ The **supported offline corpus builder** for the demo corpus in this repository 
 ## Why keep it
 
 - **Working reference** for HF validate → stage → classify → export / interim seed planning.
-- **Documentation lineage:** rationale and broader proposal narrative remain in [docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md](../../docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md).
+- **Documentation lineage:** rationale and broader proposal narrative remain in [docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md](../../docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md).
 - **Repository timeline:** [docs/history/EVOLUTION.md](../../docs/history/EVOLUTION.md).
 
 For **architecture and current behavior** of the running app and loader, see [docs/architecture/README.md](../../docs/architecture/README.md).
@@ -69,7 +69,7 @@ python3 scripts/export_staged_parquet_jsonl.py --repo-root ../..
 python3 scripts/create_seed_plan.py --repo-root ../..
 ```
 
-From **repository root** (adjust if your venv lives under this directory’s `.venv`):
+From **repository root** (adjust if your venv lives under this directory's `.venv`):
 
 ```bash
 corpus_pipelines/agbonnet_hf_clinical_notes/.venv/bin/python corpus_pipelines/agbonnet_hf_clinical_notes/scripts/classify_specialties.py --device auto --repo-root .
@@ -79,6 +79,6 @@ corpus_pipelines/agbonnet_hf_clinical_notes/.venv/bin/python corpus_pipelines/ag
 
 ## Relationship to the app and to `data_prep/`
 
-Historical master-plan prose may refer to a generic **`lakehouse/`** tree; **this repository’s HF staging scripts live under `corpus_pipelines/agbonnet_hf_clinical_notes/`** (formerly `lakehouse-old/`). Product sequencing and application MVP details live in [docs/roadmap/PHASE1_MASTER_PLAN.md](../../docs/roadmap/PHASE1_MASTER_PLAN.md) — treat early **`lakehouse/`** path mentions there as **design lineage**, not mandatory paths today.
+Historical master-plan prose may refer to a generic **`lakehouse/`** tree; **this repository's HF staging scripts live under `corpus_pipelines/agbonnet_hf_clinical_notes/`** (formerly `lakehouse-old/`). Product sequencing and application MVP details for the archived PHASE1 plan live in [docs/archive/PHASE1_MASTER_PLAN.md](../../docs/archive/PHASE1_MASTER_PLAN.md) — treat early **`lakehouse/`** path mentions there as **design lineage**, not mandatory paths today.
 
 **For new demo corpus work** prefer **`data_prep/`** and the corpus brief; extend this tree only when you are changing the HF staging / classifier / seed-plan behavior itself.

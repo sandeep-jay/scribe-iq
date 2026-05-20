@@ -1,6 +1,6 @@
 # Scribe-IQ Backend
 
-FastAPI service for the clinical RAG demo. See [`../docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`](../docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md).
+FastAPI service for the clinical RAG demo. See [`../docs/architecture/IMPLEMENTED_BASELINE.md`](../docs/architecture/IMPLEMENTED_BASELINE.md) (historical v1 plan: [`../docs/archive/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`](../docs/archive/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md)).
 
 Architecture hub: [`docs/architecture/README.md`](../docs/architecture/README.md) · As-built detail: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../docs/architecture/IMPLEMENTED_BASELINE.md).
 
@@ -14,6 +14,8 @@ cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
 cp .env.example .env   # edit keys when using LLM/embeddings
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
 Logging:
 
@@ -24,8 +26,6 @@ Logging:
 - Each response includes an `X-Request-ID` header for correlation with frontend `x-request-id` logs.
 - PHI policy: do **not** log transcript/note bodies; log IDs/counts/status/timings only.
 
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
 
 Smoke test:
 
@@ -71,7 +71,7 @@ From `backend/` (Postgres reachable via `DATABASE_URL`, repo root sibling of `ba
 pip install -e .
 python -m scripts.load_corpus              # upsert corpus (idempotent via ON CONFLICT)
 python -m scripts.load_corpus --truncate   # wipe patients/notes first
-python -m scripts.load_corpus --embed      # requires OPENAI_API_KEY; fills VECTOR(1536)
+python -m scripts.load_corpus --embed      # requires configured embedding provider credentials; fills VECTOR per EMBED_DIM
 ```
 
 Alternatively: `scribe-load-corpus`.
@@ -92,26 +92,26 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 ## LLM providers
 
 - **Demo:** `LLM_PROVIDER=groq` + `GROQ_API_KEY`
-- **Enterprise:** `azure_openai` or `bedrock` — see `backend/.env.example` and [`docs/roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md`](../docs/roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md).
+- **Enterprise:** `azure_openai` or `bedrock` — see `backend/.env.example` and [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md).
 
 ## Meeting prep (patient chart)
 
 - Endpoint: `GET /patients/{id}/meeting-prep?domain=clinical&refresh=false`.
-- Requires `GROQ_API_KEY` (same Groq stack as chat generation paths).
+- Requires a configured LLM provider (`LLM_PROVIDER` plus provider credentials). Without one, the route returns a deterministic offline summary.
 - Cached row in `patient_meeting_prep` (see Alembic `20260504_002`).
 - Disable with `MEETING_PREP_ENABLED=false`.
 - Performance: cache-hit reads now use a lightweight notes fingerprint check before returning, avoiding full bundle rebuild on hot path.
 
 ### Logging events (backend)
 
-- **INFO**: request accepted/completed, cache hit/miss, Groq success, audit persistence outcomes.
+- **INFO**: request accepted/completed, cache hit/miss, provider success, audit persistence outcomes.
 - **DEBUG** (`LOG_LEVEL=DEBUG`): branch decisions (scope/cache/replace-vs-create), token/latency metadata, source-selection checkpoints.
 - **WARN/ERROR**: degraded fallback paths, expected provider outages, validation/auth failures, unexpected exceptions.
 
 ### Performance notes
 
 - Meeting-prep cached path uses fast fingerprint validation and avoids full bundle rebuild on cache hits.
-- External Groq calls can vary widely in latency; cached reads should remain low-single-digit milliseconds locally.
+- External provider calls can vary widely in latency; cached reads should remain low-single-digit milliseconds locally.
 - ANN retrieval index migration: `20260506_005` creates `ix_notes_embedding_ivfflat_cosine` for `/chat` vector search.
 
 ## Responsible AI Control Center (audit + admin)

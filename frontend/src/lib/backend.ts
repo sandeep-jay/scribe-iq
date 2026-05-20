@@ -118,6 +118,12 @@ export type BackendHealth = {
   status: string;
   service?: string;
   llm_provider?: string;
+  llm_configured?: boolean;
+  llm_json_mode?: "native" | "prompt_enforced" | "unavailable" | string;
+  embedding_provider?: string;
+  embedding_configured?: boolean;
+  embedding_model?: string | null;
+  embedding_dim?: number;
   note_generation_enabled?: boolean;
   meeting_prep_enabled?: boolean;
   responsible_ai_admin_enabled?: boolean;
@@ -173,7 +179,7 @@ export type MeetingPrepPayload = {
   cached: boolean;
   prompt_version: string;
   model: string;
-  /** True when summary was assembled locally (no Groq or Groq call failed). */
+  /** True when summary was assembled locally (no LLM provider configured or provider call failed). */
   degraded?: boolean;
   ai_audit?: MeetingPrepAiAudit | null;
 };
