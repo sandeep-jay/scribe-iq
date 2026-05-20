@@ -55,6 +55,8 @@ evals/results/
 
 # Cursor IDE local metadata
 .cursor/
+!.cursor/rules/
+!.cursor/rules/**
 
 
 # Frontend / Playwright artifacts
