@@ -1,12 +1,48 @@
-**LLM providers:** Demo default is **Groq**. Enterprise: **Azure OpenAI** / **Bedrock**.
-
 # Scribe IQ
 
-Scribe IQ is a full-stack clinical documentation and retrieval system built on a synthetic patient corpus. It demonstrates three things end-to-end: grounding LLM responses in a structured record so answers are citation-backed, generating structured clinical notes from transcripts, and making every AI interaction auditable from day one — not as a feature added later, but as a constraint woven into the architecture.
+**Responsible clinical AI platform prototype** for grounded, auditable documentation workflows on synthetic data.
+
+Scribe IQ is a full-stack clinical documentation and retrieval system built on a synthetic patient corpus. It demonstrates grounding LLM responses in stored clinical context, generating structured clinical notes from transcripts, and making AI interactions auditable from day one.
+
+**Portfolio focus:** Lead Data & AI Platform Architecture, Lead AI Engineering, Responsible AI, and university-health AI/ML roles.
 
 Built on synthetic data. Not for clinical decision-making.
 
-The system has been built incrementally; the documentation is maintained alongside it. The index below is the canonical entry point.
+The system has been built incrementally; documentation is maintained alongside the code. The index below is the canonical entry point.
+
+---
+
+## Why this project matters
+
+- Bridges higher-education experience with sensitive advising notes, student success workflows, enterprise data platforms, RAG, and responsible AI governance into a healthcare-shaped product setting.
+- Demonstrates clinical AI reliability patterns: grounded retrieval, citations, structured note generation, source traceability, prompt/model audit, degraded modes, and explicit provider boundaries.
+- Shows platform architecture across data, service, AI, UI, and governance layers rather than a narrow chatbot demo.
+- Supports institution-aligned deployment thinking: Groq for low-friction synthetic demos; Azure OpenAI and Amazon Bedrock for enterprise cloud paths.
+
+---
+
+## Role alignment
+
+This project is designed to demonstrate strengths relevant to:
+
+- Lead Data & AI Platform Architect
+- Lead AI Engineer
+- AI/ML Platform Architect
+- Healthcare / academic medical center data architect
+- Responsible AI / GenAI platform engineer
+
+---
+
+## Portfolio highlights
+
+| Signal | Evidence |
+|--------|----------|
+| Product thinking | Patient chart, encounter viewer, pre-meeting prep, structured note generation, Responsible AI Control Center |
+| AI engineering | Grounded RAG with citations, prompt contracts, JSON note generation, provider-agnostic LLM layer |
+| Data/platform architecture | Offline corpus pipeline, Postgres/pgvector, Alembic migrations, health/readiness flags, embedding provider abstraction |
+| Responsible AI | Append-only `ai_interactions`, redacted previews, prompt/model traceability, safety heuristics, source traces |
+| Healthcare relevance | Synthetic clinical corpus, PHI/provider boundary docs, production caveats for real healthcare deployment |
+| Engineering discipline | FastAPI, Next.js, tests, CI, migrations, typed API client, structured logging |
 
 ---
 
@@ -14,6 +50,8 @@ The system has been built incrementally; the documentation is maintained alongsi
 
 | If you want to | Open |
 |----------------|------|
+| Understand the portfolio framing | [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md) |
+| Understand privacy/provider boundaries | [`docs/overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md`](docs/overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md) |
 | Understand the architecture (diagrams, flags, seams) | [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md) |
 | Understand the product framing and scope | [`docs/overview/PRODUCT_CONTEXT.md`](docs/overview/PRODUCT_CONTEXT.md) |
 | Run the system locally | [`docs/guides/QUICKSTART.md`](docs/guides/QUICKSTART.md) |
@@ -30,10 +68,25 @@ The system has been built incrementally; the documentation is maintained alongsi
 | Frontend | Next.js (App Router), TypeScript |
 | Backend | FastAPI, asyncpg, Pydantic |
 | Data store | Postgres 16 with pgvector |
-| LLM | Groq, Azure OpenAI, or Bedrock |
-| Embeddings | OpenAI, Azure OpenAI, or Bedrock (optional) |
+| LLM | Groq, Azure OpenAI, or Amazon Bedrock |
+| Embeddings | OpenAI, Azure OpenAI, or Amazon Bedrock |
 | Migrations | Alembic |
 | Corpus pipeline | Python, Synthea, Hugging Face datasets, Groq |
+
+---
+
+## System at a glance
+
+```mermaid
+flowchart LR
+  DataPrep["Synthetic corpus pipeline"] --> PG["Postgres + pgvector"]
+  Next["Next.js UI"] --> API["FastAPI"]
+  API --> PG
+  API --> LLM["LLM provider<br/>Groq | Azure OpenAI | Bedrock"]
+  API --> Embed["Embedding provider<br/>OpenAI | Azure OpenAI | Bedrock"]
+  API --> Audit["ai_interactions<br/>audit trail"]
+  Audit --> Admin["Responsible AI Control Center"]
+```
 
 ---
 
@@ -41,8 +94,8 @@ The system has been built incrementally; the documentation is maintained alongsi
 
 Every external dependency is optional. The system degrades gracefully and reports what is configured via `GET /health`.
 
-| Without any keys | LLM provider key | Embedding provider key + `--embed` | Admin flags |
-|------------------|----------------|------------------------------|-------------|
+| Without any keys | LLM provider credentials | Embedding provider credentials + `--embed` | Admin flags |
+|------------------|--------------------------|--------------------------------------------|-------------|
 | Patient list, charts, encounter viewer | Pre-meeting summaries, structured note generation | RAG chat with citations | Responsible AI Control Center |
 
 For the full flag matrix, see [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md#capability-flags).
@@ -77,7 +130,13 @@ The UI is backed by a synthetic Synthea cohort; on-screen labels make this expli
 
 ## Architecture themes (short)
 
-**Vectors in Postgres** · **Retrieval-first chat with citation syntax** · **Append-only `ai_interactions` on AI routes**. Diagrams, flags, and extension table: [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md). Rationale and alternatives: [`docs/overview/DESIGN_NOTES.md`](docs/overview/DESIGN_NOTES.md).
+**Vectors in Postgres** · **Provider-agnostic LLM/embedding layer** · **Retrieval-first chat with citation syntax** · **Append-only `ai_interactions` on AI routes**. Diagrams, flags, and extension table: [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md). Rationale and alternatives: [`docs/overview/DESIGN_NOTES.md`](docs/overview/DESIGN_NOTES.md).
+
+---
+
+## Portfolio case study
+
+Hiring-manager narrative — problem, architecture, higher-ed-to-healthcare bridge, decisions, outcomes, and production limits: [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md).
 
 ---
 
