@@ -4,9 +4,9 @@
 
 Scribe IQ is a full-stack clinical documentation and retrieval system built on a synthetic patient corpus. It demonstrates grounding LLM responses in stored clinical context, generating structured clinical notes from transcripts, and making AI interactions auditable from day one.
 
-**Portfolio focus:** Lead Data & AI Platform Architecture, Lead AI Engineering, Responsible AI, and university-health AI/ML roles.
-
 Built on synthetic data. Not for clinical decision-making.
+
+Start with the product case study: [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md).
 
 The system has been built incrementally; documentation is maintained alongside the code. The index below is the canonical entry point.
 
@@ -21,19 +21,18 @@ The system has been built incrementally; documentation is maintained alongside t
 
 ---
 
-## Role alignment
+## Product lens
 
-This project is designed to demonstrate strengths relevant to:
+Scribe IQ is framed as a clinical documentation product prototype, not just a technical demo:
 
-- Lead Data & AI Platform Architect
-- Lead AI Engineer
-- AI/ML Platform Architect
-- Healthcare / academic medical center data architect
-- Responsible AI / GenAI platform engineer
+- Turns a synthetic longitudinal chart into usable clinician-facing workflows.
+- Makes degraded states explicit when providers, embeddings, or feature flags are unavailable.
+- Treats provider boundaries, auditability, and production caveats as product requirements.
+- Keeps the offline corpus pipeline separate from request-time user experience.
 
 ---
 
-## Portfolio highlights
+## Product and platform highlights
 
 | Signal | Evidence |
 |--------|----------|
@@ -50,7 +49,7 @@ This project is designed to demonstrate strengths relevant to:
 
 | If you want to | Open |
 |----------------|------|
-| Understand the portfolio framing | [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md) |
+| Start with the product case study | [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md) |
 | Understand privacy/provider boundaries | [`docs/overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md`](docs/overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md) |
 | Understand the architecture (diagrams, flags, seams) | [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md) |
 | Understand the product framing and scope | [`docs/overview/PRODUCT_CONTEXT.md`](docs/overview/PRODUCT_CONTEXT.md) |
@@ -134,9 +133,9 @@ The UI is backed by a synthetic Synthea cohort; on-screen labels make this expli
 
 ---
 
-## Portfolio case study
+## Product case study
 
-Hiring-manager narrative — problem, architecture, higher-ed-to-healthcare bridge, decisions, outcomes, and production limits: [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md).
+Product narrative — problem, workflows, architecture, governance boundaries, decisions, outcomes, and production limits: [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md).
 
 ---
 

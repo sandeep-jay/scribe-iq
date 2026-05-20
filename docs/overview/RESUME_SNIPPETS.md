@@ -1,6 +1,6 @@
 # Resume and LinkedIn snippets
 
-Drop-in descriptions for resume bullets, healthcare-targeted variants, and LinkedIn-length copy. All variants describe the same project ([Scribe IQ portfolio case study](PORTFOLIO_CASE_STUDY.md)); pick the one that matches the audience.
+Drop-in descriptions for resume bullets, healthcare-targeted variants, and LinkedIn-length copy. All variants describe the same project ([Scribe IQ product case study](PORTFOLIO_CASE_STUDY.md)); pick the one that matches the audience.
 
 ---
 
@@ -12,7 +12,7 @@ Drop-in descriptions for resume bullets, healthcare-targeted variants, and Linke
 
 ## Healthcare / UCLA-targeted version
 
-**Scribe IQ — grounded clinical documentation demonstration.** Designed and built an end-to-end clinical AI documentation system (Next.js, FastAPI, Postgres + pgvector) to demonstrate the architectural restraint and governance posture required for institutional healthcare AI. Treats hallucination as a safety failure rather than a usability bug: every chat answer is retrieval-grounded with a `[note:uuid]` citation contract enforced in the system prompt, every AI-touching route writes an append-only audit row to a first-class `ai_interactions` table on the request path, and provider boundaries (Groq demo, Azure OpenAI / Amazon Bedrock for institutional deployments) are stated explicitly with clear caveats that enterprise providers do not by themselves create PHI compliance. Bridges institutional data-system experience from higher-education (longitudinal records, governance as schema, multi-stakeholder views) into clinical-shaped systems. Synthetic corpus only; documentation names what would change for a production PHI deployment (SSO, multi-tenant isolation, BAA, formal de-identification, observability).
+**Scribe IQ — grounded clinical documentation demonstration.** Designed and built an end-to-end clinical AI documentation system (Next.js, FastAPI, Postgres + pgvector) to demonstrate the architectural restraint and governance posture required for institutional healthcare AI. Treats hallucination as a safety failure rather than a usability bug: every chat answer is retrieval-grounded with a `[note:uuid]` citation contract enforced in the system prompt, audited AI paths write append-only rows to a first-class `ai_interactions` table with admin-visible `success`, `degraded`, `failed`, and `blocked` status aggregation, and provider boundaries (Groq demo, Azure OpenAI / Amazon Bedrock for institutional deployments) are stated explicitly with clear caveats that enterprise providers do not by themselves create PHI compliance. Bridges institutional data-system experience from higher-education (longitudinal records, governance as schema, multi-stakeholder views) into clinical-shaped systems. Synthetic corpus only; documentation names what would change for a production PHI deployment (SSO, multi-tenant isolation, BAA, formal de-identification, observability).
 
 ---
 

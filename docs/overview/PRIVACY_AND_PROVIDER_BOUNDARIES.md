@@ -2,7 +2,7 @@
 
 ## Demo corpus
 
-Scribe-IQ ships with a **synthetic** clinical corpus for portfolio and local demos. Do not load real PHI into demo environments.
+Scribe-IQ ships with a **synthetic** clinical corpus for product walkthroughs and local demos. Do not load real PHI into demo environments.
 
 ## What leaves the deployment
 
@@ -39,7 +39,7 @@ The same code paths run against three LLM provider postures and three embedding 
 
 | Mode | LLM provider | Embedding provider | Typical posture |
 |------|--------------|-------------------|-----------------|
-| **Demo / portfolio** | Groq (`LLM_PROVIDER=groq`) | OpenAI (`EMBEDDING_PROVIDER=openai`) | Local laptop, public cloud APIs, synthetic data only |
+| **Demo / local** | Groq (`LLM_PROVIDER=groq`) | OpenAI (`EMBEDDING_PROVIDER=openai`) | Local laptop, public cloud APIs, synthetic data only |
 | **Institutional Azure** | Azure OpenAI (`LLM_PROVIDER=azure_openai`) | Azure OpenAI (`EMBEDDING_PROVIDER=azure_openai`) | Customer-controlled Azure tenancy, BAA-eligible deployment, private networking optional |
 | **AWS-native** | Amazon Bedrock (`LLM_PROVIDER=bedrock`) | Amazon Bedrock (`EMBEDDING_PROVIDER=bedrock`) | Customer AWS account, IAM-scoped role/profile, VPC egress controls optional |
 | **Mixed (advanced)** | Any of the above | Any of the above | E.g. Azure OpenAI for chat, OpenAI for embeddings — supported by the abstraction, but rare in practice |
@@ -58,11 +58,11 @@ The embedding provider is part of the **data substrate**, not just a runtime kno
 
 ---
 
-## Portfolio interpretation
+## Product interpretation
 
 This repository is a **demonstration**, not a clinical product. The privacy posture should be read accordingly.
 
-- **No PHI is involved.** The corpus is synthetic (Synthea + public note datasets, adapted), and the documentation states this everywhere a reader could plausibly assume otherwise. The portfolio value is the *shape* of the privacy thinking, not a compliance claim.
+- **No PHI is involved.** The corpus is synthetic (Synthea + public note datasets, adapted), and the documentation states this everywhere a reader could plausibly assume otherwise. The product value is the *shape* of the privacy thinking, not a compliance claim.
 - **The provider boundary is the load-bearing artifact, not the credentials.** What matters for evaluation is that the code separates LLM provider from embedding provider, that `GET /health` exposes the configured posture, that the audit table redacts content rather than mirrors it, and that switching providers is a deployment-level decision with explicit operational steps. Those are the design signals; the keys themselves are deliberately scoped to demo accounts.
 - **Enterprise providers are not a compliance claim.** Azure OpenAI and Bedrock support stronger institutional postures, and the project documents how those postures plug in. The docs are explicit that this is necessary but not sufficient for PHI: BAA, SSO/RBAC, multi-tenant isolation, formal de-identification, retention policy, and observability are all called out as production deltas in [`DESIGN_NOTES.md`](./DESIGN_NOTES.md) and [`PORTFOLIO_CASE_STUDY.md`](./PORTFOLIO_CASE_STUDY.md).
-- **Reviewers should look for restraint, not coverage.** The fact that the project says "synthetic only" and "not PHI-ready" out loud is itself the signal — a portfolio system that overclaimed PHI readiness would be a worse signal than one that names the boundary plainly.
+- **Reviewers should look for restraint, not coverage.** The fact that the project says "synthetic only" and "not PHI-ready" out loud is itself the signal — a product prototype that overclaimed PHI readiness would be a worse signal than one that names the boundary plainly.
