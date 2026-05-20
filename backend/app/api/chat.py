@@ -1,7 +1,7 @@
-"""Vector RAG chat over clinical note embeddings (pgvector) + Groq completion.
+"""Vector RAG chat over clinical note embeddings (pgvector) + configured LLM completion.
 
 Flow (high level): validate domain -> ensure embeddings exist for domain -> optional patient scope
--> embed user query -> retrieve top-k chunks -> build prompt -> Groq -> safety checks -> audit row.
+-> embed user query -> retrieve top-k chunks -> build prompt -> LLM -> safety checks -> audit row.
 
 Logging policy: use ``logger.info`` for milestones you should see in normal ops; use ``logger.debug``
 for branch/detail checkpoints when ``LOG_LEVEL=DEBUG``. Never log raw clinical text here; counts,

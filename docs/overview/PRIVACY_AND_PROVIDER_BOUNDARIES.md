@@ -12,7 +12,7 @@ When LLM features run, **selected prompt context** (system instructions, retriev
 - **Azure OpenAI** (institution-controlled Azure deployment)
 - **Amazon Bedrock** (AWS-native deployment)
 
-Embeddings may use OpenAI or Azure separately (`EMBEDDING_PROVIDER`).
+Embeddings may use OpenAI, Azure OpenAI, or Amazon Bedrock separately (`EMBEDDING_PROVIDER`). Switching embedding providers requires re-embedding stored vectors because provider vector spaces are not interchangeable.
 
 ## Audit storage
 

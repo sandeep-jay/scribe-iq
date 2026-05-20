@@ -30,8 +30,8 @@ The system has been built incrementally; the documentation is maintained alongsi
 | Frontend | Next.js (App Router), TypeScript |
 | Backend | FastAPI, asyncpg, Pydantic |
 | Data store | Postgres 16 with pgvector |
-| LLM | Groq (OpenAI-compatible API) |
-| Embeddings | OpenAI (optional) |
+| LLM | Groq, Azure OpenAI, or Bedrock |
+| Embeddings | OpenAI, Azure OpenAI, or Bedrock (optional) |
 | Migrations | Alembic |
 | Corpus pipeline | Python, Synthea, Hugging Face datasets, Groq |
 
@@ -41,7 +41,7 @@ The system has been built incrementally; the documentation is maintained alongsi
 
 Every external dependency is optional. The system degrades gracefully and reports what is configured via `GET /health`.
 
-| Without any keys | `GROQ_API_KEY` | `OPENAI_API_KEY` + `--embed` | Admin flags |
+| Without any keys | LLM provider key | Embedding provider key + `--embed` | Admin flags |
 |------------------|----------------|------------------------------|-------------|
 | Patient list, charts, encounter viewer | Pre-meeting summaries, structured note generation | RAG chat with citations | Responsible AI Control Center |
 
