@@ -1,6 +1,6 @@
 # System overview
 
-Scribe IQ is a Next.js frontend over a FastAPI service, backed by Postgres with pgvector. LLM and embedding providers are **configurable per deployment**: the demo defaults to Groq for completions and OpenAI for embeddings, but the same code paths run against Azure OpenAI or Amazon Bedrock for institutional postures. AI interaction audit is modeled as first-class Postgres data in `ai_interactions`; **admin** routes and UI only control whether those rows are exposed for inspection.
+Scribe IQ is a healthcare AI platform prototype that turns an offline synthetic clinical corpus into a governed product surface: Postgres/pgvector serving, FastAPI APIs, provider-agnostic LLM workflows, a Next.js clinical UI, and Responsible AI auditability. LLM and embedding providers are **configurable per deployment**: the demo defaults to Groq for completions and OpenAI for embeddings, but the same code paths run against Azure OpenAI or Amazon Bedrock for institutional postures. AI interaction audit is modeled as first-class Postgres data in `ai_interactions`; **admin** routes and UI only control whether those rows are exposed for inspection.
 
 This document is the **architecture story**: diagrams, capability flags, extension seams. For rationale and alternatives considered, see [`DESIGN_NOTES.md`](./DESIGN_NOTES.md). For exact routes, schema, and flags, see [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). For the provider configuration matrix, see [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../guides/LLM_AND_EMBEDDING_PROVIDERS.md).
 
@@ -118,7 +118,7 @@ These themes are intentional; **alternatives considered, depth, and production d
 | Backend | [`backend/`](../../backend/) |
 | Frontend | [`frontend/`](../../frontend/) |
 | Corpus pipeline | [`data_prep/`](../../data_prep/) |
-| Pre-built corpus | `data/clinical_corpus_v2/` |
+| Generated corpus artifact | `data/clinical_corpus_v2/` |
 | As-built API and schema | [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md) |
 | Run instructions | [`docs/guides/QUICKSTART.md`](../guides/QUICKSTART.md) |
 | Provider configuration | [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../guides/LLM_AND_EMBEDDING_PROVIDERS.md) |

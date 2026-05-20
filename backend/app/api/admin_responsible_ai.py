@@ -306,7 +306,7 @@ async def get_interaction(
     def _json(val):
         if val is None:
             return None
-        if isinstance(val, (dict, list)):
+        if isinstance(val, dict | list):
             return val
         if isinstance(val, str):
             try:

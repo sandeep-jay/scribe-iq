@@ -8,6 +8,7 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 
 | Doc | What it is for |
 |-----|----------------|
+| [overview/REVIEWER_GUIDE.md](overview/REVIEWER_GUIDE.md) | Fast review paths for recruiters, technical architects, and data platform reviewers |
 | [overview/PORTFOLIO_CASE_STUDY.md](overview/PORTFOLIO_CASE_STUDY.md) | Product case study: problem, workflows, architecture, governance boundaries, and production limits |
 | [overview/RESUME_SNIPPETS.md](overview/RESUME_SNIPPETS.md) | Reusable resume/project descriptions |
 | [overview/PRODUCT_CONTEXT.md](overview/PRODUCT_CONTEXT.md) | Problem framing, scope, what is deferred and why |
@@ -19,6 +20,7 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 
 | Doc | What it is for |
 |-----|----------------|
+| [guides/CORPUS_ARTIFACTS.md](guides/CORPUS_ARTIFACTS.md) | Generated corpus artifact contract and missing-data expectations |
 | [guides/QUICKSTART.md](guides/QUICKSTART.md) | One supported path to a working local system |
 | [guides/LLM_AND_EMBEDDING_PROVIDERS.md](guides/LLM_AND_EMBEDDING_PROVIDERS.md) | LLM and embedding provider setup (Groq, Azure OpenAI, Bedrock) |
 | [guides/README.md](guides/README.md) | Contributor setup and conventions |
@@ -71,7 +73,11 @@ When a roadmap disagrees with [`architecture/IMPLEMENTED_BASELINE.md`](architect
 
 ## Generated artifacts
 
-Output of the corpus pipeline, not hand-maintained specs:
+Output of the corpus pipeline, not hand-maintained specs. The `data/clinical_corpus_v2/` JSONL files are generated/restored corpus artifacts, not committed application source; see [guides/CORPUS_ARTIFACTS.md](guides/CORPUS_ARTIFACTS.md).
 
+- `data/clinical_corpus_v2/patients.jsonl`
+- `data/clinical_corpus_v2/encounters.jsonl`
+- `data/clinical_corpus_v2/notes.jsonl`
+- `data/clinical_corpus_v2/manifest.json`
 - `data/clinical_corpus_v2/dataset_card.md`
 - `data/clinical_corpus_v2/audit_report.md`

@@ -66,11 +66,12 @@ function ChatSurface() {
   return (
     <div className="min-w-0 max-w-full space-y-6">
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-50">
-          <p className="font-medium">RAG chat requires seeded embeddings.</p>
+          <p className="font-medium">Corpus chat is not indexed yet.</p>
           <p className="mt-2 text-xs text-amber-900/80 dark:text-amber-100/80">
-            Vector chat requires a configured embedding provider plus `scribe-load-corpus --embed`. Until then,
+            Corpus chat is available after the clinical corpus has been indexed for retrieval. Until then,
             <span className="font-medium"> POST /chat </span> returns 503. Use the patient chart{" "}
-            <span className="font-medium">Pre-Meeting Summary</span> (provider-backed + cached) for AI-grounded narrative instead.
+            <span className="font-medium">Pre-Meeting Summary</span> for AI-grounded narrative, or see{" "}
+            <span className="font-medium">Quickstart</span> for indexing setup.
           </p>
         </div>
 
@@ -80,7 +81,7 @@ function ChatSurface() {
           <h1 className="text-2xl font-semibold">Chat-on-corpus</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Browser → <span className="font-mono text-xs">{apiOrigin}</span>
-            . Requires seeded embeddings (`scribe-load-corpus --embed`).
+            . Answers are grounded in indexed corpus notes.
           </p>
           <p className="text-xs text-zinc-500">
             Patient scope:&nbsp;
