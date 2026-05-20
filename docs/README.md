@@ -34,11 +34,16 @@ Start here for **human-maintained** specs, roadmaps, and archives. Generated cor
 | Design (mockups + screenshots) | [design/README.md](design/README.md) |
 | README / social showcase images | [assets/showcase/readme/](assets/showcase/readme/) · [assets/showcase/social/og.png](assets/showcase/social/og.png) |
 
+## Overview (`docs/overview/`)
+
+- [overview/README.md](overview/README.md) — privacy and provider boundaries
+
 ## Roadmaps (`docs/roadmap/`)
 
 - [PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) — architecture / Phase 1 framing (historical `lakehouse/` paths → lineage; archived scripts: `corpus_pipelines/agbonnet_hf_clinical_notes/`)
 - [SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) — UI and related product surface
 - [SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) — Responsible AI Control Center
+- [SCRIBE_IQ_LLM_PROVIDER_LAYER.md](roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md) — multi-provider LLM layer (Groq / Azure / Bedrock)
 - [SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) — v1 checklist (status refreshed against baseline)
 
 ## Reference docs — corpus / `data_prep/` pipeline
