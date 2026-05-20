@@ -66,11 +66,11 @@ function ChatSurface() {
   return (
     <div className="min-w-0 max-w-full space-y-6">
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-50">
-          <p className="font-medium">RAG chat retrieval is intentionally deferred in this sprint.</p>
+          <p className="font-medium">RAG chat requires seeded embeddings.</p>
           <p className="mt-2 text-xs text-amber-900/80 dark:text-amber-100/80">
-            Vector chat requires OpenAI embeddings (`OPENAI_API_KEY` + `python -m scripts.load_corpus --embed`). Until then,
+            Vector chat requires a configured embedding provider plus `scribe-load-corpus --embed`. Until then,
             <span className="font-medium"> POST /chat </span> returns 503. Use the patient chart{" "}
-            <span className="font-medium">Pre-Meeting Summary</span> (Groq + cached) for AI-grounded narrative instead.
+            <span className="font-medium">Pre-Meeting Summary</span> (provider-backed + cached) for AI-grounded narrative instead.
           </p>
         </div>
 
