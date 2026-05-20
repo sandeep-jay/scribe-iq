@@ -111,7 +111,7 @@ Notable environment-driven flags (see `backend/.env.example`):
 
 - **`DATABASE_URL`**, **`BACKEND_API_KEY`** (optional)
 - **LLM:** `LLM_PROVIDER` (`groq` \| `azure_openai` \| `bedrock`; `azure` alias), Groq/Azure/Bedrock fields, `GROQ_API_KEY`, etc.
-- **Embeddings:** `EMBEDDING_PROVIDER` (`openai` \| `azure` \| `none`), `OPENAI_API_KEY`, dimensions/model names
+- **Embeddings:** `EMBEDDING_PROVIDER` (`openai` \| `azure_openai` \| `bedrock` \| `none`; `azure` alias), OpenAI/Azure/Bedrock fields, dimensions/model names. Stored vectors must be rebuilt after switching providers.
 - **`NOTE_GENERATION_ENABLED`** — must be `true` for `POST /notes/generate` writes
 - **`MEETING_PREP_ENABLED`** — toggles meeting prep path (default on in settings)
 - **`RESPONSIBLE_AI_ADMIN_ENABLED`** — when `true`, mounts **`/admin/responsible-ai/*`** admin routes and exposes **`responsible_ai_admin_enabled`** on **`GET /health`**; when `false`, those routes are **not registered** (callers get **404**).

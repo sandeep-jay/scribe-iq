@@ -86,8 +86,8 @@ These themes are intentional; **alternatives considered, depth, and production d
 
 | Extension | Where it plugs in |
 |-----------|-------------------|
-| Alternative LLM provider | `app/llm.py` — `Settings.llm_provider` |
-| Alternative embedding provider | `app/embeddings.py` — `Settings.embedding_provider` (`openai` / `azure` / `none`) |
+| Alternative LLM provider | `app/llm/` — `Settings.llm_provider` |
+| Alternative embedding provider | `app/embeddings/` — `Settings.embedding_provider` (`openai` / `azure_openai` / `bedrock` / `none`) |
 | Agentic tool loop for chat | `app/api/chat.py` — single-shot today; tool calls can extend without changing audit shape |
 | Production authentication | `OptionalApiKeyMiddleware` — replace with SSO/RBAC at the middleware layer |
 | Audio transcription | [`docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md`](../roadmap/SCRIBE_IQ_UI_ROADMAP.md) §12 — `POST /transcribe` before `POST /notes/generate` |

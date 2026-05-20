@@ -242,8 +242,9 @@ def deterministic_meeting_prep_summary(facts: dict[str, Any]) -> str:
         p3 = "No longitudinal JSON was attached to notes for this patient (or the bundle was empty after parsing)."
 
     p4 = (
-        "NOTE: Groq is not configured or the model call failed — set `GROQ_API_KEY` in `backend/.env` "
-        "and restart the API to enable AI-polished pre-meeting summaries."
+        "NOTE: The configured LLM provider is unavailable or the model call failed — check `LLM_PROVIDER` "
+        "and provider credentials in `backend/.env`, then restart the API to enable AI-polished "
+        "pre-meeting summaries."
     )
 
     return ('\n\n').join([p1, p2, p3, p4])
