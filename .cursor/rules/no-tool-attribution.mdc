@@ -1,0 +1,19 @@
+---
+description: Avoid tool-brand attribution in commits, PRs, and project docs
+alwaysApply: true
+---
+
+# No Tool Attribution
+
+Do not add editor or AI-tool branding to artifacts that leave the local workstation.
+
+- Commit messages and trailers must not include tool co-author trailers, "made with" footers, generated-by lines, or similar attribution.
+- Pull request titles, bodies, review comments, and issue comments must not advertise the editor or agent used to prepare the change.
+- Documentation, code comments, READMEs, and changelog entries must not credit local authoring tools.
+
+Legitimate technical uses of lowercase words such as CSS cursor styles, database cursor APIs, pagination cursors, and required IDE configuration paths are allowed.
+
+When asked to commit, push, or open a PR:
+- Write the message/body yourself without tool trailers or footer credits.
+- Use the repo hooks in `.githooks/`; do not bypass them with `--no-verify`.
+- Keep PR bodies focused on product changes and verification only.

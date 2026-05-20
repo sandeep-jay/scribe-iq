@@ -48,18 +48,23 @@ Run secret checks on demand:
 pre-commit run gitleaks --all-files
 ```
 
-### Commit message hook (strip Cursor trailer)
+### Tool attribution guards
 
-This repo ships a versioned commit-msg hook at [`../../.githooks/commit-msg`](../../.githooks/commit-msg) that removes this exact trailer if present:
+This repo ships versioned git hooks under [`../../.githooks/`](../../.githooks/) that strip or block local tool attribution from commit messages and PR metadata.
 
-- `Co-authored-by: Cursor <cursoragent@cursor.com>`
+- `commit-msg` and `prepare-commit-msg` remove known tool co-author trailers, "made with" footers, generated-by lines, and similar variants from the in-progress commit message.
+- `pre-push` refuses to push commits whose messages still include disallowed attribution after the strip pass.
 
-Install it locally (per clone):
+Wire them up once per clone:
 
 ```bash
-ln -sf ../../.githooks/commit-msg .git/hooks/commit-msg
-chmod +x .git/hooks/commit-msg
+./scripts/install_dev_hooks.sh
 ```
+
+That sets `git config core.hooksPath .githooks` and makes the hook files executable. Do not bypass with `--no-verify`.
+
+Authoring guidance: do not include local editor or AI-tool branding in commit messages, PR titles/bodies, review comments, or issue comments. The project rule under [`../../.cursor/rules/no-tool-attribution.mdc`](../../.cursor/rules/no-tool-attribution.mdc) captures the same guidance for AI-assisted authoring.
+
 
 ## Full documentation map
 

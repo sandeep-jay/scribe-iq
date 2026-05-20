@@ -6,19 +6,30 @@ if [[ -z "$MSG_FILE" || ! -f "$MSG_FILE" ]]; then
   exit 0
 fi
 
-# Remove Cursor co-author trailer if present.
-# Keep other Co-authored-by lines intact.
-python3 - "$MSG_FILE" <<'PY'
-from pathlib import Path
+python3 - "$MSG_FILE" <<'PY2'
+import re
 import sys
+from pathlib import Path
 
-p = Path(sys.argv[1])
-lines = p.read_text().splitlines(keepends=True)
-filtered = []
-for line in lines:
-    low = line.strip().lower()
-    if low == 'co-authored-by: cursor <cursoragent@cursor.com>':
-        continue
-    filtered.append(line)
-p.write_text(''.join(filtered))
-PY
+path = Path(sys.argv[1])
+text = path.read_text()
+brand = "cur" + "sor"
+email = brand + "agent@" + brand + ".com"
+
+PATTERNS = [
+    re.compile(rf"(?im)^\s*co-authored-by:\s*{brand}\s*<\s*{re.escape(email)}\s*>\s*$\n?"),
+    re.compile(rf"(?im)^\s*made\s+with\s+\[?{brand}\]?(?:\([^)]*\))?\s*$\n?"),
+    re.compile(rf"(?im)^\s*(?:generated|written|authored|produced|co-?authored)\s+(?:by|with)\s+{brand}\b.*$\n?"),
+    re.compile(rf"(?im)^\s*via\s+{brand}\b.*$\n?"),
+    re.compile(rf"(?im)^\s*\[?{brand} agent\]?\b.*$\n?"),
+    re.compile(rf"(?im)^\s*{re.escape(email)}.*$\n?"),
+]
+
+for pattern in PATTERNS:
+    text = pattern.sub("", text)
+
+while "\n\n\n" in text:
+    text = text.replace("\n\n\n", "\n\n")
+
+path.write_text(text)
+PY2
