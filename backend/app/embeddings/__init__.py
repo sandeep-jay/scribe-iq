@@ -1,45 +1,45 @@
-"""Query embedding helpers (OpenAI API; aligns with corpus loader dims)."""
+"""Query embedding helpers with provider-backed implementations."""
 
 from __future__ import annotations
 
 from app.config import get_settings
+from app.embeddings.errors import EmbeddingConfigurationError, EmbeddingProviderError
+from app.embeddings.provider import EmbeddingProvider, get_embedding_provider
+from app.embeddings.types import EmbeddingResult
+
+__all__ = [
+    "EmbeddingConfigurationError",
+    "EmbeddingProvider",
+    "EmbeddingProviderError",
+    "EmbeddingResult",
+    "compose_note_embed_input",
+    "embed_and_vector_literal",
+    "embed_query_text",
+    "get_embedding_provider",
+    "vector_literal",
+]
 
 
 def vector_literal(vec: list[float]) -> str:
     return "[" + ",".join(f"{float(x):.8f}" for x in vec) + "]"
 
 
+def _validate_embedding_dimensions(result: EmbeddingResult) -> None:
+    settings = get_settings()
+    if settings.embed_dim and result.dimensions != settings.embed_dim:
+        raise EmbeddingConfigurationError(
+            f"Embedding length {result.dimensions} from {result.provider}/{result.model} "
+            f"does not match EMBED_DIM={settings.embed_dim}; use a matching model or migrate/re-embed."
+        )
+
+
 async def embed_query_text(text: str) -> tuple[list[float], str]:
     """Return raw embedding vector and pgvector literal for SQL."""
     settings = get_settings()
-    if settings.embedding_provider == "none" or not (settings.openai_api_key or "").strip():
-        msg = (
-            "Embeddings unavailable: set OPENAI_API_KEY and embedding_provider "
-            "(e.g. openai), then run scribe-load-corpus --embed."
-        )
-        raise RuntimeError(msg)
-
-    from openai import AsyncOpenAI
-
-    client = AsyncOpenAI(api_key=settings.openai_api_key)
-    kwargs: dict[str, object] = {
-        "model": settings.openai_embeddings_model,
-        "input": [text.strip()],
-    }
-    if settings.openai_embeddings_dimensions is not None:
-        kwargs["dimensions"] = settings.openai_embeddings_dimensions
-
-    resp = await client.embeddings.create(**kwargs)  # type: ignore[arg-type]
-    if not resp.data:
-        raise RuntimeError("embedding API returned no data")
-
-    vec = list(resp.data[0].embedding)
-    if settings.embed_dim and len(vec) != settings.embed_dim:
-        raise RuntimeError(
-            f"Embedding length {len(vec)} does not match embed_dim={settings.embed_dim}; "
-            "check openai_embeddings_model / dimensions vs migration vector(N)."
-        )
-    return vec, vector_literal(vec)
+    provider = get_embedding_provider(settings)
+    result = await provider.embed_text(text)
+    _validate_embedding_dimensions(result)
+    return result.vector, vector_literal(result.vector)
 
 
 def compose_note_embed_input(structured_note: dict, conversation_text: str | None) -> str:

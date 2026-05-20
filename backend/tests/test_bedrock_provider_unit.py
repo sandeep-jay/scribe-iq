@@ -15,7 +15,7 @@ async def test_bedrock_provider_maps_converse_response():
     settings = Settings(
         llm_provider="bedrock",
         aws_region="us-west-2",
-        bedrock_chat_model_id="anthropic.claude-3-5-sonnet-20241022-v2:0",
+        aws_bedrock_chat_model_id="anthropic.claude-3-5-sonnet-20241022-v2:0",
     )
     fake_client = MagicMock()
     fake_client.converse.return_value = {

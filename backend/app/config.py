@@ -1,5 +1,6 @@
 """Runtime configuration from environment."""
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,6 +9,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        populate_by_name=True,
     )
 
     app_name: str = "scribe-iq-backend"
@@ -51,18 +53,42 @@ class Settings(BaseSettings):
     azure_openai_mini_deployment: str | None = None
 
     aws_region: str = "us-west-2"
-    bedrock_chat_model_id: str | None = None
-    bedrock_json_model_id: str | None = None
+    # AWS_BEDROCK_* are the preferred names. BEDROCK_* aliases are kept for backward compatibility.
+    aws_bedrock_chat_model_id: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("AWS_BEDROCK_CHAT_MODEL_ID", "BEDROCK_CHAT_MODEL_ID"),
+    )
+    aws_bedrock_json_model_id: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("AWS_BEDROCK_JSON_MODEL_ID", "BEDROCK_JSON_MODEL_ID"),
+    )
+    aws_bedrock_role_arn: str | None = None
     bedrock_profile_name: str | None = None
 
-    # --- Embeddings (Groq chat does not provide embeddings API) ---
+    # --- Embeddings (for RAG retrieval and generated note vectors) ---
     embed_dim: int = 1536
-    embedding_provider: str = "openai"  # openai | azure | none
+    embedding_provider: str = "openai"  # openai | azure_openai | bedrock | none (azure alias supported)
     openai_api_key: str | None = None
     openai_embeddings_model: str = "text-embedding-3-small"
     openai_embeddings_dimensions: int | None = 1536
 
     azure_embedding_deployment: str | None = None
+    # Keep unset unless an Azure text-embedding-3 deployment must down-project to EMBED_DIM.
+    azure_embeddings_dimensions: int | None = None
+
+    # Use amazon.titan-embed-text-v1 for the default pgvector(1536) schema.
+    aws_bedrock_embedding_model_id: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "AWS_BEDROCK_EMBEDDING_MODEL_ID", "BEDROCK_EMBEDDING_MODEL_ID"
+        ),
+    )
+    aws_bedrock_embedding_dimensions: int | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "AWS_BEDROCK_EMBEDDING_DIMENSIONS", "BEDROCK_EMBEDDING_DIMENSIONS"
+        ),
+    )
 
     # Optional shared secret (env BACKEND_API_KEY); no SSO in Phase 1.
     backend_api_key: str | None = None
@@ -82,6 +108,14 @@ class Settings(BaseSettings):
         if raw in ("azure", "azure_openai"):
             return "azure_openai"
         if raw in ("groq", "azure_openai", "bedrock"):
+            return raw
+        return raw
+
+    def normalized_embedding_provider(self) -> str:
+        raw = (self.embedding_provider or "none").strip().lower()
+        if raw in ("azure", "azure_openai"):
+            return "azure_openai"
+        if raw in ("openai", "azure_openai", "bedrock", "none"):
             return raw
         return raw
 
@@ -106,11 +140,26 @@ class Settings(BaseSettings):
                 return str(candidate).strip()
         return ""
 
-    def resolved_bedrock_chat_model_id(self) -> str:
-        return (self.bedrock_chat_model_id or "").strip()
+    def resolved_aws_bedrock_chat_model_id(self) -> str:
+        return (self.aws_bedrock_chat_model_id or "").strip()
 
-    def resolved_bedrock_json_model_id(self) -> str:
-        return (self.bedrock_json_model_id or self.bedrock_chat_model_id or "").strip()
+    def resolved_aws_bedrock_json_model_id(self) -> str:
+        return (
+            self.aws_bedrock_json_model_id or self.aws_bedrock_chat_model_id or ""
+        ).strip()
+
+    def resolved_aws_bedrock_embedding_model_id(self) -> str:
+        return (self.aws_bedrock_embedding_model_id or "").strip()
+
+    def resolved_embedding_model(self) -> str:
+        provider = self.normalized_embedding_provider()
+        if provider == "openai":
+            return (self.openai_embeddings_model or "").strip()
+        if provider == "azure_openai":
+            return (self.azure_embedding_deployment or "").strip()
+        if provider == "bedrock":
+            return self.resolved_aws_bedrock_embedding_model_id()
+        return ""
 
     def llm_configured(self) -> bool:
         provider = self.normalized_llm_provider()
@@ -123,7 +172,7 @@ class Settings(BaseSettings):
                 and self.resolved_azure_chat_deployment()
             )
         if provider == "bedrock":
-            return bool((self.aws_region or "").strip() and self.resolved_bedrock_chat_model_id())
+            return bool((self.aws_region or "").strip() and self.resolved_aws_bedrock_chat_model_id())
         return False
 
     def llm_json_mode_capability(self) -> str:
@@ -135,17 +184,19 @@ class Settings(BaseSettings):
         return "unavailable"
 
     def embedding_configured(self) -> bool:
-        ep = (self.embedding_provider or "none").strip().lower()
+        ep = self.normalized_embedding_provider()
         if ep == "none":
             return False
         if ep == "openai":
-            return bool((self.openai_api_key or "").strip())
-        if ep == "azure":
+            return bool((self.openai_api_key or "").strip() and self.resolved_embedding_model())
+        if ep == "azure_openai":
             return bool(
                 (self.azure_openai_endpoint or "").strip()
                 and (self.azure_openai_api_key or "").strip()
-                and (self.azure_embedding_deployment or "").strip()
+                and self.resolved_embedding_model()
             )
+        if ep == "bedrock":
+            return bool((self.aws_region or "").strip() and self.resolved_embedding_model())
         return False
 
 

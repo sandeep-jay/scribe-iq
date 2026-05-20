@@ -13,6 +13,7 @@ Structured logs use :mod:`logging` on stderr; never emit note bodies or transcri
 from __future__ import annotations
 
 import argparse
+import asyncio
 import logging
 import json
 import os
@@ -24,7 +25,6 @@ from typing import Any
 
 import psycopg2
 from dotenv import load_dotenv
-from openai import OpenAI
 from psycopg2.extras import Json, execute_batch
 from tqdm import tqdm
 
@@ -365,11 +365,31 @@ def _compose_embed_input(structured_note: Any, conversation_text: str | None) ->
     return out if out.strip() else "(empty)"
 
 
-def embed_notes(*, model: str, dimensions: int | None) -> int:
+def embed_notes(*, model: str | None, dimensions: int | None) -> int:
     load_dotenv(BACKEND_ROOT / ".env")
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        log.warning("embed_notes_skipped reason=no_openai_api_key")
+
+    import app.config as config_module
+    from app.config import get_settings
+    from app.embeddings import get_embedding_provider
+    from app.embeddings.errors import EmbeddingConfigurationError, EmbeddingProviderError
+
+    config_module._settings = None
+    settings = get_settings()
+    if dimensions is not None:
+        settings.embed_dim = dimensions
+    if model:
+        provider_name = settings.normalized_embedding_provider()
+        if provider_name == "openai":
+            settings.openai_embeddings_model = model
+        elif provider_name == "azure_openai":
+            settings.azure_embedding_deployment = model
+        elif provider_name == "bedrock":
+            settings.aws_bedrock_embedding_model_id = model
+
+    try:
+        provider = get_embedding_provider(settings)
+    except EmbeddingConfigurationError as exc:
+        log.warning("embed_notes_skipped reason=%s", exc)
         return 0
 
     conn = psycopg2.connect(_connect_dsn())
@@ -385,46 +405,42 @@ def embed_notes(*, model: str, dimensions: int | None) -> int:
         rows = cur.fetchall()
     conn.close()
 
-    log.info("embed_notes_selected_rows count=%s model=%s dimensions=%s", len(rows), model, dimensions)
-    log.debug("embed_notes_batching batch_size=32")
+    log.info(
+        "embed_notes_selected_rows count=%s provider=%s model=%s dimensions=%s",
+        len(rows),
+        settings.normalized_embedding_provider(),
+        settings.resolved_embedding_model(),
+        settings.embed_dim,
+    )
 
-    client = OpenAI(api_key=api_key)
-    batch_size = 32
     updated = 0
-
     conn = psycopg2.connect(_connect_dsn())
     conn.autocommit = True
 
-    embed_dim_expect = dimensions or int(os.getenv("OPENAI_EMBEDDINGS_DIMENSIONS") or "1536")
+    async def _embed_one(text: str):
+        return await provider.embed_text(text)
 
-    for i in tqdm(range(0, len(rows), batch_size), desc="embedding_batches"):
-        chunk = rows[i : i + batch_size]
-        inputs = [_compose_embed_input(sn, convo) for _rid, sn, convo in chunk]
-        kwargs: dict[str, Any] = {"model": model, "input": inputs}
-        if model.startswith("text-embedding-3"):
-            kwargs["dimensions"] = embed_dim_expect
-        resp = client.embeddings.create(**kwargs)
-        ordered = sorted(resp.data, key=lambda d: int(d.index))
-        if len(ordered) != len(chunk):
-            raise SystemExit("embedding batch length mismatch")
-
+    for rid, sn, convo in tqdm(rows, desc="embedding_rows"):
+        text = _compose_embed_input(sn, convo)
+        try:
+            result = asyncio.run(_embed_one(text))
+        except (EmbeddingConfigurationError, EmbeddingProviderError) as exc:
+            raise SystemExit(f"Embedding provider failed: {exc}") from exc
+        if settings.embed_dim and result.dimensions != settings.embed_dim:
+            raise SystemExit(
+                f"Embedding dim mismatch: got {result.dimensions}, expected {settings.embed_dim}; "
+                "use a matching provider/model or migrate/re-embed the pgvector column."
+            )
+        lit = _vector_literal(result.vector)
         with conn.cursor() as cur:
-            for (rid, _sn, _convo), item in zip(chunk, ordered):
-                vec = item.embedding
-                if len(vec) != embed_dim_expect:
-                    raise SystemExit(
-                        f"Embedding dim mismatch: got {len(vec)}, expected {embed_dim_expect}; "
-                        "check OPENAI_EMBEDDINGS_DIMENSIONS matches VECTOR(1536)."
-                    )
-                lit = _vector_literal(vec)
-                cur.execute(
-                    "UPDATE notes SET embedding = %s::vector WHERE id = %s::uuid",
-                    (lit, str(rid)),
-                )
-                updated += 1
+            cur.execute(
+                "UPDATE notes SET embedding = %s::vector WHERE id = %s::uuid",
+                (lit, str(rid)),
+            )
+        updated += 1
 
     conn.close()
-    log.info("embed_notes_complete updated=%s dimensions=%s", updated, embed_dim_expect)
+    log.info("embed_notes_complete updated=%s dimensions=%s", updated, settings.embed_dim)
     return updated
 
 
@@ -438,16 +454,18 @@ def main() -> None:
     parser.add_argument(
         "--embed",
         action="store_true",
-        help="Backfill embeddings where notes.embedding IS NULL (requires OPENAI_API_KEY).",
+        help="Backfill embeddings where notes.embedding IS NULL (uses EMBEDDING_PROVIDER config).",
     )
     parser.add_argument(
         "--embed-model",
-        default=os.getenv("OPENAI_EMBEDDINGS_MODEL", "text-embedding-3-small"),
+        default=None,
+        help="Optional override for the active embedding provider model/deployment.",
     )
     parser.add_argument(
         "--embed-dim",
         type=int,
-        default=int(os.getenv("OPENAI_EMBEDDINGS_DIMENSIONS") or "1536"),
+        default=None,
+        help="Optional override for EMBED_DIM / pgvector dimension validation.",
     )
     parser.add_argument(
         "-v",

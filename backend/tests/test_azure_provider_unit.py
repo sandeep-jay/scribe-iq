@@ -17,6 +17,7 @@ async def test_azure_provider_maps_usage_and_model():
         azure_openai_endpoint="https://example.openai.azure.com",
         azure_openai_api_key="test-key",
         azure_openai_chat_deployment="gpt-4o-mini",
+        azure_openai_json_deployment="gpt-4o-mini",
     )
     fake_resp = SimpleNamespace(
         choices=[SimpleNamespace(message=SimpleNamespace(content='{"ok": true}'))],

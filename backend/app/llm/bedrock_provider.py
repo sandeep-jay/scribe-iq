@@ -19,21 +19,12 @@ class BedrockProvider:
         self._settings = settings
 
     def _runtime_client(self) -> Any:
+        from app.aws.bedrock_session import bedrock_runtime_client
+
         try:
-            import boto3
-        except ImportError as exc:
-            raise LlmConfigurationError(
-                "boto3 is required for LLM_PROVIDER=bedrock; install scribe-iq-backend with boto3."
-            ) from exc
-        region = (self._settings.aws_region or "").strip()
-        if not region:
-            raise LlmConfigurationError("AWS_REGION is required for LLM_PROVIDER=bedrock.")
-        profile = (self._settings.bedrock_profile_name or "").strip()
-        session_kwargs: dict[str, str] = {"region_name": region}
-        if profile:
-            session_kwargs["profile_name"] = profile
-        session = boto3.Session(**session_kwargs)
-        return session.client("bedrock-runtime")
+            return bedrock_runtime_client(self._settings)
+        except RuntimeError as exc:
+            raise LlmConfigurationError(str(exc)) from exc
 
     async def chat_complete(
         self,
@@ -42,7 +33,7 @@ class BedrockProvider:
         temperature: float = 0.2,
         max_tokens: int | None = 1024,
     ) -> LlmCompletionResult:
-        model_id = self._settings.resolved_bedrock_chat_model_id()
+        model_id = self._settings.resolved_aws_bedrock_chat_model_id()
         return await self._converse(
             model_id=model_id,
             messages=messages,
@@ -58,7 +49,7 @@ class BedrockProvider:
         temperature: float = 0.1,
         max_tokens: int = 4096,
     ) -> LlmCompletionResult:
-        model_id = self._settings.resolved_bedrock_json_model_id()
+        model_id = self._settings.resolved_aws_bedrock_json_model_id()
         return await self._converse(
             model_id=model_id,
             messages=messages,
@@ -77,7 +68,9 @@ class BedrockProvider:
         json_mode: bool,
     ) -> LlmCompletionResult:
         if not model_id:
-            raise LlmConfigurationError("BEDROCK_CHAT_MODEL_ID / BEDROCK_JSON_MODEL_ID is required.")
+            raise LlmConfigurationError(
+                "AWS_BEDROCK_CHAT_MODEL_ID / AWS_BEDROCK_JSON_MODEL_ID is required."
+            )
         system_blocks, bedrock_messages = openai_messages_to_bedrock(messages, json_mode=json_mode)
         if not bedrock_messages:
             raise LlmConfigurationError("Bedrock requires at least one user or assistant message.")
