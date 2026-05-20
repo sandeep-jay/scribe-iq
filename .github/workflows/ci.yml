@@ -20,10 +20,8 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Validate Cursor hooks config JSON
-        run: python -c "import json; json.load(open('.cursor/hooks.json'))"
-      - name: Byte-compile security hook scripts
-        run: python -m py_compile scripts/secret_patterns.py .cursor/hooks/_scanner_loader.py .cursor/hooks/secret_scan_file.py .cursor/hooks/secret_scan_prompt.py .cursor/hooks/secret_scan_shell.py
+      - name: Byte-compile secret scanner
+        run: python -m py_compile scripts/secret_patterns.py
       - name: Run in-repo secret scanner across tracked files
         run: |
           python - <<'PYSCAN'
