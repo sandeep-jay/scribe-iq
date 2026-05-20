@@ -88,6 +88,12 @@ Swagger: `http://localhost:8000/docs` while `uvicorn` is running.
 
 **Tip:** Postgres `json/jsonb` can surface as Python `str` via asyncgp; callers always receive parsed JSON objects in responses.
 
+
+## LLM providers
+
+- **Demo:** `LLM_PROVIDER=groq` + `GROQ_API_KEY`
+- **Enterprise:** `azure_openai` or `bedrock` — see `backend/.env.example` and [`docs/roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md`](../docs/roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md).
+
 ## Meeting prep (patient chart)
 
 - Endpoint: `GET /patients/{id}/meeting-prep?domain=clinical&refresh=false`.

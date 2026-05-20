@@ -27,6 +27,7 @@ nvm use
 | API routes, env flags, DB schema, or as-built behavior | [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md) |
 | High-level “what runs now” story | [`docs/architecture/CURRENT.md`](../architecture/CURRENT.md) |
 | `data_prep/scripts/` contracts or pipeline behavior | [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md) |
+| Privacy / provider boundaries | [`docs/overview/`](../overview/) |
 | Sequencing, scope, or product commitments | Relevant file under [`docs/roadmap/`](../roadmap/) |
 
 
