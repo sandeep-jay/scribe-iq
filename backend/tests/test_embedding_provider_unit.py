@@ -51,7 +51,7 @@ def test_embedding_configured_for_providers():
     assert Settings(
         embedding_provider="bedrock",
         aws_region="us-west-2",
-        bedrock_embedding_model_id="amazon.titan-embed-text-v1",
+        aws_bedrock_embedding_model_id="amazon.titan-embed-text-v1",
     ).embedding_configured()
     assert not Settings(embedding_provider="bedrock", aws_region="us-west-2").embedding_configured()
 
@@ -68,7 +68,7 @@ def test_resolved_embedding_model_and_vector_literal():
     assert (
         Settings(
             embedding_provider="bedrock",
-            bedrock_embedding_model_id="amazon.titan-embed-text-v1",
+            aws_bedrock_embedding_model_id="amazon.titan-embed-text-v1",
         ).resolved_embedding_model()
         == "amazon.titan-embed-text-v1"
     )

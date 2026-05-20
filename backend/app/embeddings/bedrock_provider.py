@@ -19,27 +19,18 @@ class BedrockEmbeddingProvider:
         self._settings = settings
 
     def _runtime_client(self) -> Any:
+        from app.aws.bedrock_session import bedrock_runtime_client
+
         try:
-            import boto3
-        except ImportError as exc:
-            raise EmbeddingConfigurationError(
-                "boto3 is required for EMBEDDING_PROVIDER=bedrock; install scribe-iq-backend with boto3."
-            ) from exc
-        region = (self._settings.aws_region or "").strip()
-        if not region:
-            raise EmbeddingConfigurationError("AWS_REGION is required for EMBEDDING_PROVIDER=bedrock.")
-        profile = (self._settings.bedrock_profile_name or "").strip()
-        session_kwargs: dict[str, str] = {"region_name": region}
-        if profile:
-            session_kwargs["profile_name"] = profile
-        session = boto3.Session(**session_kwargs)
-        return session.client("bedrock-runtime")
+            return bedrock_runtime_client(self._settings)
+        except RuntimeError as exc:
+            raise EmbeddingConfigurationError(str(exc)) from exc
 
     async def embed_text(self, text: str) -> EmbeddingResult:
-        model_id = self._settings.resolved_bedrock_embedding_model_id()
+        model_id = self._settings.resolved_aws_bedrock_embedding_model_id()
         if not model_id:
             raise EmbeddingConfigurationError(
-                "BEDROCK_EMBEDDING_MODEL_ID is required for EMBEDDING_PROVIDER=bedrock."
+                "AWS_BEDROCK_EMBEDDING_MODEL_ID is required for EMBEDDING_PROVIDER=bedrock."
             )
         if not model_id.startswith("amazon.titan-embed-text"):
             raise EmbeddingConfigurationError(
@@ -49,8 +40,8 @@ class BedrockEmbeddingProvider:
 
         body: dict[str, object] = {"inputText": text.strip()}
         if model_id.startswith("amazon.titan-embed-text-v2"):
-            if self._settings.bedrock_embedding_dimensions is not None:
-                body["dimensions"] = self._settings.bedrock_embedding_dimensions
+            if self._settings.aws_bedrock_embedding_dimensions is not None:
+                body["dimensions"] = self._settings.aws_bedrock_embedding_dimensions
             body["normalize"] = True
 
         client = self._runtime_client()

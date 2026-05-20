@@ -18,7 +18,7 @@ async def test_bedrock_embedding_provider_maps_titan_response():
     settings = Settings(
         embedding_provider="bedrock",
         aws_region="us-west-2",
-        bedrock_embedding_model_id="amazon.titan-embed-text-v1",
+        aws_bedrock_embedding_model_id="amazon.titan-embed-text-v1",
     )
     fake_client = MagicMock()
     fake_client.invoke_model.return_value = {
@@ -48,7 +48,7 @@ async def test_bedrock_embedding_provider_rejects_unsupported_model():
     settings = Settings(
         embedding_provider="bedrock",
         aws_region="us-west-2",
-        bedrock_embedding_model_id="cohere.embed-english-v3",
+        aws_bedrock_embedding_model_id="cohere.embed-english-v3",
     )
     provider = BedrockEmbeddingProvider(settings)
     with pytest.raises(EmbeddingConfigurationError, match="Only Amazon Titan"):
@@ -60,8 +60,8 @@ async def test_bedrock_titan_v2_includes_dimensions_when_configured():
     settings = Settings(
         embedding_provider="bedrock",
         aws_region="us-west-2",
-        bedrock_embedding_model_id="amazon.titan-embed-text-v2:0",
-        bedrock_embedding_dimensions=1024,
+        aws_bedrock_embedding_model_id="amazon.titan-embed-text-v2:0",
+        aws_bedrock_embedding_dimensions=1024,
     )
     fake_client = MagicMock()
     fake_client.invoke_model.return_value = {"body": BytesIO(json.dumps({"embedding": [0.1]}).encode())}
