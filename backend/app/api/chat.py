@@ -19,7 +19,8 @@ from fastapi import APIRouter, HTTPException, Request
 from app.api.patients import resolve_patient_id
 from app.config import get_settings
 from app.embeddings import embed_query_text
-from app.llm import groq_chat_complete
+from app.llm import chat_complete
+from app.llm.errors import LlmConfigurationError, LlmProviderError
 from app.request_id import get_request_id
 from app.responsible_ai.audit_logger import insert_ai_interaction
 from app.responsible_ai.hashes import sha256_hex
@@ -237,19 +238,21 @@ async def chat(
         user_message_chars=len(body.message.strip()),
     )
     try:
-        groq_res = await groq_chat_complete(msg_list)
-    except RuntimeError as e:
+        completion = await chat_complete(msg_list)
+    except LlmConfigurationError as e:
         logger.warning("llm_unavailable", request_id=req_id, error=str(e))
         raise HTTPException(status_code=503, detail=str(e)) from e
-
-    answer = groq_res.text
+    except LlmProviderError as e:
+        logger.warning("llm_provider_error", request_id=req_id, error=str(e))
+        raise HTTPException(status_code=502, detail=str(e)) from e
+    answer = completion.text
     logger.info(
         "chat_llm_succeeded",
         request_id=req_id,
-        model=groq_res.model,
-        latency_ms=groq_res.latency_ms,
-        prompt_tokens=groq_res.prompt_tokens,
-        completion_tokens=groq_res.completion_tokens,
+        model=completion.model,
+        latency_ms=completion.latency_ms,
+        prompt_tokens=completion.prompt_tokens,
+        completion_tokens=completion.completion_tokens,
         citation_count=len(citations),
     )
     trace_payload = trace_from_chat_rows(
@@ -270,8 +273,8 @@ async def chat(
             interaction_type="chat",
             patient_id=pid_str,
             note_id=None,
-            model_provider=settings.llm_provider,
-            model_name=groq_res.model,
+            model_provider=completion.provider,
+            model_name=completion.model,
             prompt_version=CHAT_RAG_V1,
             system_prompt_hash=sys_hash,
             input_hash=inp_hash,
@@ -282,9 +285,9 @@ async def chat(
             citations_json=citations_payload,
             safety_flags_json=safety_flags,
             governance_json={"prompt_version": CHAT_RAG_V1},
-            latency_ms=groq_res.latency_ms,
-            input_tokens=groq_res.prompt_tokens,
-            output_tokens=groq_res.completion_tokens,
+            latency_ms=completion.latency_ms,
+            input_tokens=completion.prompt_tokens,
+            output_tokens=completion.completion_tokens,
             status="success",
             error_message=None,
         )
@@ -301,11 +304,11 @@ async def chat(
         citations=citations,
         audit=ChatAuditBlock(
             interaction_id=interaction_id,
-            model=groq_res.model,
+            model=completion.model,
             prompt_version=CHAT_RAG_V1,
             source_count=len(citations),
             safety_status=safety_status,
-            latency_ms=groq_res.latency_ms,
+            latency_ms=completion.latency_ms,
         ),
     )
 
