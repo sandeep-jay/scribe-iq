@@ -1,90 +1,79 @@
 # Documentation index
 
-Start here for **human-maintained** specs, roadmaps, and archives. Generated corpus outputs may include Markdown under `data/` (see **Generated artifacts** below).
+Canonical entry point for Scribe IQ documentation. Start with the **overview** section if this is your first visit. For a two-minute **what runs now** spine that points at the baseline, see [architecture/CURRENT.md](architecture/CURRENT.md).
 
-## Reading order (new contributors)
+---
 
-1. [architecture/CURRENT.md](architecture/CURRENT.md) — short “what runs now” spine  
-2. [reference/corpus_offline_pipeline_v2_brief.md](reference/corpus_offline_pipeline_v2_brief.md) — offline corpus / `data_prep/` pipeline source of truth  
-3. [architecture/README.md](architecture/README.md) — architecture hub (baseline + pillar README links)
+## Overview (read first)
 
-## Architecture (current state)
+| Doc | What it is for |
+|-----|----------------|
+| [overview/PRODUCT_CONTEXT.md](overview/PRODUCT_CONTEXT.md) | Problem framing, scope, what is deferred and why |
+| [overview/SYSTEM_OVERVIEW.md](overview/SYSTEM_OVERVIEW.md) | Diagrams, capability flags, extension seams (rationale in DESIGN_NOTES) |
+| [overview/DESIGN_NOTES.md](overview/DESIGN_NOTES.md) | Builder's perspective: alternatives considered, what was non-obvious, what would change for production |
+| [overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md](overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md) | Demo / PHI policy and provider egress boundaries |
 
-| Topic | Location |
-|--------|-----------|
-| **Architecture hub** (baseline + pillar links) | [architecture/README.md](architecture/README.md) |
-| Current system (short narrative) | [architecture/CURRENT.md](architecture/CURRENT.md) |
-| **As-built inventory** (API, schema, flags) | [architecture/IMPLEMENTED_BASELINE.md](architecture/IMPLEMENTED_BASELINE.md) |
+## Run and operate
 
-## Four pillars — implementation / execution
+| Doc | What it is for |
+|-----|----------------|
+| [guides/QUICKSTART.md](guides/QUICKSTART.md) | One supported path to a working local system |
+| [guides/README.md](guides/README.md) | Contributor setup and conventions |
 
-| Pillar | README |
-|--------|--------|
-| Backend (FastAPI) | [backend/README.md](../backend/README.md) |
-| Frontend (Next.js) | [frontend/README.md](../frontend/README.md) |
-| Offline corpus builder (`data_prep/`) | [data_prep/README.md](../data_prep/README.md) |
-| AGBonnet HF clinical notes (`corpus_pipelines/agbonnet_hf_clinical_notes/`) | [corpus_pipelines/agbonnet_hf_clinical_notes/README.md](../corpus_pipelines/agbonnet_hf_clinical_notes/README.md) |
+## As-built reference
 
-## Quick links
+| Doc | What it is for |
+|-----|----------------|
+| [architecture/IMPLEMENTED_BASELINE.md](architecture/IMPLEMENTED_BASELINE.md) | Authoritative inventory: routes, schema, env flags |
+| [architecture/CURRENT.md](architecture/CURRENT.md) | Short narrative of what runs today |
+| [architecture/README.md](architecture/README.md) | Architecture hub with pillar links |
 
-| Topic | Location |
-|--------|-----------|
-| Run / demo overview | [README.md](../README.md) |
-| Contributor guides (setup + when to update docs) | [guides/README.md](guides/README.md) |
-| Design (mockups + screenshots) | [design/README.md](design/README.md) |
-| README / social showcase images | [assets/showcase/readme/](assets/showcase/readme/) · [assets/showcase/social/og.png](assets/showcase/social/og.png) |
+## Per-pillar READMEs
 
-## Overview (`docs/overview/`)
+| Pillar | Location |
+|--------|----------|
+| Backend (FastAPI) | [`backend/README.md`](../backend/README.md) |
+| Frontend (Next.js) | [`frontend/README.md`](../frontend/README.md) |
+| Offline corpus pipeline | [`data_prep/README.md`](../data_prep/README.md) |
 
-- [overview/README.md](overview/README.md) — privacy and provider boundaries
+## Corpus pipeline reference
 
-## Roadmaps (`docs/roadmap/`)
+- [reference/corpus_offline_pipeline_v2_brief.md](reference/corpus_offline_pipeline_v2_brief.md) — execution source of truth for scripts `01`–`09`
+- [reference/data_prep_adapt_notes_longitudinal_design.md](reference/data_prep_adapt_notes_longitudinal_design.md) — adapt notes plus longitudinal context contract
 
-- [PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) — architecture / Phase 1 framing (historical `lakehouse/` paths → lineage; archived scripts: `corpus_pipelines/agbonnet_hf_clinical_notes/`)
-- [SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) — UI and related product surface
-- [SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) — Responsible AI Control Center
-- [SCRIBE_IQ_LLM_PROVIDER_LAYER.md](roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md) — multi-provider LLM layer (Groq / Azure / Bedrock)
-- [SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) — v1 checklist (status refreshed against baseline)
+## Application design references
 
-## Reference docs — corpus / `data_prep/` pipeline
+- [reference/rag_clinical_note_llm_design.md](reference/rag_clinical_note_llm_design.md)
+- [reference/rag_app_phase1_mvp_design.md](reference/rag_app_phase1_mvp_design.md)
+- [reference/performance_improvement_plan_2026_05_06.md](reference/performance_improvement_plan_2026_05_06.md) — backend meeting-prep latency review and benchmarks
 
-**Execution source of truth for scripts `01`–`09`:** [reference/corpus_offline_pipeline_v2_brief.md](reference/corpus_offline_pipeline_v2_brief.md)
+## Roadmaps
 
-Supporting specs:
+| Doc | Scope |
+|-----|-------|
+| [roadmap/PHASE1_MASTER_PLAN.md](roadmap/PHASE1_MASTER_PLAN.md) | Phase 1 architecture framing |
+| [roadmap/SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) | UI roadmap |
+| [roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md](roadmap/SCRIBE_IQ_RESPONSIBLE_AI_ROADMAP.md) | Responsible AI Control Center |
+| [roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md](roadmap/SCRIBE_IQ_LLM_PROVIDER_LAYER.md) | Multi-provider LLM runtime (Groq / Azure OpenAI / Bedrock) |
+| [roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md](roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md) | v1 implementation checklist |
 
-- [reference/data_prep_adapt_notes_longitudinal_design.md](reference/data_prep_adapt_notes_longitudinal_design.md) — adapt notes + longitudinal context (script `06` contract)
-- [archive/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md](archive/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md) — **supersession stub**; merged implementation corrections live in the corpus brief **Appendix** above
+When a roadmap disagrees with [`architecture/IMPLEMENTED_BASELINE.md`](architecture/IMPLEMENTED_BASELINE.md), trust the baseline until the roadmap is updated.
 
-## Reference docs — application design
+## Visual assets
 
-- [reference/rag_clinical_note_llm_design.md](reference/rag_clinical_note_llm_design.md), [reference/rag_app_phase1_mvp_design.md](reference/rag_app_phase1_mvp_design.md)
+- README and social showcase images: [assets/showcase/readme/](assets/showcase/readme/) and [assets/showcase/social/og.png](assets/showcase/social/og.png)
+- UI mockups and screenshots: [design/README.md](design/README.md)
 
-## Historical precursor — AGBonnet / “lakehouse” lineage
+## Lineage and history
 
-- [reference/agbonnet_lakehouse_precursor_proposal_v2.md](reference/agbonnet_lakehouse_precursor_proposal_v2.md) — architectural proposal (historical; see banner). Archived runnable precursors: [corpus_pipelines/agbonnet_hf_clinical_notes/README.md](../corpus_pipelines/agbonnet_hf_clinical_notes/README.md)
-
-## Archive (`docs/archive/`)
-
-Superseded prompts and drafts kept for history: [archive/README.md](archive/README.md).
-
-## Evolution narrative
-
-Short timeline of how layouts and docs evolved: [history/EVOLUTION.md](history/EVOLUTION.md).
-
-## Hygiene work plan (completed)
-
-Historical checklist for the 2026-05 documentation pass: [WORK_PLAN_DOC_HYGIENE.md](WORK_PLAN_DOC_HYGIENE.md) (see banner at top of that file). Summary: [history/EVOLUTION.md](history/EVOLUTION.md).
+- [history/EVOLUTION.md](history/EVOLUTION.md) — short timeline of how the layout and docs evolved
+- [reference/agbonnet_lakehouse_precursor_proposal_v2.md](reference/agbonnet_lakehouse_precursor_proposal_v2.md) — historical architectural proposal preceding the current pipeline
+- [archive/README.md](archive/README.md) — superseded prompts and drafts kept for record
+- Archived precursor scripts: [`corpus_pipelines/agbonnet_hf_clinical_notes/`](../corpus_pipelines/agbonnet_hf_clinical_notes/) — preserved for reference; do not extend
 
 ## Generated artifacts
 
-These files are **outputs** of pipelines, not specs:
+Output of the corpus pipeline, not hand-maintained specs:
 
-- `data/clinical_corpus_v2/audit_report.md`
 - `data/clinical_corpus_v2/dataset_card.md`
-
-Treat them as build metadata; link from here rather than duplicating them inside roadmaps.
-
-
-## Reference
-
-- [reference/performance_improvement_plan_2026_05_06.md](reference/performance_improvement_plan_2026_05_06.md) — backend meeting-prep latency review, fixes, and benchmark notes
+- `data/clinical_corpus_v2/audit_report.md`
