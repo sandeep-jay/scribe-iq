@@ -110,7 +110,7 @@ Apply: `cd backend && alembic upgrade head` (with `DATABASE_URL` pointing at the
 Notable environment-driven flags (see `backend/.env.example`):
 
 - **`DATABASE_URL`**, **`BACKEND_API_KEY`** (optional)
-- **LLM:** `LLM_PROVIDER` (`groq` \| `azure`), Groq/Azure OpenAI fields, `GROQ_API_KEY`, etc.
+- **LLM:** `LLM_PROVIDER` (`groq` \| `azure_openai` \| `bedrock`; `azure` alias), Groq/Azure/Bedrock fields, `GROQ_API_KEY`, etc.
 - **Embeddings:** `EMBEDDING_PROVIDER` (`openai` \| `azure` \| `none`), `OPENAI_API_KEY`, dimensions/model names
 - **`NOTE_GENERATION_ENABLED`** — must be `true` for `POST /notes/generate` writes
 - **`MEETING_PREP_ENABLED`** — toggles meeting prep path (default on in settings)
@@ -120,7 +120,7 @@ Notable environment-driven flags (see `backend/.env.example`):
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/health` | Liveness + flags: `llm_provider`, `note_generation_enabled`, `meeting_prep_enabled`, `responsible_ai_admin_enabled`, `api_auth_configured`, etc. |
+| `GET` | `/health` | Liveness + flags: `llm_provider`, `llm_configured`, `llm_json_mode`, `embedding_provider`, `embedding_configured`, feature flags, `api_auth_configured`, etc. |
 | `GET` | `/patients` | Paginated patient roster (`domain`, `limit`, `offset`); aggregates note counts / last session / specialty hints. |
 | `GET` | `/patients/stats` | Corpus totals for a `domain`. |
 | `GET` | `/patients/{patient_id}` | Chart payload: metadata, `latest_longitudinal`, medication hints, **note previews** list. |
@@ -141,7 +141,7 @@ Notable environment-driven flags (see `backend/.env.example`):
 | Module | Role |
 |--------|------|
 | `app/db.py` | Request-scoped DB access from pool |
-| `app/llm.py` | Groq/Azure chat + JSON structured outputs for note generation |
+| `app/llm/` | Provider factory: Groq, Azure OpenAI, Bedrock; `chat_complete` / `chat_json_completion` wrappers |
 | `app/embeddings.py` | Query embedding + note embedding helpers for chat / note_generate |
 | `app/meeting_prep_service.py` | Meeting prep generation + cache logic |
 | `app/schemas/*` | Pydantic models for patients, chat, note generation |

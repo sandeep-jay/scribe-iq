@@ -1,3 +1,5 @@
+**LLM providers:** Demo default is **Groq**. Enterprise: **Azure OpenAI** / **Bedrock**.
+
 # Scribe IQ
 
 Scribe IQ is a full-stack clinical documentation and retrieval system built on a synthetic patient corpus. It demonstrates three things end-to-end: grounding LLM responses in a structured record so answers are citation-backed, generating structured clinical notes from transcripts, and making every AI interaction auditable from day one — not as a feature added later, but as a constraint woven into the architecture.
