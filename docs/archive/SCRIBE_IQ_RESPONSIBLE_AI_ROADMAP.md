@@ -1,6 +1,9 @@
 # Scribe IQ — Responsible AI Control Center (roadmap)
 
-This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`docs/README.md`** (documentation index), **`docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (what exists today), and **`docs/roadmap/PHASE1_MASTER_PLAN.md`** / **`docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+
+
+This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`docs/README.md`** (documentation index), **`docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (what exists today), and **`PHASE1_MASTER_PLAN.md`** / **`docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.
 
 **Status:** **implemented** in the repository (see **`docs/architecture/IMPLEMENTED_BASELINE.md`** for routes, env flags, and schema). Remaining roadmap items (for example a formal review queue table) may still be future work.
 
@@ -201,5 +204,5 @@ What landed (high level):
 | `docs/README.md` | Documentation index (roadmaps, references, archives) |
 | `docs/architecture/IMPLEMENTED_BASELINE.md` | What is implemented today |
 | `docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md` | Overall UI roadmap |
-| `docs/roadmap/PHASE1_MASTER_PLAN.md` | Phase-1 master plan |
+| `PHASE1_MASTER_PLAN.md` | Phase-1 master plan |
 | `docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md` | V1 implementation plan |

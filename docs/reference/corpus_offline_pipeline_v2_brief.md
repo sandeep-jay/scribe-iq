@@ -1619,7 +1619,7 @@ Scripts 01-05 are idempotent (safe to re-run, they overwrite output).
 
 ## Relation to lakehouse-era proposals
 
-**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`docs/reference/agbonnet_lakehouse_precursor_proposal_v2.md`** and **`docs/history/EVOLUTION.md`**.
+**Historical proposals** sometimes assumed a **`lakehouse/`** script tree alongside demos; **this repository** executes corpus work only under **`data_prep/`**. Written lineage and diagrams live under **`docs/archive/agbonnet_lakehouse_precursor_proposal_v2.md`** and **`docs/history/EVOLUTION.md`**.
 
 Do not recreate a competing **`lakehouse/scripts`** tree for new work.
 
@@ -1629,7 +1629,7 @@ Do not recreate a competing **`lakehouse/scripts`** tree for new work.
 
 ## Appendix: Implementation corrections (merged)
 
-> **Merged (2026-05-06):** Former standalone [`SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`](../archive/SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md) narrative is reproduced below so this brief remains a **single source of truth**. The archive retains a short supersession stub only.
+> **Merged (2026-05-06):** Former standalone [`SCRIBE_IQ_IMPLEMENTATION_CORRECTED.md`](../architecture/IMPLEMENTED_BASELINE.md) narrative is reproduced below so this brief remains a **single source of truth**. The archive retains a short supersession stub only.
 
 ## Changes From Previous Version
 

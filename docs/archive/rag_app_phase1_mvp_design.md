@@ -1,5 +1,8 @@
 # Phase 1 Design — RAG Documentation Assistant
 
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+
+
 > Focused design for Phase 1 MVP only.
 > Local development first. Deployment-ready by design.
 > Reference this file when implementing Phase 1 (local MVP).

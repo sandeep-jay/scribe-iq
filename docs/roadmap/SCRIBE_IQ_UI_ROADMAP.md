@@ -1,6 +1,8 @@
+> **Status — Last reviewed: 2026-05.** Forward-looking UI plan. For **as-built behavior** of the running app (routes, flags, schema, what actually ships today), see [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Items here describe intent and sequencing, not implementation commitments.
+
 # Scribe IQ — UI roadmap
 
-This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/roadmap/PHASE1_MASTER_PLAN.md`** (data + backend), and **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today). **No implementation commitments** are implied by ordering; adjust as priorities shift.
+This document is the **UI / product surface plan** for the web app (Next.js + FastAPI demo). It complements **`docs/README.md`** (documentation index), **`docs/archive/PHASE1_MASTER_PLAN.md`** (data + backend), and **`docs/architecture/IMPLEMENTED_BASELINE.md`** (inventory of what is implemented today). **No implementation commitments** are implied by ordering; adjust as priorities shift.
 
 ---
 
@@ -22,7 +24,7 @@ Already in place (high level):
 - **Patients list:** sortable columns, search, corpus stats.
 - **Patient chart:** **Read / Sources / Codes & map** tabs; pre-meeting summary; **full** care timeline with **scroll anchored to latest** (right); **encounter list** newest-first with **UI pagination (10)**; medication hints when present; generate-note panel.
 - **Encounter viewer:** two-column encounter + context.
-- **Backend-driven:** meeting prep with **Groq fallback** when key missing; chat/RAG deferred when embeddings absent.
+- **Backend-driven:** meeting prep with **provider-backed fallback** when LLM credentials are missing; chat/RAG deferred when embeddings absent.
 
 Use this section as the **line in the sand** for future diffs: roadmap items below are **incremental**, not rewrites, unless explicitly marked.
 
@@ -193,7 +195,7 @@ This section mirrors the **agent plan** *Transcription and note generation servi
 | **Transcription (ASR)** | Audio (or finalized chunks) → **plain transcript** (optional segments, language). | **Generate note** panel: file upload, optional mic **record → stop → transcribe**, optional chunked/streaming-oriented session UX. |
 | **Note generation** | **Clinician-edited** transcript + existing encounter/specialty context → structured note via current backend/LLM. | Same panel after edit; errors must read as **note** failures, not ASR failures. |
 
-**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `docs/reference/rag_clinical_note_llm_design.md`).
+**Primary story:** short audio (portfolio cap, e.g. **≤ ~5 minutes**) → transcript → **edit** → **generate note** (linear pipeline; LangGraph deferred per `docs/archive/rag_clinical_note_llm_design.md`).
 
 ### 12.2 Batch vs streaming-oriented ingestion (both in scope for planning)
 
