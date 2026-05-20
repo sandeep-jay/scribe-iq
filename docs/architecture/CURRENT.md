@@ -6,7 +6,7 @@ For **problem framing, scope, and what is deferred**, see [../overview/PRODUCT_C
 
 ## What it is
 
-A **clinical documentation / RAG demo**: Next.js frontend + FastAPI backend over **Postgres + pgvector**. Users browse a synthetic patient corpus, open charts and encounters, generate structured notes from transcripts when enabled, run **chat over embeddings**, and — when flags allow — see **Responsible AI** audit surfaces.
+A **healthcare AI platform prototype**: an offline synthetic clinical corpus loaded into **Postgres + pgvector**, served by a FastAPI backend and Next.js frontend. Users browse synthetic patient charts and encounters, generate structured notes from transcripts when enabled, run grounded chat over embeddings, and — when flags allow — inspect **Responsible AI** audit surfaces.
 
 ## Where truth lives
 
@@ -26,4 +26,4 @@ When a roadmap disagrees with the baseline, **trust the baseline** until the roa
 - **Runtime:** `docker-compose.yml` (Postgres on host port **5433**), `backend/`, `frontend/`.
 - **Data:** `data_prep/` builds the corpus the loader ingests; application reads via the backend loader paths documented in the baseline.
 
-Last updated: **2026-05-05** (architecture README hub + pillar documentation pass).
+Last updated: **2026-05-20** (README positioning and corpus-artifact documentation pass).
