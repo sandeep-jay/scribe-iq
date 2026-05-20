@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+echo "== Corpus artifact =="
+bash scripts/check_corpus_artifact.sh
+
 echo "== Docker (Postgres on host :5433) =="
 if docker compose ps 2>/dev/null | grep -q postgres; then
   docker compose ps

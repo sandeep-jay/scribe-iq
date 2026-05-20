@@ -1,6 +1,13 @@
 # Quickstart
 
-One supported path to a working system. Follow this top to bottom and you will have a working UI in about ten minutes.
+One supported path to a working system. Follow this top to bottom and you will have a working UI once a generated corpus artifact is available locally.
+
+## Before you start
+
+This quickstart assumes a generated corpus artifact exists at `data/clinical_corpus_v2/`. The corpus is produced by the offline `data_prep/` pipeline and is treated as generated output, not committed application source.
+
+- Corpus missing after clone? See [Corpus Artifacts](./CORPUS_ARTIFACTS.md).
+- Reviewing without running locally? See [Reviewer Guide](../overview/REVIEWER_GUIDE.md).
 
 For exact API and schema detail, see [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). For diagrams and flags, see [`docs/overview/SYSTEM_OVERVIEW.md`](../overview/SYSTEM_OVERVIEW.md) (optional reading after you are running).
 
@@ -28,9 +35,9 @@ No key is required to see the patient list, charts, and encounter viewer.
 
 ---
 
-## Minimum working system
+## Run with existing corpus artifact
 
-These commands assume you are at the repository root and the pre-built corpus exists under `data/clinical_corpus_v2/`.
+These commands assume you are at the repository root and a generated or restored corpus artifact exists under `data/clinical_corpus_v2/`.
 
 ```bash
 # 1. Start Postgres with pgvector on host port 5433
@@ -61,6 +68,14 @@ npm run dev
 ```
 
 Open <http://localhost:3000>. You should see the patient list immediately.
+
+---
+
+## Rebuild the corpus
+
+If `data/clinical_corpus_v2/` is missing, rebuild or restore the generated artifact before running `scribe-load-corpus`. The offline corpus pipeline needs a Python environment, the Synthea JAR, source dataset setup, and optional provider keys for adaptation steps. Depending on source downloads, matching, and adaptation, a full run can take hours.
+
+Start with [`data_prep/README.md`](../../data_prep/README.md), then use the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md) for the script-by-script execution path.
 
 ---
 
@@ -102,9 +117,3 @@ Expected: Postgres healthy via Compose; `GET /health` returns JSON with capabili
 **Chat 503 "No embeddings in the database".** Expected until the configured embedding provider is set (`EMBEDDING_PROVIDER` plus credentials in `backend/.env`) **and** `scribe-load-corpus --embed` has been run against that provider. See [`LLM_AND_EMBEDDING_PROVIDERS.md`](./LLM_AND_EMBEDDING_PROVIDERS.md) for the full embedding-rebuild workflow. Meeting prep with Groq is an LLM-only feature and works without embeddings.
 
 **More:** backend port, CORS, API base URL — see [`backend/README.md`](../../backend/README.md) and [`frontend/README.md`](../../frontend/README.md).
-
----
-
-## Rebuilding the corpus
-
-See [`data_prep/README.md`](../../data_prep/README.md) (requires `synthea-with-dependencies.jar` at repo root).

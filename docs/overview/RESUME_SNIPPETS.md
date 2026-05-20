@@ -6,7 +6,7 @@ Drop-in descriptions for resume bullets, healthcare-targeted variants, and Linke
 
 ## Generic engineering version (resume-bullet length)
 
-**Scribe IQ — end-to-end grounded clinical documentation system.** Built a full-stack demonstration (Next.js + FastAPI + Postgres/pgvector) of retrieval-grounded LLM documentation with first-class governance: citation-contract RAG over a 50-patient synthetic corpus, append-only `ai_interactions` audit on the request path, configurable LLM and embedding providers (Groq, OpenAI, Azure OpenAI, Amazon Bedrock), and an offline nine-step data pipeline (Synthea + ACI-Bench + MTSamples → match → score → cohort → adapt → validate). Architected for restraint: synthetic data only, explicit deferred-list with named extension seams, audience-routed documentation, structured logging with `X-Request-ID` propagation, and pre-commit secret scanning.
+**Scribe IQ — healthcare AI platform prototype.** Built an end-to-end demonstration of data-product style synthetic clinical corpus construction, governed AI serving, and clinical documentation workflows. The system separates offline corpus construction from runtime serving: a nine-step `data_prep/` pipeline builds a validated synthetic corpus artifact from Synthea and public clinical note sources; FastAPI/Postgres/pgvector serve patient charts, encounter views, grounded RAG chat with citations, structured note generation, and an `ai_interactions` audit dashboard. Pluggable LLM/embedding providers (Groq, OpenAI, Azure OpenAI, Amazon Bedrock); synthetic data only with explicit PHI, SSO, tenancy, and BAA caveats.
 
 ---
 

@@ -19,7 +19,7 @@ SAFETY_FLAG_TAXONOMY: list[tuple[str, str]] = [
 def _parse_jsonb(val: Any) -> Any:
     if val is None:
         return None
-    if isinstance(val, (dict, list)):
+    if isinstance(val, dict | list):
         return val
     if isinstance(val, str):
         try:

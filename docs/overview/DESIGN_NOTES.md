@@ -18,7 +18,7 @@ I wanted a project where governance and grounding could not be optional add-ons.
 
 **The decision.** Use Postgres pgvector for embeddings, on the same instance that holds patients and notes.
 
-**What I considered.** A managed vector store (Pinecone) would have been faster to set up for a flat retrieval use case. Qdrant or Weaviate self-hosted would have been more idiomatic for "RAG demo" framing. Both would have given better recall benchmarks for very large corpora.
+**What I considered.** A managed vector store (Pinecone) would have been faster to set up for a flat retrieval use case. Qdrant or Weaviate self-hosted would have been more idiomatic for narrow retrieval-demo framing. Both would have given better recall benchmarks for very large corpora.
 
 **Why this won.** Two stores means two transactional models, two failure modes, two deployment surfaces, and two consistency stories. For a 50-patient corpus where retrieval quality is bounded by note length and structure anyway, the consistency win — embeddings join cleanly to the rows that produced them — matters more than peak retrieval throughput. The system would need an order of magnitude more data before a separate vector store earned its operational cost. At that point the abstraction in `app/embeddings.py` makes the swap mechanical.
 

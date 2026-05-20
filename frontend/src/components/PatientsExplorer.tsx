@@ -189,7 +189,7 @@ export function PatientsExplorer({
         </div>
         <div className="flex w-full max-w-md flex-col gap-2">
           <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-            Name or external id: use the top search bar (same filter as <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-[10px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">?q=</code> in the URL). Specialty, chips, and advanced search stay here.
+            Search by patient name or external ID. The top search bar is also bound to <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-[10px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">?q=</code> in the URL; specialty, chips, and advanced search stay here.
           </p>
           <label className="text-sm">
             <span className="sr-only">Filter by specialty text</span>
