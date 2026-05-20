@@ -11,7 +11,7 @@ If ~/.cache/huggingface is not writable (e.g. sandbox), use a repo-local cache:
     export HF_HOME="$(pwd)/.hf_home"
     mkdir -p "$HF_HOME"
 
-See roadmap/PHASE1_MASTER_PLAN.md §4.3 (Phase 0).
+See docs/archive/PHASE1_MASTER_PLAN.md §4.3 (Phase 0).
 Leveled logs go to stderr via logging.basicConfig (INFO by default, DEBUG with -v).
 Sample rows in reports are truncated to avoid dumping full clinical notes into CI logs.
 """

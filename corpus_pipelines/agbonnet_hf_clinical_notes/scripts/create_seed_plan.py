@@ -12,7 +12,7 @@ Usage:
   python scripts/create_seed_plan.py
   python scripts/create_seed_plan.py --seed 42 --manifest ../data/staging/manifest.json
 
-See roadmap/PHASE1_MASTER_PLAN.md §4.6 and corpus_pipelines/agbonnet_hf_clinical_notes/README.md.
+See docs/archive/PHASE1_MASTER_PLAN.md §4.6 and corpus_pipelines/agbonnet_hf_clinical_notes/README.md.
 """
 from __future__ import annotations
 
