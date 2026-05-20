@@ -4,6 +4,8 @@ One supported path to a working system. Follow this top to bottom and you will h
 
 For exact API and schema detail, see [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). For diagrams and flags, see [`docs/overview/SYSTEM_OVERVIEW.md`](../overview/SYSTEM_OVERVIEW.md) (optional reading after you are running).
 
+> **Note.** Groq (for completions) and OpenAI (for embeddings) are the **simplest local defaults** and what this quickstart assumes. The same code paths support Azure OpenAI and Amazon Bedrock — see [`LLM_AND_EMBEDDING_PROVIDERS.md`](./LLM_AND_EMBEDDING_PROVIDERS.md) for the full provider configuration matrix.
+
 ---
 
 ## Prerequisites
@@ -97,7 +99,7 @@ Expected: Postgres healthy via Compose; `GET /health` returns JSON with capabili
 
 **`FATAL: role "rag" does not exist` during `alembic upgrade head`.** You are not hitting Compose Postgres — confirm `docker compose ps` and that `DATABASE_URL` in `backend/.env` uses `127.0.0.1:5433`.
 
-**Chat 503 "No embeddings in the database".** Expected until `OPENAI_API_KEY` and `scribe-load-corpus --embed`, or use meeting prep with Groq instead.
+**Chat 503 "No embeddings in the database".** Expected until the configured embedding provider is set (`EMBEDDING_PROVIDER` plus credentials in `backend/.env`) **and** `scribe-load-corpus --embed` has been run against that provider. See [`LLM_AND_EMBEDDING_PROVIDERS.md`](./LLM_AND_EMBEDDING_PROVIDERS.md) for the full embedding-rebuild workflow. Meeting prep with Groq is an LLM-only feature and works without embeddings.
 
 **More:** backend port, CORS, API base URL — see [`backend/README.md`](../../backend/README.md) and [`frontend/README.md`](../../frontend/README.md).
 
