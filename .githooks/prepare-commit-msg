@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MSG_FILE="${1:-}"
+if [[ -z "$MSG_FILE" || ! -f "$MSG_FILE" ]]; then
+  exit 0
+fi
+
+# Reuse the commit-msg stripping logic before the user edits the message.
+exec "$(dirname "$0")/commit-msg" "$MSG_FILE"

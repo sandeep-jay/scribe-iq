@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Block pushes whose commits between the local and remote ref still contain
+# Cursor attribution. Falls back to no-op when the remote ref is unknown
+# (e.g. first push) to avoid breaking new branches.
+set -euo pipefail
+
+REMOTE="${1:-}"
+URL="${2:-}"
+
+block=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [[ "$local_sha" == "0000000000000000000000000000000000000000" ]]; then
+    continue
+  fi
+  if [[ "$remote_sha" == "0000000000000000000000000000000000000000" ]]; then
+    # New branch: scan only the most recent 50 commits to avoid scanning history.
+    range="${local_sha}~50..${local_sha}"
+    if ! git rev-parse "${local_sha}~50" >/dev/null 2>&1; then
+      range="$local_sha"
+    fi
+  else
+    range="${remote_sha}..${local_sha}"
+  fi
+
+  bad=$(git log --format="%H%n%B%n--END--" "$range" 2>/dev/null | python3 - <<'PY' || true
+import re
+import sys
+
+block_re = re.compile(r"(?im)cursor\s*<\s*cursoragent@cursor\.com\s*>|made\s+with\s+\[?cursor\b|generated\s+by\s+cursor\b")
+buffer = []
+hits = []
+sha = None
+for raw in sys.stdin.read().splitlines():
+    if sha is None:
+        sha = raw.strip()
+        buffer = []
+        continue
+    if raw.strip() == "--END--":
+        body = "\n".join(buffer)
+        if block_re.search(body):
+            hits.append(sha)
+        sha = None
+        buffer = []
+        continue
+    buffer.append(raw)
+print("\n".join(hits))
+PY
+)
+  if [[ -n "$bad" ]]; then
+    echo "pre-push: refusing to push commits with Cursor attribution:" >&2
+    echo "$bad" | sed 's/^/  /' >&2
+    echo "Edit the offending commit message(s) (git rebase -i) and retry." >&2
+    block=1
+  fi
+done
+
+if [[ $block -ne 0 ]]; then
+  exit 1
+fi
+exit 0

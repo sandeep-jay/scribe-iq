@@ -6,19 +6,29 @@ if [[ -z "$MSG_FILE" || ! -f "$MSG_FILE" ]]; then
   exit 0
 fi
 
-# Remove Cursor co-author trailer if present.
-# Keep other Co-authored-by lines intact.
 python3 - "$MSG_FILE" <<'PY'
-from pathlib import Path
+import re
 import sys
+from pathlib import Path
 
-p = Path(sys.argv[1])
-lines = p.read_text().splitlines(keepends=True)
-filtered = []
-for line in lines:
-    low = line.strip().lower()
-    if low == 'co-authored-by: cursor <cursoragent@cursor.com>':
-        continue
-    filtered.append(line)
-p.write_text(''.join(filtered))
+path = Path(sys.argv[1])
+text = path.read_text()
+
+PATTERNS = [
+    re.compile(r"(?im)^\s*co-authored-by:\s*cursor\b.*$\n?"),
+    re.compile(r"(?im)^\s*made\s+with\s+\[?cursor\]?(?:\([^)]*\))?\s*$\n?"),
+    re.compile(r"(?im)^\s*(?:generated|written|authored|produced|co-?authored)\s+(?:by|with)\s+cursor\b.*$\n?"),
+    re.compile(r"(?im)^\s*via\s+cursor\b.*$\n?"),
+    re.compile(r"(?im)^\s*\[?cursor agent\]?\b.*$\n?"),
+    re.compile(r"(?im)^\s*cursoragent@cursor\.com.*$\n?"),
+]
+
+for pattern in PATTERNS:
+    text = pattern.sub("", text)
+
+# Collapse any triple newlines introduced by trailer removal.
+while "\n\n\n" in text:
+    text = text.replace("\n\n\n", "\n\n")
+
+path.write_text(text)
 PY
