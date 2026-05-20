@@ -129,11 +129,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
           LLM encounter drafting
         </h2>
         <p className="text-xs leading-relaxed">
-          The backend reports <strong className="font-mono">note_generation_enabled = false</strong>. Set{' '}
-          <span className="font-mono">NOTE_GENERATION_ENABLED=true</span> in{' '}
-          <span className="font-mono">backend/.env</span> with a valid{' '}
-          <span className="font-mono">LLM_PROVIDER</span> and provider credentials, restart uvicorn, and refresh — then transcripts can
-          be drafted into persisted notes for{' '}
+          Encounter drafting is disabled in this environment. Enable note generation in backend configuration for trusted demos; then transcripts can be drafted into persisted notes for{' '}
           <span className="font-mono">{patientId.slice(0, 8)}…</span>.
         </p>
         {health.api_auth_configured ? (
@@ -189,7 +185,7 @@ export function GenerateNotePanel({ patientId, seedEncounterId, seedTranscript }
       <header className="space-y-1">
         <h2 className="text-[11px] font-semibold uppercase tracking-wide">LLM encounter drafting</h2>
         <p className="text-[11px] text-indigo-800 dark:text-indigo-100">
-          <span className="font-mono">POST /notes/generate</span> → configured LLM structured JSON persisted on Postgres.
+          Structured encounter drafts are persisted to Postgres with the patient record.
         </p>
       </header>
 
