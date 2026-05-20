@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Block pushes whose new commit messages still contain disallowed tool attribution.
+set -euo pipefail
+
+brand="cur""sor"
+email="${brand}agent@${brand}.com"
+pattern="${brand}[[:space:]]*<[[:space:]]*${email}[[:space:]]*>|made[[:space:]]+with[[:space:]]+\\[?${brand}\\b|generated[[:space:]]+by[[:space:]]+${brand}\\b|via[[:space:]]+${brand}\\b"
+
+block=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [[ "$local_sha" == "0000000000000000000000000000000000000000" ]]; then
+    continue
+  fi
+  if [[ "$remote_sha" == "0000000000000000000000000000000000000000" ]]; then
+    if git rev-parse --verify origin/main >/dev/null 2>&1; then
+      base="$(git merge-base origin/main "$local_sha")"
+      range="${base}..${local_sha}"
+    else
+      range="$local_sha"
+    fi
+  else
+    range="${remote_sha}..${local_sha}"
+  fi
+
+  bad=""
+  while read -r commit_sha; do
+    [[ -z "$commit_sha" ]] && continue
+    if git log -1 --format=%B "$commit_sha" | grep -Eiq "$pattern"; then
+      bad+="${commit_sha}"$'\n'
+    fi
+  done < <(git log --format=%H "$range" 2>/dev/null || true)
+
+  if [[ -n "$bad" ]]; then
+    echo "pre-push: refusing to push commits with disallowed tool attribution:" >&2
+    printf '%s' "$bad" | sed 's/^/  /' >&2
+    echo "Edit the offending commit message(s) and retry." >&2
+    block=1
+  fi
+done
+
+if [[ $block -ne 0 ]]; then
+  exit 1
+fi
+exit 0
