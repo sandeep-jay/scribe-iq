@@ -9,7 +9,7 @@ Use this folder for **as-built** and **high-level current-system** documentation
 
 **Product framing, diagrams, and design rationale:** [../overview/](../overview/) (`PRODUCT_CONTEXT`, `SYSTEM_OVERVIEW`, `DESIGN_NOTES`).
 
-**Full documentation map:** [../README.md](../README.md).
+**Full documentation map:** [../README.md](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 ## Implementation entrypoints (pillars)
 
@@ -17,10 +17,10 @@ How to run and extend each area; deep specs live under `docs/reference/` and per
 
 | Area | Code | README |
 |------|------|--------|
-| Backend | `backend/` | [backend/README.md](../../backend/README.md) |
-| Frontend | `frontend/` | [frontend/README.md](../../frontend/README.md) |
-| Offline corpus (`data_prep/`) | `data_prep/` | [data_prep/README.md](../../data_prep/README.md) |
+| Backend | `backend/` | [backend/README.md](https://github.com/sandeep-jay/scribe-iq/blob/main/backend/README.md) |
+| Frontend | `frontend/` | [frontend/README.md](https://github.com/sandeep-jay/scribe-iq/blob/main/frontend/README.md) |
+| Offline corpus (`data_prep/`) | `data_prep/` | [data_prep/README.md](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md) |
 
-**Historical precursors (do not extend for new work):** [corpus_pipelines/agbonnet_hf_clinical_notes/](../../corpus_pipelines/agbonnet_hf_clinical_notes/) — see [corpus_pipelines/agbonnet_hf_clinical_notes/README.md](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md).
+**Historical precursors (do not extend for new work):** [corpus_pipelines/agbonnet_hf_clinical_notes/](https://github.com/sandeep-jay/scribe-iq/tree/main/corpus_pipelines/agbonnet_hf_clinical_notes/) — see [corpus_pipelines/agbonnet_hf_clinical_notes/README.md](https://github.com/sandeep-jay/scribe-iq/blob/main/corpus_pipelines/agbonnet_hf_clinical_notes/README.md).
 
 **Lineage:** [../history/EVOLUTION.md](../history/EVOLUTION.md). **Superseded drafts:** [../archive/](../archive/).

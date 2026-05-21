@@ -75,7 +75,7 @@ Open <http://localhost:3000>. You should see the patient list immediately.
 
 If `data/clinical_corpus_v2/` is missing, rebuild or restore the generated artifact before running `scribe-load-corpus`. The offline corpus pipeline needs a Python environment, the Synthea JAR, source dataset setup, and optional provider keys for adaptation steps. Depending on source downloads, matching, and adaptation, a full run can take hours.
 
-Start with [`data_prep/README.md`](../../data_prep/README.md), then use the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md) for the script-by-script execution path.
+Start with [`data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md), then use the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md) for the script-by-script execution path.
 
 ---
 
@@ -110,10 +110,10 @@ Expected: Postgres healthy via Compose; `GET /health` returns JSON with capabili
 
 ## Troubleshooting
 
-**Port 5433 already in use.** Stop the conflicting Postgres (often Homebrew: `brew services stop postgresql`) or change the host mapping in [`docker-compose.yml`](../../docker-compose.yml).
+**Port 5433 already in use.** Stop the conflicting Postgres (often Homebrew: `brew services stop postgresql`) or change the host mapping in [`docker-compose.yml`](https://github.com/sandeep-jay/scribe-iq/blob/main/docker-compose.yml).
 
 **`FATAL: role "rag" does not exist` during `alembic upgrade head`.** You are not hitting Compose Postgres — confirm `docker compose ps` and that `DATABASE_URL` in `backend/.env` uses `127.0.0.1:5433`.
 
 **Chat 503 "No embeddings in the database".** Expected until the configured embedding provider is set (`EMBEDDING_PROVIDER` plus credentials in `backend/.env`) **and** `scribe-load-corpus --embed` has been run against that provider. See [`LLM_AND_EMBEDDING_PROVIDERS.md`](./LLM_AND_EMBEDDING_PROVIDERS.md) for the full embedding-rebuild workflow. Meeting prep with Groq is an LLM-only feature and works without embeddings.
 
-**More:** backend port, CORS, API base URL — see [`backend/README.md`](../../backend/README.md) and [`frontend/README.md`](../../frontend/README.md).
+**More:** backend port, CORS, API base URL — see [`backend/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/backend/README.md) and [`frontend/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/frontend/README.md).

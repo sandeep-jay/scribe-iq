@@ -6,7 +6,7 @@ last_updated: 2026-05-19
 
 # Scribe-IQ LLM provider layer
 
-> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 
 Execution roadmap for a provider-agnostic LLM runtime (`groq`, `azure_openai`, `bedrock`) with consistent audit metadata.

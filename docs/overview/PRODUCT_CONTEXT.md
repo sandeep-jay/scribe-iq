@@ -57,4 +57,4 @@ Different audiences look for different things. The documentation is structured t
 | An architect | [`SYSTEM_OVERVIEW.md`](./SYSTEM_OVERVIEW.md) and [`DESIGN_NOTES.md`](./DESIGN_NOTES.md) | Diagrams, flags, seams; rationale and alternatives |
 | An engineer running it | [`docs/guides/QUICKSTART.md`](../guides/QUICKSTART.md) | One supported path to a working UI |
 | A reviewer of the as-built | [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md) | Exact routes, schema, env flags |
-| A reader of the corpus pipeline | [`data_prep/README.md`](../../data_prep/README.md) and [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md) | Nine-step pipeline detail |
+| A reader of the corpus pipeline | [`data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md) and [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md) | Nine-step pipeline detail |

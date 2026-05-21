@@ -64,3 +64,4 @@ nav:
   - Corpus Artifacts: guides/CORPUS_ARTIFACTS.md
   - Provider Setup: guides/LLM_AND_EMBEDDING_PROVIDERS.md
   - As-Built Reference: architecture/IMPLEMENTED_BASELINE.md
+  - Code on GitHub: https://github.com/sandeep-jay/scribe-iq

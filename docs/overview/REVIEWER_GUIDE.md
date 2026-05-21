@@ -36,7 +36,7 @@ Scribe IQ is one portfolio artifact among several. For how this repo maps onto r
 
 ### Recruiter / hiring manager
 
-1. [README](../../README.md)
+1. [README](https://github.com/sandeep-jay/scribe-iq/blob/main/README.md)
 2. [Portfolio Case Study](PORTFOLIO_CASE_STUDY.md)
 3. [Target Role Alignment](TARGET_ROLE_ALIGNMENT.md)
 
@@ -50,7 +50,7 @@ Scribe IQ is one portfolio artifact among several. For how this repo maps onto r
 ### Data platform reviewer
 
 1. [Corpus Artifacts](../guides/CORPUS_ARTIFACTS.md)
-2. [`data_prep/README.md`](../../data_prep/README.md)
+2. [`data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md)
 3. [Corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md)
 
 ## What this is not

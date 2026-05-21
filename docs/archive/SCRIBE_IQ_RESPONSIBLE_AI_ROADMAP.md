@@ -1,6 +1,6 @@
 # Scribe IQ — Responsible AI Control Center (roadmap)
 
-> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 
 This document is the **product + engineering plan** for the **Responsible AI Control Center**: unified audit logging, admin APIs, and admin UI so every AI outcome is **traceable**, **source-grounded**, **safety-checked**, and **auditable**. It complements **`docs/README.md`** (documentation index), **`docs/roadmap/SCRIBE_IQ_UI_ROADMAP.md`** (general UI phases), **`docs/architecture/IMPLEMENTED_BASELINE.md`** (what exists today), and **`PHASE1_MASTER_PLAN.md`** / **`docs/roadmap/SCRIBE_IQ_V1_IMPLEMENTATION_PLAN.md`** where relevant.

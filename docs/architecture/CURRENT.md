@@ -13,7 +13,7 @@ A **governed clinical documentation AI prototype**: an offline synthetic clinica
 | Concern | Doc |
 |--------|-----|
 | Implemented behavior (today) | [IMPLEMENTED_BASELINE.md](./IMPLEMENTED_BASELINE.md) |
-| Documentation index | [../README.md](../README.md) |
+| Documentation index | [../README.md](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md) |
 | Architecture hub | [README.md](./README.md) |
 | Product framing and deferred intent | [../overview/PRODUCT_CONTEXT.md](../overview/PRODUCT_CONTEXT.md) |
 | Offline corpus build | `data_prep/` + [../reference/corpus_offline_pipeline_v2_brief.md](../reference/corpus_offline_pipeline_v2_brief.md) |

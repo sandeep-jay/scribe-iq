@@ -2,7 +2,7 @@
 
 This guide explains what the generated Scribe IQ corpus contains, where the source material comes from, how the offline pipeline builds it, and what to do when `data/clinical_corpus_v2/` is missing.
 
-Pipeline execution details live in [`data_prep/README.md`](../../data_prep/README.md). Script-by-script implementation detail lives in the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md). The generated artifact, when restored locally, also includes its own [`dataset_card.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data/clinical_corpus_v2/dataset_card.md), [`manifest.json`](https://github.com/sandeep-jay/scribe-iq/blob/main/data/clinical_corpus_v2/manifest.json), and [`audit_report.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data/clinical_corpus_v2/audit_report.md).
+Pipeline execution details live in [`data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md). Script-by-script implementation detail lives in the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md). The generated artifact, when restored locally, also includes its own [`dataset_card.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data/clinical_corpus_v2/dataset_card.md), [`manifest.json`](https://github.com/sandeep-jay/scribe-iq/blob/main/data/clinical_corpus_v2/manifest.json), and [`audit_report.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data/clinical_corpus_v2/audit_report.md).
 
 ## Short version
 
@@ -117,4 +117,4 @@ The current artifact's note source breakdown is 262 MedSynth-sourced notes and 7
 
 If `data/clinical_corpus_v2/` is absent after clone, that is expected unless a generated artifact has been restored. Rebuild or restore the generated artifact before running `scribe-load-corpus`.
 
-For local run instructions, see [`QUICKSTART.md`](./QUICKSTART.md). For pipeline execution, see [`data_prep/README.md`](../../data_prep/README.md). For the long-form implementation brief, see the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md).
+For local run instructions, see [`QUICKSTART.md`](./QUICKSTART.md). For pipeline execution, see [`data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md). For the long-form implementation brief, see the [corpus pipeline reference](../reference/corpus_offline_pipeline_v2_brief.md).
