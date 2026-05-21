@@ -76,7 +76,7 @@ python -m scripts.load_corpus --embed      # requires configured embedding provi
 
 Alternatively: `scribe-load-corpus`.
 
-Expected counts match `data/clinical_corpus_v2/manifest.json` (demo: ~19 patients, ~269 notes).
+The pipeline can generate a configured demo cohort; restored artifacts may vary. Validate expected counts against `data/clinical_corpus_v2/manifest.json`.
 
 ## Read API (T4)
 
