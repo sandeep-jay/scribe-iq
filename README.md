@@ -93,19 +93,6 @@ flowchart TB
 
 ---
 
-## Demo readiness
-
-| Area | Status |
-|------|--------|
-| Synthetic clinical corpus pipeline | Implemented |
-| Runtime app: charts, encounters, meeting prep, RAG chat, note generation | Implemented |
-| Responsible AI audit surfaces | Implemented |
-| PHI readiness | Intentionally not claimed |
-| SSO / multi-tenant isolation | Deferred production seam |
-| Hosted demo URL | Planned / optional |
-
----
-
 ## Screenshots
 
 The UI is backed by a synthetic Synthea cohort; on-screen labels make this explicit.
@@ -129,6 +116,19 @@ The UI is backed by a synthetic Synthea cohort; on-screen labels make this expli
 ### Responsible AI
 
 ![Responsible AI control center](docs/assets/showcase/readme/readme-responsible-ai.png)
+
+---
+
+## Demo readiness
+
+| Area | Status |
+|------|--------|
+| Synthetic clinical corpus pipeline | Implemented |
+| Runtime app: charts, encounters, meeting prep, RAG chat, note generation | Implemented |
+| Responsible AI audit surfaces | Implemented |
+| PHI readiness | Intentionally not claimed |
+| SSO / multi-tenant isolation | Deferred production seam |
+| Hosted demo URL | Planned / optional |
 
 ---
 
