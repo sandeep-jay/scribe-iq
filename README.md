@@ -3,7 +3,7 @@
 [![CI](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**Healthcare AI platform prototype** for grounded clinical documentation workflows on synthetic data.
+**Grounded clinical documentation AI prototype** built on a synthetic Synthea patient spine, public clinical note corpora, RAG, pgvector, FastAPI, Next.js, and governed LLM audit workflows.
 
 Scribe IQ is built around a product premise: clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work.
 
@@ -36,6 +36,21 @@ I built Scribe IQ to make the bridge from education data platforms to healthcare
 | Clinical workflows | Patient chart, encounter viewer, care timeline, pre-meeting prep, structured note generation, and grounded RAG chat |
 | Responsible AI | Citation contract, append-only `ai_interactions`, redacted previews, prompt/model traceability, source traces, and Responsible AI Control Center |
 | Production judgment | Explicit synthetic-data boundary, provider egress caveats, degraded states, and named seams for SSO, tenant isolation, PHI controls, and observability |
+
+---
+
+## Corpus
+
+I generated a synthetic longitudinal patient and encounter corpus for Scribe IQ — no real PHI — by leveraging these open sources:
+
+- **[Synthea](https://github.com/synthetichealth/synthea)** — synthetic patient spine: demographics, encounters, conditions, medications, observations, and longitudinal structure.
+- **[MTSamples](https://huggingface.co/datasets/harishnair04/mtsamples)** — public outpatient-style clinical note examples.
+- **[MedSynth](https://huggingface.co/datasets/Ahmad0067/MedSynth)** — synthetic SOAP-style clinical notes and dialogue/note pairs.
+- **[ACI-Bench](https://huggingface.co/datasets/mkieffer/ACI-Bench)** — encounter dialogue examples used in showcase workflows.
+
+`data_prep/` matches public note examples to Synthea encounters, scores candidate fit, adapts notes for patient-level consistency, validates outputs, and emits `clinical_corpus_v2/` with a manifest, dataset card, and audit report.
+
+Synthetic data only. No real PHI is used. The system is for demonstration and architecture review, not clinical decision-making.
 
 ---
 
@@ -78,19 +93,6 @@ flowchart TB
 
 ---
 
-## Demo readiness
-
-| Area | Status |
-|------|--------|
-| Synthetic clinical corpus pipeline | Implemented |
-| Runtime app: charts, encounters, meeting prep, RAG chat, note generation | Implemented |
-| Responsible AI audit surfaces | Implemented |
-| PHI readiness | Intentionally not claimed |
-| SSO / multi-tenant isolation | Deferred production seam |
-| Hosted demo URL | Planned / optional |
-
----
-
 ## Screenshots
 
 The UI is backed by a synthetic Synthea cohort; on-screen labels make this explicit.
@@ -127,7 +129,7 @@ The UI is backed by a synthetic Synthea cohort; on-screen labels make this expli
 | LLM | Groq, Azure OpenAI, or Amazon Bedrock |
 | Embeddings | OpenAI, Azure OpenAI, or Amazon Bedrock |
 | Migrations | Alembic |
-| Corpus pipeline | Python, Synthea, Hugging Face datasets, Groq |
+| Corpus pipeline | Python, Synthea, MTSamples, MedSynth, ACI-Bench, Hugging Face datasets, Groq |
 
 ---
 
@@ -156,6 +158,25 @@ cd frontend && nvm use && npm install && npm run dev
 ```
 
 Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
+
+---
+
+## Demo readiness
+
+| Area | Status |
+|------|--------|
+| Synthetic clinical corpus pipeline | Implemented |
+| Runtime app: charts, encounters, meeting prep, RAG chat, note generation | Implemented |
+| Responsible AI audit surfaces | Implemented |
+| PHI readiness | Intentionally not claimed |
+| SSO / multi-tenant isolation | Deferred production seam |
+| Hosted demo URL | Planned / optional |
+
+---
+
+## Repository topics
+
+`healthcare-ai`, `clinical-ai`, `clinical-documentation`, `clinical-notes`, `synthetic-data`, `synthea`, `rag`, `vector-search`, `pgvector`, `postgresql`, `fastapi`, `nextjs`, `python`, `typescript`, `responsible-ai`, `multi-cloud`, `groq`, `openai`, `azure-openai`, `amazon-bedrock`
 
 ---
 

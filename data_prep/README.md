@@ -1,7 +1,9 @@
 # Scribe-IQ `data_prep/` pipeline
 
-Generates the **50-patient** demo corpus under `data/clinical_corpus_v2/`. Spec:
+Generates the demo clinical corpus under `data/clinical_corpus_v2/`. Spec:
 `../docs/reference/corpus_offline_pipeline_v2_brief.md`.
+
+The pipeline can generate a configured demo cohort; restored artifacts may vary. Validate expected counts against `data/clinical_corpus_v2/manifest.json`.
 
 Archived exploratory scripts live in **`../corpus_pipelines/agbonnet_hf_clinical_notes/`**.
 
