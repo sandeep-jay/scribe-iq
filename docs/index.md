@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/license-portfolio--only-orange.svg)](https://github.com/sandeep-jay/scribe-iq/blob/main/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-github--pages-blue.svg)](https://sandeep-jay.github.io/scribe-iq/)
 
+**[View source on GitHub ->](https://github.com/sandeep-jay/scribe-iq)**
+
 **Governed clinical documentation AI prototype.** Synthetic longitudinal records, clinical-note-grounded RAG, chart review, structured note generation, and Responsible AI auditability — with provider-agnostic LLM and embedding layers and explicit production boundaries.
 
 Clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work. Scribe IQ is built around that premise.

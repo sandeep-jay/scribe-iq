@@ -51,7 +51,7 @@ flowchart LR
 
 Synthea produces a deterministic synthetic patient population. The note pool contributes realistic clinical narrative from public datasets. The nine-step `data_prep` pipeline matches notes to synthetic patients, scores quality, selects a cohort, adapts notes via the configured LLM provider for consistency, and emits validated JSONL with a dataset card and audit report. The backend loader (`scribe-load-corpus`) upserts that JSONL into Postgres; with `--embed`, it generates embeddings via the **configured embedding provider** (OpenAI, Azure OpenAI, or Amazon Bedrock — see [`docs/guides/LLM_AND_EMBEDDING_PROVIDERS.md`](../guides/LLM_AND_EMBEDDING_PROVIDERS.md)) into the `notes.embedding` vector column.
 
-For pipeline detail, see [`data_prep/README.md`](../../data_prep/README.md) and [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md).
+For pipeline detail, see [`data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md) and [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md).
 
 ---
 
@@ -114,10 +114,10 @@ These themes are intentional; **alternatives considered, depth, and production d
 
 | Concern | Location |
 |---------|----------|
-| Local Postgres + pgvector | [`docker-compose.yml`](../../docker-compose.yml) (host port 5433) |
-| Backend | [`backend/`](../../backend/) |
-| Frontend | [`frontend/`](../../frontend/) |
-| Corpus pipeline | [`data_prep/`](../../data_prep/) |
+| Local Postgres + pgvector | [`docker-compose.yml`](https://github.com/sandeep-jay/scribe-iq/blob/main/docker-compose.yml) (host port 5433) |
+| Backend | [`backend/`](https://github.com/sandeep-jay/scribe-iq/tree/main/backend/) |
+| Frontend | [`frontend/`](https://github.com/sandeep-jay/scribe-iq/tree/main/frontend/) |
+| Corpus pipeline | [`data_prep/`](https://github.com/sandeep-jay/scribe-iq/tree/main/data_prep/) |
 | Generated corpus artifact | `data/clinical_corpus_v2/` |
 | As-built API and schema | [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md) |
 | Run instructions | [`docs/guides/QUICKSTART.md`](../guides/QUICKSTART.md) |

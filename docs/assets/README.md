@@ -1,6 +1,6 @@
 # Showcase assets
 
-Images embedded in the repository root [`README.md`](../../README.md).
+Images embedded in the repository root [`README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/README.md).
 
 | File | Used for |
 |------|----------|

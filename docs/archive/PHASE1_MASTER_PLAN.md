@@ -1,9 +1,9 @@
 # Scribe IQ — Master plan (clinical lakehouse + app MVP)
 
-> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md). Map: [`docs/README.md`](../README.md).
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/reference/corpus_offline_pipeline_v2_brief.md`](../reference/corpus_offline_pipeline_v2_brief.md). Map: [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 
-> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`corpus_pipelines/agbonnet_hf_clinical_notes/`** ([`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
+> **Repository snapshot (2026-05):** The **supported offline corpus pipeline for this repository** is **`data_prep/`** (see root `README.md` and `docs/reference/corpus_offline_pipeline_v2_brief.md`). Later sections use **`lakehouse/`** as historical naming for Project L; the archived scripts on disk live under **`corpus_pipelines/agbonnet_hf_clinical_notes/`** ([`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/corpus_pipelines/agbonnet_hf_clinical_notes/README.md)). Treat **`lakehouse/`** paths in prose as **design lineage**, not required repo layout today. Architecture hub: [`docs/architecture/README.md`](../architecture/README.md); map: **`docs/README.md`**; timeline: **`docs/history/EVOLUTION.md`**.
 
 
 > **Two projects**

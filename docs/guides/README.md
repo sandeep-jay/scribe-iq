@@ -8,14 +8,14 @@ Entry point for **running and changing** this repository. Long-form specs live u
 |------|--------|
 | **Quick start (end-to-end)** | [`QUICKSTART.md`](./QUICKSTART.md) |
 | **LLM and embedding providers** | [`LLM_AND_EMBEDDING_PROVIDERS.md`](./LLM_AND_EMBEDDING_PROVIDERS.md) |
-| Backend (FastAPI) | [`../../backend/README.md`](../../backend/README.md) |
-| Frontend (Next.js) | [`../../frontend/README.md`](../../frontend/README.md) |
-| Offline corpus builder | [`../../data_prep/README.md`](../../data_prep/README.md) |
-| AGBonnet HF clinical notes (historical precursors; do not extend) | [`../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md) |
+| Backend (FastAPI) | [`../../backend/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/backend/README.md) |
+| Frontend (Next.js) | [`../../frontend/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/frontend/README.md) |
+| Offline corpus builder | [`../../data_prep/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/data_prep/README.md) |
+| AGBonnet HF clinical notes (historical precursors; do not extend) | [`../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/corpus_pipelines/agbonnet_hf_clinical_notes/README.md) |
 
 ## Node version
 
-Frontend development assumes the Node version in [`.nvmrc`](../../.nvmrc):
+Frontend development assumes the Node version in [`.nvmrc`](https://github.com/sandeep-jay/scribe-iq/blob/main/.nvmrc):
 
 ```bash
 nvm use
@@ -51,7 +51,7 @@ pre-commit run gitleaks --all-files
 
 ### Tool attribution guards
 
-This repo ships versioned git hooks under [`../../.githooks/`](../../.githooks/) that strip or block local tool attribution from commit messages and PR metadata.
+This repo ships versioned git hooks under [`../../.githooks/`](https://github.com/sandeep-jay/scribe-iq/tree/main/.githooks/) that strip or block local tool attribution from commit messages and PR metadata.
 
 - `commit-msg` and `prepare-commit-msg` remove known tool co-author trailers, "made with" footers, generated-by lines, and similar variants from the in-progress commit message.
 - `pre-push` refuses to push commits whose messages still include disallowed attribution after the strip pass.
@@ -69,4 +69,4 @@ Authoring guidance: do not include local editor or AI-tool branding in commit me
 
 ## Full documentation map
 
-See [`docs/README.md`](../README.md).
+See [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).

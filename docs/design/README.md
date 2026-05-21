@@ -7,7 +7,7 @@ Canonical written design specs for the historical RAG app and clinical-note LLM 
 - [`docs/archive/rag_app_phase1_mvp_design.md`](../archive/rag_app_phase1_mvp_design.md)
 - [`docs/archive/rag_clinical_note_llm_design.md`](../archive/rag_clinical_note_llm_design.md)
 
-Documentation map: [`docs/README.md`](../README.md).
+Documentation map: [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 ## Layout
 
@@ -18,4 +18,4 @@ Documentation map: [`docs/README.md`](../README.md).
 
 ## Public showcase (repository)
 
-Downsampled images embedded in the repository root [`README.md`](../../README.md) live under [`assets/showcase/readme/`](../assets/showcase/readme/). A **1200×630** Open Graph-style crop is at [`assets/showcase/social/og.png`](../assets/showcase/social/og.png).
+Downsampled images embedded in the repository root [`README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/README.md) live under [`assets/showcase/readme/`](../assets/showcase/readme/). A **1200×630** Open Graph-style crop is at [`assets/showcase/social/og.png`](../assets/showcase/social/og.png).

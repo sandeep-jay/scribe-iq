@@ -83,7 +83,7 @@ scribe-iq/                          ← repo root
 
 **Rule:** **`data_prep/`** is the **only supported** tree for running corpus-generation scripts. **Historical** lakehouse-style proposals live under **`docs/reference/`** (see **`docs/history/EVOLUTION.md`**). An optional local **`corpus_pipelines/agbonnet_hf_clinical_notes/`** directory may exist on some machines and is **not** part of the supported layout.
 
-**Related (same repo):** adapt-notes + longitudinal contract — [`data_prep_adapt_notes_longitudinal_design.md`](./data_prep_adapt_notes_longitudinal_design.md); merged implementation corrections — **Appendix** in this file; archived precursor scripts — [`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](../../corpus_pipelines/agbonnet_hf_clinical_notes/README.md); superseded long prompts — [`docs/archive/`](../archive/).
+**Related (same repo):** adapt-notes + longitudinal contract — [`data_prep_adapt_notes_longitudinal_design.md`](./data_prep_adapt_notes_longitudinal_design.md); merged implementation corrections — **Appendix** in this file; archived precursor scripts — [`corpus_pipelines/agbonnet_hf_clinical_notes/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/corpus_pipelines/agbonnet_hf_clinical_notes/README.md); superseded long prompts — [`docs/archive/`](../archive/).
 
 ---
 

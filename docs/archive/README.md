@@ -17,4 +17,4 @@ Files here are **superseded** or **historical**, but kept for traceability. Each
 | [SCRIBE_IQ_SIMPLIFIED_IMPLEMENTATION_AGENT.md](SCRIBE_IQ_SIMPLIFIED_IMPLEMENTATION_AGENT.md) | Narrative consolidated toward corpus brief + baseline. |
 | [SCRIBE_IQ_APP_IMPLEMENTATION_GUIDE.md](SCRIBE_IQ_APP_IMPLEMENTATION_GUIDE.md) | Superseded by corpus brief + baseline. |
 
-Index of all documentation: [**`docs/README.md`**](../README.md). Evolution summary: [**`docs/history/EVOLUTION.md`**](../history/EVOLUTION.md).
+Index of all documentation: [**`docs/README.md`**](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md). Evolution summary: [**`docs/history/EVOLUTION.md`**](../history/EVOLUTION.md).

@@ -6,7 +6,7 @@ last_updated: 2026-05-03
 
 # Scribe-IQ V1 Implementation Plan — Chat-first RAG
 
-> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 
 > **Note (2026-05):** This plan was written as an execution checklist. Task statuses were refreshed against `docs/architecture/IMPLEMENTED_BASELINE.md`. For **current** behavior and flags, treat the baseline as authoritative; this file remains useful for mockup links and original v1 intent.

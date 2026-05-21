@@ -1,6 +1,6 @@
 # Work plan: documentation hygiene, truth repair, and evolution trail
 
-> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](../README.md).
+> **Archived (2026-05).** Preserved for design lineage. Current authoritative source: [`docs/architecture/IMPLEMENTED_BASELINE.md`](../architecture/IMPLEMENTED_BASELINE.md). Map: [`docs/README.md`](https://github.com/sandeep-jay/scribe-iq/blob/main/docs/README.md).
 
 
 > **Status (completed pass, 2026-05):** The goals below were carried out on `main` (see git history on `docs/hygiene-pass` and follow-up merges). Treat this file as a **historical checklist**, not an active branch plan. For the condensed narrative, see [`docs/history/EVOLUTION.md`](../history/EVOLUTION.md).
