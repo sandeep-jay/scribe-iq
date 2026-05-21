@@ -41,12 +41,12 @@ I built Scribe IQ to make the bridge from education data platforms to healthcare
 
 ## Corpus
 
-Scribe IQ uses a generated synthetic clinical corpus, not real PHI. The `data_prep/` pipeline combines:
+I generated a synthetic longitudinal patient and encounter corpus for Scribe IQ — no real PHI — by leveraging these open sources:
 
-- **Synthea** — synthetic patient spine: demographics, encounters, conditions, medications, observations, and longitudinal structure.
-- **MTSamples** — public outpatient-style clinical note examples.
-- **MedSynth** — synthetic SOAP-style clinical notes and dialogue/note pairs.
-- **ACI-Bench** — encounter dialogue examples used in showcase workflows.
+- **[Synthea](https://github.com/synthetichealth/synthea)** — synthetic patient spine: demographics, encounters, conditions, medications, observations, and longitudinal structure.
+- **[MTSamples](https://huggingface.co/datasets/harishnair04/mtsamples)** — public outpatient-style clinical note examples.
+- **[MedSynth](https://huggingface.co/datasets/Ahmad0067/MedSynth)** — synthetic SOAP-style clinical notes and dialogue/note pairs.
+- **[ACI-Bench](https://huggingface.co/datasets/mkieffer/ACI-Bench)** — encounter dialogue examples used in showcase workflows.
 
 `data_prep/` matches public note examples to Synthea encounters, scores candidate fit, adapts notes for patient-level consistency, validates outputs, and emits `clinical_corpus_v2/` with a manifest, dataset card, and audit report.
 
