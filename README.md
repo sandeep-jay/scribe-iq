@@ -2,12 +2,11 @@
 
 [![CI](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-portfolio--only-orange.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-github--pages-blue.svg)](https://sandeep-jay.github.io/scribe-iq/)
 
 **Governed clinical documentation AI prototype** translating institutional data platform architecture into healthcare-shaped workflows: synthetic longitudinal records, clinical note-grounded RAG, chart review, note generation, provider-agnostic LLM/embedding layers, and Responsible AI auditability.
 
 Scribe IQ is built around a product premise: clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work.
-
-The project demonstrates how an offline synthetic clinical corpus becomes a governed AI product: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical documentation UI, and Responsible AI auditability.
 
 Built on synthetic data. Not for clinical decision-making.
 
@@ -26,20 +25,6 @@ For role-fit interpretation across healthcare, university, research, and educati
 
 ---
 
-## Product framing
-
-Scribe IQ is not a chatbot wrapped around clinical notes. It is a clinical documentation product prototype shaped around the constraints healthcare AI has to respect:
-
-- **Grounding:** answers and summaries should trace back to stored notes and encounters.
-- **Workflow fit:** AI features live inside chart review, encounter viewing, pre-meeting prep, and note drafting.
-- **Governance:** AI interactions are recorded as first-class audit rows, not loose logs.
-- **Degraded states:** missing providers, embeddings, and feature flags are surfaced explicitly.
-- **Boundary discipline:** synthetic data only; PHI readiness, SSO, tenancy, and BAA-backed deployment are named production seams.
-
-I built Scribe IQ to make the bridge from education data platforms to healthcare AI concrete. My background is in governed education systems: longitudinal student records, sensitive advising notes, privacy-aware analytics, and human decision support. Scribe IQ translates the same architecture into a healthcare-shaped system: longitudinal patient records, clinical notes, retrieval-grounded AI, human review boundaries, and governance as schema.
-
----
-
 ## What this shows
 
 | Layer | What is demonstrated |
@@ -48,7 +33,6 @@ I built Scribe IQ to make the bridge from education data platforms to healthcare
 | Serving substrate | FastAPI, Postgres/pgvector, Alembic migrations, async database access, and one governed store for patient rows, notes, embeddings, and audit records |
 | Clinical workflows | Patient chart, encounter viewer, care timeline, pre-meeting prep, structured note generation, and grounded RAG chat |
 | Responsible AI | Citation contract, append-only `ai_interactions`, redacted previews, prompt/model traceability, source traces, and Responsible AI Control Center |
-| Production judgment | Explicit synthetic-data boundary, provider egress caveats, degraded states, and named seams for SSO, tenant isolation, PHI controls, and observability |
 
 ---
 
@@ -103,6 +87,7 @@ flowchart TB
 | Technical reviewer | [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md) |
 | Data platform reviewer | [`docs/guides/CORPUS_ARTIFACTS.md`](docs/guides/CORPUS_ARTIFACTS.md) |
 | Local setup | [`docs/guides/QUICKSTART.md`](docs/guides/QUICKSTART.md) |
+| Live docs site | <https://sandeep-jay.github.io/scribe-iq/> |
 | Full docs | [`docs/README.md`](docs/README.md) |
 
 ---
@@ -185,12 +170,6 @@ Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
 | PHI readiness | Intentionally not claimed |
 | SSO / multi-tenant isolation | Deferred production seam |
 | Hosted demo URL | Planned / optional |
-
----
-
-## Repository topics
-
-`healthcare-ai`, `clinical-ai`, `clinical-documentation`, `clinical-notes`, `synthetic-data`, `synthea`, `rag`, `vector-search`, `pgvector`, `postgresql`, `fastapi`, `nextjs`, `python`, `typescript`, `responsible-ai`, `multi-cloud`, `groq`, `openai`, `azure-openai`, `amazon-bedrock`
 
 ---
 
