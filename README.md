@@ -1,7 +1,7 @@
 # Scribe IQ
 
 [![CI](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-portfolio--only-orange.svg)](LICENSE)
 
 **Governed clinical documentation AI prototype** translating institutional data platform architecture into healthcare-shaped workflows: synthetic longitudinal records, clinical note-grounded RAG, chart review, note generation, provider-agnostic LLM/embedding layers, and Responsible AI auditability.
 
@@ -196,4 +196,5 @@ Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
 
 ## License
 
-Apache License 2.0 — see [`LICENSE`](LICENSE).
+This project is source-available for portfolio review and educational purposes only.
+Commercial use is prohibited without prior written permission. See [LICENSE](./LICENSE).
