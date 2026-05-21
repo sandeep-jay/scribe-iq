@@ -1,0 +1,66 @@
+site_name: Scribe IQ
+site_description: Governed clinical documentation AI prototype
+site_url: https://sandeep-jay.github.io/scribe-iq/
+repo_url: https://github.com/sandeep-jay/scribe-iq
+repo_name: sandeep-jay/scribe-iq
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
+
+nav:
+  - Start Here: index.md
+  - Reviewer Guide: overview/REVIEWER_GUIDE.md
+  - Product & Architecture Case Study: overview/PORTFOLIO_CASE_STUDY.md
+  - Target Role Alignment: overview/TARGET_ROLE_ALIGNMENT.md
+  - System Overview: overview/SYSTEM_OVERVIEW.md
+  - Responsible AI & Privacy: overview/PRIVACY_AND_PROVIDER_BOUNDARIES.md
+  - Design Notes: overview/DESIGN_NOTES.md
+  - Product Context: overview/PRODUCT_CONTEXT.md
+  - Run Locally: guides/QUICKSTART.md
+  - Corpus Artifacts: guides/CORPUS_ARTIFACTS.md
+  - Provider Setup: guides/LLM_AND_EMBEDDING_PROVIDERS.md
+  - As-Built Reference: architecture/IMPLEMENTED_BASELINE.md

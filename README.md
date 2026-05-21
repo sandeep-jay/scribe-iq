@@ -1,15 +1,28 @@
 # Scribe IQ
 
 [![CI](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sandeep-jay/scribe-iq/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-portfolio--only-orange.svg)](LICENSE)
 
-**Grounded clinical documentation AI prototype** built on a synthetic Synthea patient spine, public clinical note corpora, RAG, pgvector, FastAPI, Next.js, and governed LLM audit workflows.
+**Governed clinical documentation AI prototype** translating institutional data platform architecture into healthcare-shaped workflows: synthetic longitudinal records, clinical note-grounded RAG, chart review, note generation, provider-agnostic LLM/embedding layers, and Responsible AI auditability.
 
 Scribe IQ is built around a product premise: clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work.
 
 The project demonstrates how an offline synthetic clinical corpus becomes a governed AI product: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical documentation UI, and Responsible AI auditability.
 
 Built on synthetic data. Not for clinical decision-making.
+
+## Why this repo exists
+
+Scribe IQ is a product and architecture review artifact, not a packaged clinical product. It is meant to demonstrate how governed institutional data patterns apply to academic health, research, and education technology environments:
+
+- longitudinal records and sensitive notes as the core data product
+- offline corpus construction separated from runtime serving
+- retrieval-grounded AI workflows with visible source context
+- provider boundary awareness for LLMs and embeddings
+- audit-first AI design with redacted previews and prompt/model traceability
+- explicit production deltas for PHI, SSO/RBAC, tenancy, BAA-backed deployment, and observability
+
+For role-fit interpretation across healthcare, university, research, and education-IT architecture roles, see [`docs/overview/TARGET_ROLE_ALIGNMENT.md`](docs/overview/TARGET_ROLE_ALIGNMENT.md).
 
 ---
 
@@ -86,6 +99,7 @@ flowchart TB
 |---------|------------------|
 | New here | [`docs/overview/REVIEWER_GUIDE.md`](docs/overview/REVIEWER_GUIDE.md) |
 | Product / architecture reviewer | [`docs/overview/PORTFOLIO_CASE_STUDY.md`](docs/overview/PORTFOLIO_CASE_STUDY.md) |
+| Role-fit reviewer | [`docs/overview/TARGET_ROLE_ALIGNMENT.md`](docs/overview/TARGET_ROLE_ALIGNMENT.md) |
 | Technical reviewer | [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md) |
 | Data platform reviewer | [`docs/guides/CORPUS_ARTIFACTS.md`](docs/guides/CORPUS_ARTIFACTS.md) |
 | Local setup | [`docs/guides/QUICKSTART.md`](docs/guides/QUICKSTART.md) |
@@ -182,4 +196,5 @@ Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
 
 ## License
 
-Apache License 2.0 — see [`LICENSE`](LICENSE).
+This project is source-available for portfolio review and educational purposes only.
+Commercial use is prohibited without prior written permission. See [LICENSE](./LICENSE).

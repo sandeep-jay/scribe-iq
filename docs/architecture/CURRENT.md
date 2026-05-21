@@ -6,7 +6,7 @@ For **problem framing, scope, and what is deferred**, see [../overview/PRODUCT_C
 
 ## What it is
 
-A **healthcare AI platform prototype**: an offline synthetic clinical corpus loaded into **Postgres + pgvector**, served by a FastAPI backend and Next.js frontend. Users browse synthetic patient charts and encounters, generate structured notes from transcripts when enabled, run grounded chat over embeddings, and — when flags allow — inspect **Responsible AI** audit surfaces.
+A **governed clinical documentation AI prototype**: an offline synthetic clinical corpus loaded into **Postgres + pgvector**, served by a FastAPI backend and Next.js frontend. Users browse synthetic patient charts and encounters, generate structured notes from transcripts when enabled, run grounded chat over embeddings, and — when flags allow — inspect **Responsible AI** audit surfaces.
 
 ## Where truth lives
 

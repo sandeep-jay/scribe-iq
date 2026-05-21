@@ -1,8 +1,0 @@
-Scribe IQ
-Copyright 2026 Sandeep Jayaprakash
-
-This product is licensed under the Apache License, Version 2.0.
-
-This repository demonstrates workflows over synthetic clinical data and is designed to interoperate with Synthea-generated records. Synthea is an open-source synthetic patient generator from The MITRE Corporation, licensed under the Apache License, Version 2.0.
-
-Third-party open-source dependencies are governed by their respective licenses as declared by their package metadata and lockfiles.

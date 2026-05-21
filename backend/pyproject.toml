@@ -3,7 +3,7 @@ name = "scribe-iq-backend"
 version = "0.1.0"
 description = "Scribe-IQ FastAPI backend (clinical RAG demo)"
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = { text = "Portfolio/Educational Use Only - see repository LICENSE" }
 authors = [{ name = "Sandeep Jayaprakash" }]
 requires-python = ">=3.11"
 dependencies = [

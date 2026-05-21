@@ -2,7 +2,7 @@
 
 ## One-line summary
 
-Scribe IQ is a healthcare AI platform prototype showing how an offline synthetic clinical corpus becomes a governed AI product surface: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical UI, and Responsible AI auditability.
+Scribe IQ is a governed clinical documentation AI prototype showing how an offline synthetic clinical corpus becomes a governed AI product surface: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical UI, and Responsible AI auditability.
 
 ---
 
@@ -125,4 +125,4 @@ These are explicit choices, not omissions. Each names the seam where the product
 
 ---
 
-For drop-in resume and LinkedIn descriptions, see [`RESUME_SNIPPETS.md`](RESUME_SNIPPETS.md).
+For role-fit interpretation across academic health, university IT, research, education innovation, and AI platform reviews, see [`TARGET_ROLE_ALIGNMENT.md`](TARGET_ROLE_ALIGNMENT.md).

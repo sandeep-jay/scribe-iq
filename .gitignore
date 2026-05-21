@@ -63,3 +63,6 @@ evals/results/
 # Frontend / Playwright artifacts
 frontend/test-results/
 frontend/playwright-report/
+
+# MkDocs build output
+/site/

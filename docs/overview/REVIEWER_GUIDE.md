@@ -4,7 +4,7 @@ This guide routes reviewers to the right deeper read in about 90 seconds. It doe
 
 ## 90-second read
 
-Scribe IQ is a healthcare AI platform prototype built on synthetic data only. It demonstrates:
+Scribe IQ is a governed clinical documentation AI prototype built on synthetic data only. It demonstrates:
 
 - an offline synthetic clinical corpus pipeline ([Corpus Artifacts](../guides/CORPUS_ARTIFACTS.md)),
 - a Postgres/pgvector serving layer ([System Overview](SYSTEM_OVERVIEW.md)),
@@ -30,13 +30,7 @@ My background is in governed education data platforms: longitudinal student reco
 
 ## Role alignment
 
-Scribe IQ demonstrates platform architecture, AI engineering, and Responsible AI work expected from:
-
-- Lead Data & AI Platform Architect
-- Lead AI Engineer
-- AI/ML Platform Architect
-- Healthcare / academic medical center data architect
-- Responsible AI / GenAI platform engineer
+Scribe IQ is one portfolio artifact among several. For how this repo maps onto role patterns across academic health, university IT, research, education innovation, and AI platform architecture reviews — including the architecture claims and evidence pointers — see [Target Role Alignment](TARGET_ROLE_ALIGNMENT.md).
 
 ## Suggested review paths
 
@@ -44,7 +38,7 @@ Scribe IQ demonstrates platform architecture, AI engineering, and Responsible AI
 
 1. [README](../../README.md)
 2. [Portfolio Case Study](PORTFOLIO_CASE_STUDY.md)
-3. [Resume Snippets](RESUME_SNIPPETS.md)
+3. [Target Role Alignment](TARGET_ROLE_ALIGNMENT.md)
 
 ### Technical architect
 
