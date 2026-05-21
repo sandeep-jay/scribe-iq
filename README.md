@@ -4,15 +4,17 @@
 [![License](https://img.shields.io/badge/license-portfolio--only-orange.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-github--pages-blue.svg)](https://sandeep-jay.github.io/scribe-iq/)
 
-**Governed clinical documentation AI prototype** translating institutional data platform architecture into healthcare-shaped workflows: synthetic longitudinal records, clinical note-grounded RAG, chart review, note generation, provider-agnostic LLM/embedding layers, and Responsible AI auditability.
+**[Explore the live documentation site →](https://sandeep-jay.github.io/scribe-iq/)**
 
-Scribe IQ is built around a product premise: clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work.
+**Governed clinical documentation AI prototype.** Synthetic longitudinal records, clinical-note-grounded RAG, chart review, structured note generation, and Responsible AI auditability — with provider-agnostic LLM and embedding layers and explicit production boundaries.
+
+Clinical AI is only useful if it is grounded in the patient record, clear about its limits, and auditable when it influences human work. Scribe IQ is built around that premise.
 
 Built on synthetic data. Not for clinical decision-making.
 
 ## Why this repo exists
 
-Scribe IQ is a product and architecture review artifact, not a packaged clinical product. It is meant to demonstrate how governed institutional data patterns apply to academic health, research, and education technology environments:
+Scribe IQ demonstrates how governed institutional data platform patterns translate into healthcare-shaped AI workflows. Built as an architecture review artifact for academic health, research, and education technology environments, it surfaces:
 
 - longitudinal records and sensitive notes as the core data product
 - offline corpus construction separated from runtime serving
@@ -21,7 +23,7 @@ Scribe IQ is a product and architecture review artifact, not a packaged clinical
 - audit-first AI design with redacted previews and prompt/model traceability
 - explicit production deltas for PHI, SSO/RBAC, tenancy, BAA-backed deployment, and observability
 
-For role-fit interpretation across healthcare, university, research, and education-IT architecture roles, see [`docs/overview/TARGET_ROLE_ALIGNMENT.md`](docs/overview/TARGET_ROLE_ALIGNMENT.md).
+For role-fit interpretation across healthcare, university, research, and education-IT architecture reviews, see [Target role alignment](docs/overview/TARGET_ROLE_ALIGNMENT.md).
 
 ---
 
@@ -38,7 +40,7 @@ For role-fit interpretation across healthcare, university, research, and educati
 
 ## Corpus
 
-I generated a synthetic longitudinal patient and encounter corpus for Scribe IQ — no real PHI — by leveraging these open sources:
+Scribe IQ runs on a synthetic longitudinal patient and encounter dataset assembled from the following open sources — no real PHI is used:
 
 - **[Synthea](https://github.com/synthetichealth/synthea)** — synthetic patient spine: demographics, encounters, conditions, medications, observations, and longitudinal structure.
 - **[MTSamples](https://huggingface.co/datasets/harishnair04/mtsamples)** — public outpatient-style clinical note examples.
@@ -77,7 +79,7 @@ flowchart TB
 
 ---
 
-## Start here
+## Documentation
 
 | Visitor | Best entry point |
 |---------|------------------|
@@ -87,7 +89,6 @@ flowchart TB
 | Technical reviewer | [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md) |
 | Data platform reviewer | [`docs/guides/CORPUS_ARTIFACTS.md`](docs/guides/CORPUS_ARTIFACTS.md) |
 | Local setup | [`docs/guides/QUICKSTART.md`](docs/guides/QUICKSTART.md) |
-| Live docs site | <https://sandeep-jay.github.io/scribe-iq/> |
 | Full docs | [`docs/README.md`](docs/README.md) |
 
 ---
@@ -132,7 +133,7 @@ The UI is backed by a synthetic Synthea cohort; on-screen labels make this expli
 
 ---
 
-## What each key unlocks
+## Feature availability
 
 Every external dependency is optional. The system degrades gracefully and reports what is configured via `GET /health`.
 
@@ -142,7 +143,7 @@ Every external dependency is optional. The system degrades gracefully and report
 
 For the full flag matrix, see [`docs/overview/SYSTEM_OVERVIEW.md`](docs/overview/SYSTEM_OVERVIEW.md#capability-flags).
 
-## Quick start
+## Getting started
 
 Local run requires a generated or restored corpus artifact at `data/clinical_corpus_v2/`. This artifact is produced by the offline `data_prep/` pipeline and is not committed as application source. If the directory is empty after clone, see [`docs/guides/CORPUS_ARTIFACTS.md`](docs/guides/CORPUS_ARTIFACTS.md). Full prerequisites, optional capability paths, and troubleshooting: [`docs/guides/QUICKSTART.md`](docs/guides/QUICKSTART.md).
 

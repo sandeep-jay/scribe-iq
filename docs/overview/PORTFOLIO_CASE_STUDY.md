@@ -2,7 +2,7 @@
 
 ## One-line summary
 
-Scribe IQ is a governed clinical documentation AI prototype showing how an offline synthetic clinical corpus becomes a governed AI product surface: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical UI, and Responsible AI auditability.
+Scribe IQ is a governed clinical documentation AI prototype showing how an offline synthetic clinical corpus becomes a clinical AI product surface: corpus construction, Postgres/pgvector serving, provider-agnostic LLM workflows, clinical UI, and Responsible AI auditability.
 
 ---
 
@@ -16,7 +16,7 @@ The headline problem the project solves is the one that defines clinical LLM wor
 
 ## Bridge from higher-ed work to healthcare
 
-| Higher-ed ( University / Institutional systems) | Healthcare (Scribe IQ) |
+| Higher-ed (university / institutional systems) | Healthcare (Scribe IQ) |
 |------------------------------------------|------------------------|
 | Longitudinal student records across enrollment, advising, financial aid | Longitudinal patient records across encounters, notes, conditions |
 | Governance constraints (FERPA, audit, role boundaries) treated as first-class schema | Governance constraints (PHI posture, `ai_interactions` audit, provider egress) treated as first-class schema |
