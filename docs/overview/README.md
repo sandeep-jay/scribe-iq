@@ -10,3 +10,4 @@ The overview layer is the **product narrative** layer of this repository. It is 
 | [DESIGN_NOTES.md](DESIGN_NOTES.md) | Senior engineers, reviewers | Decisions, alternatives considered, what would change for production |
 | [PRIVACY_AND_PROVIDER_BOUNDARIES.md](PRIVACY_AND_PROVIDER_BOUNDARIES.md) | Security and compliance readers | PHI posture, provider egress, audit redaction, enterprise caveats |
 | [RESUME_SNIPPETS.md](RESUME_SNIPPETS.md) | Project owner | Drop-in resume, healthcare-targeted, and LinkedIn-length descriptions |
+| [TARGET_ROLE_ALIGNMENT.md](TARGET_ROLE_ALIGNMENT.md) | Architecture reviewers, hiring managers, collaborators | How to interpret this repo against academic health, university IT, research, education innovation, and AI platform role patterns |

@@ -4,13 +4,21 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 
 ---
 
+## If you read only three docs
+
+1. [`../README.md`](../README.md) — product framing, screenshots, architecture sketch, and quickstart.
+2. [`overview/REVIEWER_GUIDE.md`](overview/REVIEWER_GUIDE.md) — fastest path through the repo by reviewer type.
+3. [`overview/PORTFOLIO_CASE_STUDY.md`](overview/PORTFOLIO_CASE_STUDY.md) — product, architecture, governance, and production-boundary narrative.
+
+---
+
 ## Overview (read first)
 
 | Doc | What it is for |
 |-----|----------------|
 | [overview/REVIEWER_GUIDE.md](overview/REVIEWER_GUIDE.md) | Fast review paths for recruiters, technical architects, and data platform reviewers |
 | [overview/PORTFOLIO_CASE_STUDY.md](overview/PORTFOLIO_CASE_STUDY.md) | Product case study: problem, workflows, architecture, governance boundaries, and production limits |
-| [overview/RESUME_SNIPPETS.md](overview/RESUME_SNIPPETS.md) | Reusable resume/project descriptions |
+| [overview/TARGET_ROLE_ALIGNMENT.md](overview/TARGET_ROLE_ALIGNMENT.md) | Role-fit interpretation for academic health, university IT, research, education innovation, and AI platform architecture reviews |
 | [overview/PRODUCT_CONTEXT.md](overview/PRODUCT_CONTEXT.md) | Problem framing, scope, what is deferred and why |
 | [overview/SYSTEM_OVERVIEW.md](overview/SYSTEM_OVERVIEW.md) | Diagrams, capability flags, extension seams (rationale in DESIGN_NOTES) |
 | [overview/DESIGN_NOTES.md](overview/DESIGN_NOTES.md) | Builder's perspective: alternatives considered, what was non-obvious, what would change for production |
@@ -53,6 +61,12 @@ Canonical entry point for Scribe IQ documentation. Start with the **overview** s
 | [roadmap/SCRIBE_IQ_UI_ROADMAP.md](roadmap/SCRIBE_IQ_UI_ROADMAP.md) | UI roadmap (forward-looking) |
 
 When a roadmap disagrees with [`architecture/IMPLEMENTED_BASELINE.md`](architecture/IMPLEMENTED_BASELINE.md), trust the baseline until the roadmap is updated.
+
+## Project owner utilities
+
+| Doc | What it is for |
+|-----|----------------|
+| [overview/RESUME_SNIPPETS.md](overview/RESUME_SNIPPETS.md) | Reusable project descriptions for external profiles and application materials |
 
 ## Archived design lineage
 
