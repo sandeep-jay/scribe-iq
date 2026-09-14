@@ -176,5 +176,4 @@ Frontend: <http://localhost:3000>. Backend: <http://127.0.0.1:8000/health>.
 
 ## License
 
-This project is source-available for portfolio review and educational purposes only.
-Commercial use is prohibited without prior written permission. See [LICENSE](./LICENSE).
+MIT. Built on Synthea Coherent synthetic data — contains no real patient information. See [LICENSE](./LICENSE).
